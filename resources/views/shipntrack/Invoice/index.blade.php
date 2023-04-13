@@ -66,7 +66,7 @@
                 <th class='text-center'>Action</th>
             </tr>
         </thead>
-        <tbody id='checkTable' class="">
+        <tbody id='checkTable'>
         </tbody>
     </table>
 </div>
@@ -76,12 +76,15 @@
 <script type="text/javascript">
     $(document).ready(function() {
         $('#mode').on('change', function() {
-            // $('$mode').removeClass("d-none");
             window.location = "/shipntrack/invoice/" + $(this).val();
         });
 
+        $.extend($.fn.dataTable.defaults, {
+            pageLength: 40,
+        });
+
         let yajra_table = $('.yajra-datatable').DataTable({
-            
+
             processing: true,
             serverSide: true,
             lengthChange: false,

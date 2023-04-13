@@ -25,7 +25,6 @@ class SNTInvoiceController extends Controller
     {
 
         $modes = SNTInvoice::select('mode')->distinct()->get();
-
         $request_mode = $request->mode;
         $url = "/shipntrack/invoice";
 
@@ -51,7 +50,7 @@ class SNTInvoiceController extends Controller
                             <a href='/shipntrack/invoice/download-direct/$row->invoice_no' class='edit btn btn-info btn-sm mr-2'>
                                 <i class='fas fa-download'></i> Download
                             </a>
-                            <a href='/invoice/edit/$row->invoice_no' class='edit btn btn-primary btn-sm mr-2'>
+                            <a href='/shipntrack/invoice/edit/$row->invoice_no' class='edit btn btn-primary btn-sm mr-2'>
                                 <i class='fas fa-edit'></i> Edit 
                             </a>
                         </div>";
@@ -105,10 +104,11 @@ class SNTInvoiceController extends Controller
             'sr_no' => 'required',
             'client_code' => 'required',
         ]);
+
         $insert_data = [
             'invoice_no' => $request->invoice_no,
             'awb_no' => $request->awb_no,
-            'mode' => $request->mode,
+            'mode' => strtoupper($request->mode),
             'invoice_date' => $request->invoice_date,
             'sku' => $request->sku,
             'channel' => $request->channel,
@@ -167,7 +167,8 @@ class SNTInvoiceController extends Controller
             return view('shipntrack.Invoice.' . $invoice_mode, compact(['value'], 'invoice_no', 'invoice_bar_code', 'bar_code'));
         }
     }
-    //Foematting Incoice Data
+
+    //Formatting Incoice Data
     public function invoiceDataFormating($id, $type = 'bulk')
     {
         $invoice_details = [];
@@ -182,7 +183,6 @@ class SNTInvoiceController extends Controller
             ))
         );
 
-        $prefix = config('database.connections.web.prefix');
         if ($type == 'bulk') {
 
             $data = SNTInvoice::select('invoice_no')->whereIn('id', $id)->get();
@@ -284,6 +284,7 @@ class SNTInvoiceController extends Controller
 
         return $item_details_final_array;
     }
+
     //Single View Pdf Download
     public function pdfexport(Request $request)
     {
@@ -297,7 +298,7 @@ class SNTInvoiceController extends Controller
         }
         $exportToPdf = storage::path($file_path);
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -310,16 +311,16 @@ class SNTInvoiceController extends Controller
         $this->deleteAllPdf();
         $data = SNTInvoice::where("invoice_no", "{$id}")->get();
         $invoice_no = $data[0]->invoice_no;
-    
+
         $currenturl =  URL::current();
 
         $url = str_replace('download-direct', 'view', $currenturl);
-       
+
         $path = storage::path("shipntrack/invoice/sntinvoice" . $invoice_no);
 
         $exportToPdf = $path . '.pdf';
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
             ->savePdf($exportToPdf);
 
@@ -341,5 +342,87 @@ class SNTInvoiceController extends Controller
                 unlink($file);
             }
         }
+    }
+
+
+    //SNT Invoiced EDIT
+    public function invoiceeditview($invoice_number)
+    {
+        $data = SNTInvoice::query()
+            ->where('invoice_no', $invoice_number)
+            ->limit(100)->get()->first();
+
+        $mode = (strtoupper($data->mode));
+        return view('shipntrack.Invoice.edit', compact('data', 'mode'));
+    }
+
+    //SNT Invoiced EDIT SAVE
+    public function invoiceeditstore(Request $request)
+    {
+        $request->validate([
+            'invoice_no' => 'required',
+            'awb_no' => 'required',
+            'mode' => 'required',
+            'invoice_date' => 'required',
+            'sku' => 'required',
+            'channel' => 'required',
+            'shipped_by' => 'required',
+            'arn_no' => 'required',
+            'store_name' => 'required',
+            'store_add' => 'required',
+            'bill_to_name' => 'required',
+            'bill_to_add' => 'required',
+            'ship_to_name' => 'required',
+            'ship_to_add' => 'required',
+            'item_description' => 'required',
+            'hsn_code' => 'required',
+            'quantity' => 'required',
+            'currency' => 'required',
+            'product_price' => 'required',
+            'taxable_value' => 'required',
+            'total_including_taxes' => 'required',
+            'grand_total' => 'required',
+            'no_of_pcs' => 'required',
+            'packing' => 'required',
+            'dimension' => 'required',
+            'actual_weight' => 'required',
+            'charged_weight' => 'required',
+            'sr_no' => 'required',
+            'client_code' => 'required',
+        ]);
+        $update_data = [
+            'invoice_no' => $request->invoice_no,
+            'awb_no' => $request->awb_no,
+            'mode' =>strtoupper($request->mode),
+            'invoice_date' => $request->invoice_date,
+            'sku' => $request->sku,
+            'channel' => $request->channel,
+            'shipped_by' => $request->shipped_by,
+            'arn_no' => $request->arn_no,
+            'store_name' => $request->store_name,
+            'store_add' => $request->store_add,
+            'bill_to_name' => $request->bill_to_name,
+            'bill_to_add' => $request->bill_to_add,
+            'ship_to_name' => $request->ship_to_name,
+            'ship_to_add' => $request->ship_to_add,
+            'item_description' => $request->item_description,
+            'hsn_code' => $request->hsn_code,
+            'quantity' => $request->quantity,
+            'currency' => $request->currency,
+            'product_price' => $request->product_price,
+            'taxable_value' => $request->taxable_value,
+            'total_including_taxes' => $request->total_including_taxes,
+            'grand_total' => $request->grand_total,
+            'no_of_pcs' => $request->no_of_pcs,
+            'packing' => $request->packing,
+            'dimension' => $request->dimension,
+            'actual_weight' => $request->actual_weight,
+            'charged_weight' => $request->charged_weight,
+            'sr_no' => $request->sr_no,
+            'client_code' => $request->client_code,
+        ];
+        SNTInvoice::where('invoice_no', $request->invoice_no)->update($update_data);
+
+        return redirect()->route('shipntrack.invoice')->with('success', 'Invoice  has been Updated successfully');
     }
 }

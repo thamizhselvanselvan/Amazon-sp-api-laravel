@@ -70,7 +70,7 @@
             </x-adminlte-select>
         </div>
         <div>
-            <x-adminlte-input label="Invoice Date :" name="invoice_date" type="text" class="form-control" placeholder=" invoice_date" value="{{ old('invoice_date') }}" autocomplete="off" />
+            <x-adminlte-input label="Invoice Date :" name="invoice_date" type="date" class="form-control" placeholder=" invoice_date" value="{{ old('invoice_date') }}" autocomplete="off" />
         </div>
         <div>
             <x-adminlte-input label="SKU :" name="sku" type="text" placeholder="sku" value="{{ old('sku') }}" autocomplete="off" />
