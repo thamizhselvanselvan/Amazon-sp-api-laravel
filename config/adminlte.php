@@ -1126,6 +1126,27 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'fas fa-file-invoice',
                         ],
+                        [
+                            'text' => 'Inventory',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-shopping-cart',
+                            'submenu' =>
+                            [
+                                [
+                                    'text' => 'Inward ',
+                                    'icon' => 'far fa fa-plus-square-o',
+                                    'url' => 'shipntrack/inward',
+                                    'can' => ['Admin'],
+                                ],
+
+                                [
+                                    'text' => 'Outward ',
+                                    'icon' => 'far fa fa-minus-square-o',
+                                    'url' => 'shipntrack/Outward',
+                                    'can' => ['Admin'],
+                                ],
+                            ],
+                        ],
                     ],
                 ],
 
