@@ -39,6 +39,9 @@ class ShipnTrackLabelManagementController extends Controller
                 ");
 
             return DataTables::of($records)
+                ->addColumn('select_all', function ($records) {
+                    return "<input class='check_options' type='checkbox' value='$records->id' name='options[]' >";
+                })
                 ->addColumn('action', function ($records) {
                     $id = $records->id;
                     $action = "<div class='d-flex'>
@@ -53,7 +56,7 @@ class ShipnTrackLabelManagementController extends Controller
                                 </div>";
                     return $action;
                 })
-                ->rawColumns(['action'])
+                ->rawColumns(['select_all', 'action'])
                 ->make(true);
         }
         return view('shipntrack.Operation.Label.index');
@@ -131,10 +134,15 @@ class ShipnTrackLabelManagementController extends Controller
 
     public function LabelPdfTemplate(Request $request)
     {
-        $records = $this->ShipntrackLabelDataFormatting($request->id);
+        $bar_code = [];
 
-        $generator = new BarcodeGeneratorPNG();
-        $bar_code = base64_encode($generator->getBarcode($records[0]['awb_no'], $generator::TYPE_CODE_39));
+        $ids = implode(',', explode('-', $request->id));
+        $records = $this->ShipntrackLabelDataFormatting($ids);
+        foreach ($records as $key => $record) {
+
+            $generator = new BarcodeGeneratorPNG();
+            $bar_code[] = base64_encode($generator->getBarcode($record['awb_no'], $generator::TYPE_CODE_39));
+        }
 
         return view('shipntrack.Operation.Label.LabelPdfTemplate', compact('records', 'bar_code'));
     }
