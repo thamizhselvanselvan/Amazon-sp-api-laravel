@@ -162,7 +162,7 @@ class CliqnshopCataloginsert
             }
 
             //generic Keyword
-            if (isset($generic_keywords)) {
+            if (isset($generic_keywords) && $generic_keywords !=='') {
 
                 $gen_keyword_get_id = [];
                 $gen_keyword = [];
