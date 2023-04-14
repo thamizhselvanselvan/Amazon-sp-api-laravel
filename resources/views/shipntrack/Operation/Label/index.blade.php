@@ -416,4 +416,5 @@
         }
     </script>
 
+    @include('shipntrack.Operation.label.edit_label')
 @stop
