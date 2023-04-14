@@ -76,7 +76,7 @@ class SNTInvoiceController extends Controller
         $request->validate([
             'invoice_no' => 'required',
             'awb_no' => 'required',
-            'mode' => 'required',
+            'mode' => 'required |in:IND2UAE,USA2UAE',
             'invoice_date' => 'required',
             'sku' => 'required',
             'channel' => 'required',
@@ -96,11 +96,11 @@ class SNTInvoiceController extends Controller
             'taxable_value' => 'required',
             'total_including_taxes' => 'required',
             'grand_total' => 'required',
-            'no_of_pcs' => 'required',
             'packing' => 'required',
-            'dimension' => 'required',
-            'actual_weight' => 'required',
-            'charged_weight' => 'required',
+            // 'no_of_pcs' => 'required',
+            // 'dimension' => 'required',
+            // 'actual_weight' => 'required',
+            // 'charged_weight' => 'required',
             'sr_no' => 'required',
             'client_code' => 'required',
         ]);
@@ -314,7 +314,7 @@ class SNTInvoiceController extends Controller
         $currenturl =  URL::current();
         $url = str_replace('download-direct', 'view', $currenturl);
 
-        $exportToPdf = storage::path("shipntrack/invoice/sntinvoice" . $invoice_no. '.pdf');
+        $exportToPdf = storage::path("shipntrack/invoice/sntinvoice" . $invoice_no . '.pdf');
         Browsershot::url($url)
             // ->setNodeBinary('D:\laragon\bin\nodejs\node.exe')
             ->showBackground()
@@ -389,7 +389,7 @@ class SNTInvoiceController extends Controller
         $update_data = [
             'invoice_no' => $request->invoice_no,
             'awb_no' => $request->awb_no,
-            'mode' =>strtoupper($request->mode),
+            'mode' => strtoupper($request->mode),
             'invoice_date' => $request->invoice_date,
             'sku' => $request->sku,
             'channel' => $request->channel,
@@ -409,11 +409,11 @@ class SNTInvoiceController extends Controller
             'taxable_value' => $request->taxable_value,
             'total_including_taxes' => $request->total_including_taxes,
             'grand_total' => $request->grand_total,
-            'no_of_pcs' => $request->no_of_pcs,
+            // 'no_of_pcs' => $request->no_of_pcs,
             'packing' => $request->packing,
-            'dimension' => $request->dimension,
-            'actual_weight' => $request->actual_weight,
-            'charged_weight' => $request->charged_weight,
+            // 'dimension' => $request->dimension,
+            // 'actual_weight' => $request->actual_weight,
+            // 'charged_weight' => $request->charged_weight,
             'sr_no' => $request->sr_no,
             'client_code' => $request->client_code,
         ];

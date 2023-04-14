@@ -173,7 +173,6 @@
 
         <thead class="table-info">
             {{-- <th>Select All <input type='checkbox' id='select_all'></th> --}}
-            <th>ID</th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
@@ -197,12 +196,6 @@
             searching: false,
             bLengthChange: false,
             columns: [{
-                    data: 'id',
-                    name: 'id',
-                    orderable: false,
-                    searchable: false
-                },
-                {
                     data: 'order_no',
                     name: 'order_no',
                     orderable: false,
@@ -423,4 +416,5 @@
         }
     </script>
 
+    @include('shipntrack.Operation.label.edit_label')
 @stop

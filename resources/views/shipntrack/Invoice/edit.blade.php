@@ -131,11 +131,20 @@
         <div>
             <x-adminlte-input label="Grand Total :" name="grand_total" type="text" placeholder="grand_total" value="{{ $data->grand_total }}" autocomplete="off" />
         </div>
-        <div>
-            <x-adminlte-input label="Number of Pieces :" name="no_of_pcs" type="text" placeholder="no_of_pcs" value="{{ $data->no_of_pcs }}" autocomplete="off" />
-        </div>
+
         <div>
             <x-adminlte-input label="Packing :" name="packing" type="text" placeholder="packing" value="{{ $data->packing }}" autocomplete="off" />
+        </div>
+
+
+        <div>
+            <x-adminlte-input label="SR No :" name="sr_no" type="text" placeholder="sr_no" value="{{ $data->sr_no }}" autocomplete="off" />
+        </div>
+        <div>
+            <x-adminlte-input label="Client Code :" name="client_code" type="text" placeholder="client_code" value="{{ $data->client_code }}" autocomplete="off" />
+        </div>
+        <div>
+            <x-adminlte-input label="Number of Pieces :" name="no_of_pcs" type="text" placeholder="no_of_pcs" value="{{ $data->no_of_pcs }}" autocomplete="off" />
         </div>
         <div>
             <x-adminlte-input label="Dimension :" name="dimension" type="text" placeholder="dimension" value="{{ $data->dimension }}" autocomplete="off" />
@@ -145,12 +154,6 @@
         </div>
         <div>
             <x-adminlte-input label="Charged Weight :" name="charged_weight" type="text" placeholder="charged_weight" value="{{ $data->charged_weight }}" autocomplete="off" />
-        </div>
-        <div>
-            <x-adminlte-input label="SR No :" name="sr_no" type="text" placeholder="sr_no" value="{{ $data->sr_no }}" autocomplete="off" />
-        </div>
-        <div>
-            <x-adminlte-input label="Client Code :" name="client_code" type="text" placeholder="client_code" value="{{ $data->client_code }}" autocomplete="off" />
         </div>
         <div>
             <div>
@@ -166,6 +169,6 @@
 
 @section('js')
 <script type="text/javascript">
-   
+
 </script>
 @stop
