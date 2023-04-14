@@ -116,7 +116,7 @@ Route::post('cliqnshop/brand/ban/delete/{id}', 'Cliqnshop\CliqnshopBrandControll
 
 Route::get('cliqnshop/verify/asin', 'Cliqnshop\CliqnshopVerificationController@verify_asin_index')->name('cliqnshop.verify.asin');
 Route::get('cliqnshop/verify/asin/destroy', 'Cliqnshop\CliqnshopVerificationController@verify_asin_destroy')->name('cliqnshop.verify.asin.destroy');
-
+Route::get('cliqnshop/verify/asin/approve', 'Cliqnshop\CliqnshopVerificationController@verify_asin_approve')->name('cliqnshop.verify.asin.approve');
 // Route::get('product/test', function () {
 //   // $data[] = $key;
 //   $searchKey = 'iPhone';
