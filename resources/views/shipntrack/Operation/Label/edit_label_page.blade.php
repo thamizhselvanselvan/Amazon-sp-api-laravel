@@ -10,7 +10,7 @@
                         <span class="sr-only">Loading...</span>
                     </div>
                 </div>
-                <div id="form-content" style="display: block">
+                <div id="form-content" style="display: none">
                     <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
                         <strong>Be carefull!</strong> changes canot be reverted back ....
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -151,10 +151,13 @@
             $('#Forwarder').val(result.forwarder);
             $('#Tracking_id').val(result.awb_no);
 
+            setTimeout(function() {
+                $('#form-content').show();
+                $('#spinner-container').hide();
+            }, 300); // How long you want the delay to be, measured in milliseconds.
+
             var order_item_identifier = result.order_item_id;
             var order_item_arrays = order_item_identifier.split(',');
-            console.log(order_item_arrays);
-
             let dom = '<strong>Order Id: </strong>' + result.order_no;
             $.each(order_item_arrays, function(index, value) {
 
