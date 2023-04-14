@@ -138,6 +138,8 @@
 
     function FetchShipntrackData(id) {
 
+        $('#form-content').hide();
+        $('#spinner-container').show();
         $.get('/shipntrack/label/fetch/record/' + id + '', function(details) {
 
             var result = details[0];
@@ -154,7 +156,7 @@
             setTimeout(function() {
                 $('#form-content').show();
                 $('#spinner-container').hide();
-            }, 300); // How long you want the delay to be, measured in milliseconds.
+            }, 400); // How long you want the delay to be, measured in milliseconds.
 
             var order_item_identifier = result.order_item_id;
             var order_item_arrays = order_item_identifier.split(',');
