@@ -79,7 +79,6 @@
                 </div>
                 <div class="col-6">
                     <x-adminlte-select label="Country" id="country" name="country" type="text">
-                        <option value=" ">Select Country</option>
                         <option value="">Select Country</option>
                         @foreach ($country as $countries)
                         @if ($countries->id == $selected_country)

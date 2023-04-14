@@ -24,7 +24,7 @@ class BOEmaster
                 if ($BOEPDFData == 'Date of Arrival:') {
                     $date2018  = $BOEPDFMasterold[$key + 1];
                     $date_Boe = Carbon::createFromFormat('d/m/Y', $date2018)->format('Y');
-                    if ($date_Boe == '2018' || $date_Boe == '2019' || $date_Boe == '2020') {
+                    if ($date_Boe == '2018' || $date_Boe == '2019' || $date_Boe == '2020' ||$date_Boe == '2021') {
                         $get = new BOEPdefreader2018;
                         $get->BOEPDFReaderold($content_txt, $storage_path, $company_id, $user_id);
                     }
@@ -35,7 +35,7 @@ class BOEmaster
                     $date = $Boecheck[$key - 2];
                     $date_Boe = Carbon::createFromFormat('d/m/Y', $date)->format('Y');
 
-                    if ($date_Boe == '2018' || $date_Boe == '2019' || $date_Boe == '2020') {
+                    if ($date_Boe == '2018' || $date_Boe == '2019' || $date_Boe == '2020'||$date_Boe == '2021' ) {
                         $get2018 = new BOEPdefreader2018;
                         $get2018->BOEPDFReaderold($content_txt, $storage_path, $company_id, $user_id);
                     } else  if ($date_Boe == '2022' || $date_Boe == '2023') {
