@@ -175,6 +175,9 @@
 
             <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="success"
                 icon="fas fa-print" class="btn-sm ml-2" />
+
+            <x-adminlte-button label="Download Selected" target="_blank" id='download_selected' theme="success"
+                icon="fas fa-download" class="btn-sm ml-2" />
         </div>
     </div>
 
@@ -454,6 +457,20 @@
                 count++;
             });
             window.open("/shipntrack/label/template/" + id, "_blank");
+        });
+
+        $('#download_selected').click(function() {
+            let id = '';
+            let count = '';
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+                    id += $(this).val();
+                } else {
+                    id += '-' + $(this).val();
+                }
+                count++;
+            });
+            window.location.href = "/shipntrack/label/pdf/download/" + id;
         });
     </script>
 
