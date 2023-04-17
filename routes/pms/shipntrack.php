@@ -114,3 +114,4 @@ Route::get('shipntrack/label/pdf/download/{id}', 'ShipnTrackLabelManagementContr
 
 Route::get('shipntrack/inward', 'shipntrack\Operations\SNTInwardController@index')->name('shipntrack.inward');
 Route::get('shipntrack/inward/create', 'shipntrack\Operations\SNTInwardController@inward_view')->name('shipntrack.inward.create');
+Route::post('shiptrack/inward/store', 'shipntrack\Operations\SNTInwardController@inward_store')->name('shipntrack.inward.store');
