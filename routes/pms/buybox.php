@@ -13,7 +13,7 @@ Route::prefix('buybox/')->group(function () {
     Route::get('asin','buybox\BuyboxAsinMasterController@index');
 });
 
-Route::get('sanjay/test/bb', function () {
+Route::get('sanju/test/bb', function () {
     exit;
     $seller_id = '8';
     $aws = Aws_credential::with(['mws_region'])->where('seller_id', $seller_id)->where('api_type', 1)->first();
@@ -57,7 +57,7 @@ Route::get('sanjay/test/bb', function () {
 });
 
 
-Route::get('sanjay/test/bb_read', function () {
+Route::get('sanju/test/bb_read', function () {
 
     // $data  = ['7', '8', '9', '10', '12',  '27'];
     $data  = ['7'];
