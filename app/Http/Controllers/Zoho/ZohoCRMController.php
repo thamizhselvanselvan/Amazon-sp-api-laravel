@@ -17,9 +17,6 @@ class ZohoCRMController extends Controller
         $page = $request['result']['page'];
         $more_records = isset($request['result']['more_records']) && !empty($request['result']['more_records']) ? $request['result']['more_records'] : '0';
 
-
         commandExecFunc("mosh:zoho-bulk-dump ${zoho_id} ${zoho_state} ${page} ${more_records}");
-        Log::notice($response);
-        Log::notice($more_records);
     }
 }
