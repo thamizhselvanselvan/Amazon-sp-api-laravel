@@ -15,7 +15,9 @@ use SellingPartnerApi\Api\ListingsV20210801Api;
 use App\Models\Buybox_stores\Product_availability_ae;
 use App\Models\Buybox_stores\Product_availability_in;
 use SellingPartnerApi\Api\FeedsV20210630Api as FeedsApi;
+use SellingPartnerApi\Model\ListingsV20210801\PatchOperation;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedSpecification;
+use SellingPartnerApi\Model\ListingsV20210801\FulfillmentAvailability;
 use SellingPartnerApi\Model\ListingsV20210801\ListingsItemPatchRequest;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedDocumentSpecification;
 
@@ -38,19 +40,21 @@ class AmazonFeedProcessAvailability
             return ['failed' => true];
         }
 
+        dd($productFeed);
+
         $product_query_model = '';
         $available_query_model = '';
 
-        if (strtolower($regionCode) == "in") {
-            $product_query_model = Product_Push_in::query();
-            $available_query_model = Product_availability_in::query();
-        } else if (strtolower($regionCode) == "ae") {
-            $product_query_model = Product_Push_ae::query();
-            $available_query_model = Product_availability_ae::query();
-        }
+        // if (strtolower($regionCode) == "in") {
+        //     $product_query_model = Product_Push_in::query();
+        //     $available_query_model = Product_availability_in::query();
+        // } else if (strtolower($regionCode) == "ae") {
+        //     $product_query_model = Product_Push_ae::query();
+        //     $available_query_model = Product_availability_ae::query();
+        // }
 
-        $product_query_model->where("store_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
-        $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed, "push_status" => 1]);
+        // $product_query_model->where("store_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
+        // $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed, "push_status" => 1]);
 
         return ['success' => true];
     }
@@ -97,11 +101,11 @@ class AmazonFeedProcessAvailability
             $messages .= '
                 <Message>
                     <MessageID>' . $counter . '</MessageID>
+                    <OperationType>Update</OperationType>
                     <Inventory>
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <Available >' . $feedlist['available'] . ' </Available>
-                        <FulfillmentLatency >' . 15 . '</FulfillmentLatency>
-                        <SwitchFulfillmentTo>' . 'MFN' . '</SwitchFulfillmentTo>
+                        <Quantity>1</Quantity>
                     </Inventory>
                 </Message>';
 
@@ -121,36 +125,46 @@ class AmazonFeedProcessAvailability
         return $feed;
     }
 
-    public function listing($aws_key, $country_code)
+    public function listing($sku, $aws_key, $country_code)
     {
 
 
         $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
         //$seller_id = $merchant_id; // string | A selling partner identifier, such as a merchant account or vendor code.
-        $sku = 'NS_B0011457OS'; // string | A selling partner provided identifier for an Amazon listing.
+       // $sku = 'NS_B07XYX72M5'; // string | A selling partner provided identifier for an Amazon listing.
         $marketplace_ids = ['A21TJRUUN4KGV']; // string[] | A comma-delimited list of Amazon marketplace identifiers for the request.
 
-        $body = new ListingsItemPatchRequest([
+
+        // $body = new ListingsItemPatchRequest();
+        // $patches = new PatchOperation();
+        // $fulfillmentAvailability = new FulfillmentAvailability();
+
+        // $body->setProductType('PRODUCT');
+        // $fulfillmentAvailability->setFulfillmentChannelCode('DEFAULT');
+        // $fulfillmentAvailability->setQuantity(1);
+
+        // $patches->setOp('replace');
+        // $patches->setPath('/attributes/fulfillment_availability');
+        // $patches->setValue([$fulfillmentAvailability]);
+        // $body->setPatches([$patches]);
+
+        $body = [
             "productType" => "PRODUCT",
-            "operation_type" => "PARTIAL_UPDATE",
             "patches" => [
-                [
+                new PatchOperation([
                     "op" => "replace",
                     "path" => "/attributes/fulfillment_availability",
                     "value" => [
-                        [
-                            "marketplace_id" => "A21TJRUUN4KGV",
-                            "fulfillment_channel_code" => "DEFAULT",
-                            "quantity" => 1
-                        ]
+                    [
+                        "quantity" => 5,
+                        "fulfillment_channel_code" => "DEFAULT"
                     ]
                 ]
+            ])
+               
             ]
-        ]); // \SellingPartnerApi\Model\ListingsV20210801\ListingsItemPatchRequest | The request body schema for the patchListingsItem operation.
-        //$issue_locale = 'en_US'; // string | A locale for localization of issues. When not provided, the default language code of the first marketplace is used. Examples: \"en_US\", \"fr_CA\", \"fr_FR\". Localized messages default to \"en_US\" when a localization is not available in the specified locale.
-        //, $issue_locale
-
-
+        ]; 
+        
 
         try {
             $result = $apiInstance->patchListingsItem('A2DMXV6IGOPV14', $sku, $marketplace_ids, $body);
@@ -164,7 +178,7 @@ class AmazonFeedProcessAvailability
         }
     }
 
-    public function getListing($aws_key, $country_code)
+    public function getListing($sku, $aws_key, $country_code)
     {
 
 
@@ -204,13 +218,13 @@ class AmazonFeedProcessAvailability
 
         $apiInstance = new ListingsV20210801Api($this->config($aws_key, $country_code));
         $seller_id = 'seller_id_example'; // string | A selling partner identifier, such as a merchant account or vendor code.
-        $sku = 'sku_example'; // string | A selling partner provided identifier for an Amazon listing.
+      //  $sku = 'sku_example'; // string | A selling partner provided identifier for an Amazon listing.
         $marketplace_ids = ['A21TJRUUN4KGV']; // string[] | A comma-delimited list of Amazon marketplace identifiers for the request.
         $issue_locale = 'en_US'; // string | A locale for localization of issues. When not provided, the default language code of the first marketplace is used. Examples: \"en_US\", \"fr_CA\", \"fr_FR\". Localized messages default to \"en_US\" when a localization is not available in the specified locale.
         $included_data = ['summaries']; // string[] | A comma-delimited list of data sets to include in the response. Default: summaries.
 
         try {
-            $result = $apiInstance->getListingsItem('A2DMXV6IGOPV14', 'NS_B0011457OS', $marketplace_ids, $issue_locale, $included_data);
+            $result = $apiInstance->getListingsItem('A2DMXV6IGOPV14', $sku, $marketplace_ids, $issue_locale, $included_data);
             return $result;
             print_r($result);
         } catch (Exception $e) {
