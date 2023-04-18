@@ -51,38 +51,40 @@
             <div class=" alert alert-danger alert-block">
                 <button type="button" class="close" data-dismiss="alert">×</button>
                 <strong>{{ $message }}</strong>
+            </div>
+            @endif
+       
+            <div class="alert_display">
+                @if (request('success'))
+                <div class="alert alert-success alert-block">
+                    <button type="button" class="close" data-dismiss="alert">×</button>
+                    <strong>{{request('success')}}</strong>
+                </div>
+                @endif
+            </div>
+         
         </div>
-        @endif
-        @if($message = Session::get('warning'))
 
-        <div class="alert alert-warning alert-block">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <strong class="er_asin">{{ $message }}</strong>
+        <div id="showTable" class="">
+            <table class='table table-bordered yajra-datatable table-striped text-center'>
+                <thead>
+                    <tr class="table-info">
+                        <!-- <th>Select All <input type='checkbox' id='selectAll'></th> -->
+                        <th>ID</th>
+                        <th>Mode</th>
+                        <th>AWB No.</th>
+                        <th>Forwader</th>
+                        <th>Shipped By</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id='checkTable'>
+                </tbody>
+            </table>
         </div>
 
-        @endif
+
     </div>
-
-    <div id="showTable" class="">
-        <table class='table table-bordered yajra-datatable table-striped text-center'>
-            <thead>
-                <tr class="table-info">
-                    <!-- <th>Select All <input type='checkbox' id='selectAll'></th> -->
-                    <th>ID</th>
-                    <th>Mode</th>
-                    <th>AWB No.</th>
-                    <th>Forwader</th>
-                    <th>Shipped By</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody id='checkTable'>
-            </tbody>
-        </table>
-    </div>
-
-
-</div>
 </div>
 @stop
 
