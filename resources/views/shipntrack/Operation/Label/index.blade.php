@@ -31,11 +31,16 @@
             padding:10px;
             overflow-y: auto;
             z-index:1100;
+            height: 100vh;
+            display: none;
+            z-index: 1100;
+            padding: 10px 40px;
         }
-        .shipNtrack-grid-form{
+
+        .shipNtrack-grid-form {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            grid-gap:10px;
+            grid-gap: 10px;
         }
     </style>
 @stop
@@ -74,6 +79,7 @@
         <x-adminlte-button theme="primary" label="Add" icon="fa fa-plus-circle" class="add" />
     </div>
 
+<<<<<<< HEAD
                 <div class="side-nav">
                     <div class="light-close-bg"></div>
                     <div class="form-section">
@@ -185,6 +191,112 @@
 
                     </div>
                 </div>
+=======
+    <div class="side-nav">
+        <a class="close"><i class="fa fa-times" aria-hidden="true"></i></a>
+        <h5 class="text-center mb-4">ShipNTrack Label Management</h5>
+
+        <form action="{{ route('shipntrack.label.submit') }}" method="POST" class="shipNtrack-grid-form">
+            @csrf
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Order Number" type="text" name="order_no" id="order_no"
+                    placeholder="Order Number" onblur="validate(1)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Order Item Number" type="text" name="order_item_id"
+                    id="order_item_id" placeholder="Order Item Number" onblur="validate(2)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Bag No." type="text" name="bag_no" id="bag_no"
+                    placeholder="Bag No." onblur="validate(3)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Forwarder Name" type="text" name="forwarder" id="forwarder"
+                    placeholder="Forwarder Name" onblur="validate(4)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="AWB No." type="text" name="awb_no" id="awb_no"
+                    placeholder="AWB No." onblur="validate(5)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Order Date" type="date" name="order_date" id="order_date"
+                    placeholder="Order Date" min="1997-01-01" max="2030-12-31" onblur="validate(6)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Customer Name" type="text" name="customer_name"
+                    id="customer_name" placeholder="Customer Name" onblur="validate(7)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Address" type="text" name="address" id="address"
+                    placeholder="Address" onblur="validate(8)" />
+            </div>
+
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="City" type="text" name="city" id="city"
+                    placeholder="City" onblur="validate(9)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="County" type="text" name="county" id="county"
+                    placeholder="County" onblur="validate(10)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Country" name="country" id="country" placeholder="Country"
+                    onblur="validate(11)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Phone" type="text" name="phone" id="phone"
+                    placeholder="Phone" onblur="validate(12)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Product Name" type="text" name="product_name"
+                    id="product_name" placeholder="Product Name" onblur="validate(13)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="SKU" name="sku" id="sku" placeholder="SKU"
+                    onblur="validate(14)" />
+            </div>
+
+            <div>
+
+                <x-adminlte-input class="mb-0 px-3" label="Quantity" name="quantity" id="quantity"
+                    placeholder="Quantity" onblur="validate(15)" />
+            </div>
+
+            <div>
+                <x-adminlte-button label="Submit" type="submit" theme="primary" />
+            </div>
+        </form>
+
+    </div>
+>>>>>>> 3c0313441462c13339d622d082dfd126a7eb11cb
 
     <div class="row ">
         <div class="col"></div>
@@ -216,12 +328,21 @@
 
 @section('js')
     <script>
+<<<<<<< HEAD
         $(document).ready(function(){
             $(document).on('click', '.add', function() { 
                 $('.side-nav').show();
             });
             $(document).on('click', '.close,.light-close-bg', function() { 
                 $('.side-nav').hide();
+=======
+        $(document).ready(function() {
+            $(document).on('click', '.add', function() {
+                $('.side-nav').show(1000);
+            });
+            $(document).on('click', '.close', function() {
+                $('.side-nav').hide(1000);
+>>>>>>> 3c0313441462c13339d622d082dfd126a7eb11cb
             });
         });
 
