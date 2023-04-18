@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Pending Orders')
+@section('title', 'Product Approval')
 
 @section('content_header')
 
@@ -13,7 +13,7 @@
     <div class="row pt-4">
         <div class="col ">
             <div style="margin: 0.1rem 0; text-align: center" >
-                <h3>Recently Added Products [verifier] : -</h3>
+                <h3>Product Approve/Reject</h3>
             </div>
         </div>
     </div>
@@ -88,13 +88,14 @@
 <table class="table table-bordered yajra-datatable table-striped" id='orderspending'>
     <thead>
         <tr class='text-bold bg-info'>
-            <th> ID </th>
+            <th> S.N </th>
             <th>ASIN</th>
-            <th>Product code </th>
-            <th>label </th>
-            <th>site</th>
-            <th>created-time</th>
-            <th>created-by</th>
+            <th>SKU </th>
+            <th>Product Name </th>
+            <th>Site</th>
+            <th>Status</th>
+            {{-- <th>created-time</th>
+            <th>created-by</th> --}}
             <th>Action</th>
         </tr>
     </thead>
@@ -155,17 +156,21 @@
                     name: 'label'
                 },
                 {
-                    data: 'siteid',
-                    name: 'siteid'
+                    data: 'site',
+                    name: 'site'
                 },
                 {
-                    data: 'ctime',
-                    name: 'ctime'
+                    data: 'status',
+                    name: 'status'
                 },
-                {
-                    data: 'editor',
-                    name: 'editor'
-                },
+                // {
+                //     data: 'ctime',
+                //     name: 'ctime'
+                // },
+                // {
+                //     data: 'editor',
+                //     name: 'editor'
+                // },
                 {
                     data: 'action',
                     name: 'action',
@@ -186,10 +191,16 @@
         label = $(this).data('label');
         shortenlabel = label.substring(0, 20).concat('...');
         
-        return confirm(`Are you sure? Yoy want to delete this  ( ${shortenlabel} ) product! `);
+        return confirm(`Are you sure? You want to ban/delete this  ( ${shortenlabel} ) product! `);
     });
 
-   
+    $(document).on('click', ".approveAsin", function(e) {
+        
+        label = $(this).data('label');
+        shortenlabel = label.substring(0, 20).concat('...');
+        
+        return confirm(`Are you sure? You want to Approve this  ( ${shortenlabel} ) product! `);
+    });
 
     
 </script>

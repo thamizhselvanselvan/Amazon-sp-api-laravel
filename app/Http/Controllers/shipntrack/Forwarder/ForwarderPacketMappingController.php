@@ -65,7 +65,6 @@ class ForwarderPacketMappingController extends Controller
                 // 'courier_name' => $partners_list['courier_names']['courier_name'],
             ];
         }
-
         return response()->json($lists);
     }
 
@@ -377,5 +376,99 @@ class ForwarderPacketMappingController extends Controller
         //         ->make(true);
         // }
         return view('shipntrack.Forwarder.listing');
+    }
+
+    public function editshipment(Request $request)
+    {
+        $source_destination = $request->destination;
+        return view('shipntrack.Forwarder.edit', compact('source_destination'));
+    }
+
+    public function editdata(Request $request)
+    {
+        $id = $request->id;
+        if ($request->destination == 'AE') {
+            $data =   Trackingae::where('reference_id', $id)->get();
+        } elseif ($request->destination == 'IN') {
+            $data =  Trackingin::where('reference_id', $id)->get();
+        } elseif ($request->destination == 'KSA') {
+            $data =    Trackingksa::where('reference_id', $id)->get();
+        }
+        if (count($data) == 0)
+        {
+            return response()->json(['eror_data' => 'Invalid Refrence ID Please check']);
+        }
+       
+        $user_name = Auth::user()->name;
+        $user_email = Auth::user()->email;
+
+        $destination =    $request->destination;
+
+        $partners_lists = CourierPartner::query()
+            ->with(['courier_names'])
+            ->where('login_user', $user_name)
+            ->where('login_email', $user_email)
+            ->where(['destination' => $destination])
+            ->get()
+            ->toArray();
+
+        $lists = [];
+        foreach ($partners_lists as $partners_list) {
+            $lists[] = [
+                'id' => $partners_list['id'],
+                'user_name' => $partners_list['user_name'],
+            ];
+        }
+
+        $responce = [
+            'ref_data' => $data,
+            'forwarder_data' => $lists,
+        ];
+
+        return response()->json($responce);
+    }
+    public function edit_store(Request $request)
+    {
+
+        $request->validate([
+            'destination' => 'required',
+            'reference' => 'required',
+            'forwarder1' => 'required|not in:0',
+            'forwarder_1_awb' => 'required',
+            'consignor' => 'required',
+            'consignee' => 'required',
+        ]);
+
+        $tracking_data = [
+            'reference_id' => $request->reference,
+            'consignor' => $request->consignor,
+            'consignee' => $request->consignee,
+            'forwarder_1' => $request->forwarder1,
+            'forwarder_1_awb' => $request->forwarder_1_awb,
+            // 'forwarder_1_flag' => 0,
+            'forwarder_2' => $request->forwarder2,
+            'forwarder_2_awb' => $request->forwarder_2_awb,
+            // 'forwarder_2_flag' => 0,
+            'forwarder_3' => $request->forwarder3,
+            'forwarder_3_awb' => $request->forwarder_3_awb,
+            // 'forwarder_3_flag' => 0,
+            'forwarder_4' => $request->forwarder4,
+            'forwarder_4_awb' => $request->forwarder_4_awb,
+            // 'forwarder_4_flag' => 0,
+            // 'status' => 0
+        ];
+
+        if ($request->destination == 'AE') {
+            Trackingae::where('reference_id', $request->reference)
+                ->update($tracking_data);
+        } elseif ($request->destination == 'IN') {
+            Trackingin::where('reference_id', $request->reference)
+                ->update($tracking_data);
+        } elseif ($request->destination == 'KSA') {
+            Trackingksa::where('reference_id', $request->reference)
+                ->update($tracking_data);
+        }
+
+        return redirect()->intended('shipntrack/shipment/edit/' . $request->destination)->with("success", "Tracking Details Updated Successfully");
     }
 }

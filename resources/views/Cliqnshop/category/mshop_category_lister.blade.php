@@ -125,7 +125,7 @@
                 <th>ID</th>
                 <th>Category Code</th>
                 <th>Category Label</th>
-                <th>site_code</th>
+                <th>Site</th>
                 <th>created-Time </th>
                 <th>Banned-Time </th>
                 <th>Ban/Unban </th>
@@ -220,8 +220,8 @@
                         
                     },
                     {
-                        data: 'siteid',
-                        name: 'siteid',
+                        data: 'site',
+                        name: 'site',
                         orderable: false,
                         searchable: false
                     },

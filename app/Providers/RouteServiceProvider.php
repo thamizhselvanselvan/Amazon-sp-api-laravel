@@ -123,7 +123,7 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/seller.php'));
 
-            Route::middleware(['web', 'maintenance_mode', 'auth'])
+            Route::middleware(['web'])
                 ->namespace($this->namespace)
                 ->group(base_path('routes/pms/shipntrack.php'));
 

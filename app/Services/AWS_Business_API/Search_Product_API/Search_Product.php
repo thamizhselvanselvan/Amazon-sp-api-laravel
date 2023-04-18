@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class Search_Product
 {
-    public function SearchProductByKey($searchKey)
+    public function SearchProductByKey($searchKey,$site)
     {
         $productSearchApi = new Search_Product_Request();
         $getProducts = $productSearchApi->getASIN($searchKey, 'key');
@@ -22,7 +22,13 @@ class Search_Product
         $siteIds = DB::connection('cliqnshop')->table('mshop_locale_site')->pluck('siteid');
         foreach ($siteIds as $siteId) {
             $source = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $siteId)->pluck('code')->toArray();
-
+        if ($source[0] == $site)
+        {
+            $display_code = 1;    
+        }
+        else {
+            $display_code = 0;
+        }
             $count = 0;
             $count2 = 0;
             $catalogs = [];
@@ -200,9 +206,34 @@ class Search_Product
                  $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
 
                  $ignore_brand = DB::connection('cliqnshop')->table('cns_ban_brand')->where('site_id',$siteId)->pluck('brand')->toArray();
+
+                 if ($ignore_brand == [])
+                 {
+                    $ignore_brand = ['Dame','Maude'];
+                 }
                  
                  $ignore_brand_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_brand)), '|');
-                if (isset($cliqnshop_catalog['price']) && $length_package_dimension !== '' && $length_package_dimension < 25 && $width_package_dimension !== '' && $width_package_dimension < 25 && $height_package_dimension !== '' && $height_package_dimension < 25 && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
+
+                 $ignore_asin = DB::connection('cliqnshop')->table('cns_ban_asin')->where('site_id',$siteId)->pluck('asin')->toArray();
+
+                 if ($ignore_asin == [])
+                 {
+                    $ignore_asin = ['B00GGXW720','B09JJLQS7S'];
+                 }
+
+                 $ignore_asin_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_asin)), '|');
+
+                if (isset($cliqnshop_catalog['price']) 
+                && $length_package_dimension !== '' 
+                && $length_package_dimension < 25 
+                && $width_package_dimension !== '' 
+                && $width_package_dimension < 25 
+                && $height_package_dimension !== '' 
+                && $height_package_dimension < 25 
+                && isset($cliqnshop_catalog['images']) 
+                && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) 
+                && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1 
+                && preg_match("(" . strtolower($ignore_asin_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['asin'])) !== 1) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
@@ -219,10 +250,10 @@ class Search_Product
                     $short_description = $cliqnshop_catalog['short_description'] ?? '';
                     $long_description = $cliqnshop_catalog['long_description'] ?? '';
                     $generic_keywords = $cliqnshop_catalog['generic_keywords'] ?? '';
-                    $editor = 'cns_search';
+                    $editor = 'cns_search_from_'.$site;
 
                     $cliqnshop = new CliqnshopCataloginsert();
-                    $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords,$editor);
+                    $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords,$editor, $display_code);
                 }
             }
         }
