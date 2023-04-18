@@ -169,11 +169,22 @@
             </div>
         </div>
     </div>
+    <div class="row ">
+        <div class="col"></div>
+        <div class="col text-right">
+
+            <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="success"
+                icon="fas fa-print" class="btn-sm ml-2" />
+
+            <x-adminlte-button label="Download Selected" target="_blank" id='download_selected' theme="success"
+                icon="fas fa-download" class="btn-sm ml-2" />
+        </div>
+    </div>
+
     <table class="table table-striped yajra-datatable table-bordered text-center table-sm mt-2">
 
         <thead class="table-info">
-            {{-- <th>Select All <input type='checkbox' id='select_all'></th> --}}
-            <th>ID</th>
+            <th>Select All <input type='checkbox' id='select_all'></th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
@@ -197,8 +208,8 @@
             searching: false,
             bLengthChange: false,
             columns: [{
-                    data: 'id',
-                    name: 'id',
+                    data: 'select_all',
+                    name: 'select_all',
                     orderable: false,
                     searchable: false
                 },
@@ -421,6 +432,47 @@
 
             return flag;
         }
+
+        $('#select_all').change(function() {
+
+            if ($('#select_all').is(':checked')) {
+
+                $('.check_options').prop('checked', true);
+            } else {
+
+                $('.check_options').prop('checked', false);
+            }
+        });
+
+        $('#print_selected').click(function() {
+
+            let id = '';
+            let count = '';
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+                    id += $(this).val();
+                } else {
+                    id += '-' + $(this).val();
+                }
+                count++;
+            });
+            window.open("/shipntrack/label/template/" + id, "_blank");
+        });
+
+        $('#download_selected').click(function() {
+            let id = '';
+            let count = '';
+            $("input[name='options[]']:checked").each(function() {
+                if (count == 0) {
+                    id += $(this).val();
+                } else {
+                    id += '-' + $(this).val();
+                }
+                count++;
+            });
+            window.location.href = "/shipntrack/label/pdf/download/" + id;
+        });
     </script>
 
+    @include('shipntrack.Operation.Label.edit_label_page')
 @stop

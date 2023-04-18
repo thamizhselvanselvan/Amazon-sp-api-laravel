@@ -1215,7 +1215,7 @@ return [
                                     'icon' => 'fa fa-download',
                                 ],
                                 [
-                                    'text' => 'Manager',
+                                    'text' => 'Approve/Reject',
                                     'url' => 'cliqnshop/verify/asin',
                                     'can' => ['Admin', 'Cliqnshop'],
                                     'icon' => 'fa fa-eraser',

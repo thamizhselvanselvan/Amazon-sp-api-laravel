@@ -109,6 +109,8 @@ Route::get('shipntrack/label', 'ShipnTrackLabelManagementController@index')->nam
 Route::post('shipntrack/submit', 'ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
 Route::get('shipntrack/label/template/{id}', 'ShipnTrackLabelManagementController@LabelPdfTemplate')->name('shipntrack.label.template');
 Route::get('shipntrack/label/pdf/download/{id}', 'ShipnTrackLabelManagementController@LabelPdfDownload')->name('shipntrack.label.template');
+Route::get('shipntrack/label/fetch/record/{id}', 'ShipnTrackLabelManagementController@LabelDetails')->name('shipntrack.label.details');
+Route::post('shipntrack/label/edit', 'ShipnTrackLabelManagementController@LabelEdit')->name('shipntrack.label.edit');
 
 
 
