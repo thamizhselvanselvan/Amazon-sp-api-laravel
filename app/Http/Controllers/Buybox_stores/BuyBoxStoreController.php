@@ -306,6 +306,7 @@ class BuyBoxStoreController extends Controller
 
     public function availability(Request $request)
     {
+        
         $stores = OrderSellerCredentials::select('store_name', 'seller_id')
             ->where('buybox_stores', 1)
             ->where('seller_id', 6)
