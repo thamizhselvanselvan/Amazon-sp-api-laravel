@@ -9,5 +9,5 @@ class zoho extends Model
 {
     use HasFactory;
     protected $connection = "mongodb";
-    protected $collection = "robin";
+    protected $collection = "zoho";
 }
