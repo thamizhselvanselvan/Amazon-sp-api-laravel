@@ -21,14 +21,13 @@ class CliqnshopVerificationController extends Controller
                 
 
                 $data = DB::connection('cliqnshop')->table('mshop_product')     
-                ->where(['siteid' => $request->site_id, 'status' => 0 ])
+                ->where(['siteid' => $request->site_id])
                 ->whereIn('editor',['cns_search_from_in','cns_search_from_uae'])       
                 ->orderBy('mtime','desc');
             }
             else
             {
                 $data = DB::connection('cliqnshop')->table('mshop_product')
-                ->where('status', 0)
                 ->whereIn('editor',['cns_search_from_in','cns_search_from_uae'])          
                 ->orderBy('mtime','desc');
             }
@@ -44,21 +43,37 @@ class CliqnshopVerificationController extends Controller
                     $code = $data->code;
                     $site = $data->siteid;
                     $label = $data->label;
-                    return  "<div class='d-flex'><a href=".route('cliqnshop.verify.asin.destroy', ['pid' => $pid,'code'=>$code,'site' => $site])." id='offers1' value ='$pid' data-label='$label' class='deleteAsin btn  bg-gradient-danger btn-xs'>Remove</a>"
-                    ."<div class='d-flex'><a href=".route('cliqnshop.verify.asin.approve', ['pid' => $pid, 'asin' => $asin, 'site' => $site])." id='offers2' value ='$pid' data-label='$label' class='approveAsin btn  bg-gradient-success btn-xs ml-2'>Approve</a>";
+                    $status = $data->status;
+                    $actionbtn = '';
+                    if ($status == 0) {
+                        $actionbtn = "<div class='d-flex'><a href=".route('cliqnshop.verify.asin.approve', ['pid' => $pid, 'asin' => $asin, 'site' => $site])." id='offers2' value ='$pid' data-label='$label' class='approveAsin btn  bg-gradient-success btn-xs mr-2'>Approve</a>";
+                        }
+                        $actionbtn .= "<div class='d-flex'><a href=".route('cliqnshop.verify.asin.destroy', ['pid' => $pid,'code'=>$code, 'asin' => $asin, 'site' => $site])." id='offers1' value ='$pid' data-label='$label' class='deleteAsin btn  bg-gradient-danger btn-xs'>Remove</a>";
+                        return $actionbtn;
                 })
                 ->addColumn('site', function ($data) {
                     $s_code = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid',$data->siteid)->pluck('code')->ToArray();
                     if ($s_code[0] == 'uae')
                     {
-                        return '<center><p class="status_checks statusButton btn-danger w-100">UAE</p></center>';
+                        return '<center><p class = "text-danger">UAE</p></center>';
                     }
                     if ($s_code[0] == 'in')
                     {
-                        return '<center><p class="status_checks statusButton btn-success w-100">India</p></center>';
+                        return '<center><p class = "text-success">India</p></center>';
                     }
                 })
-                ->rawColumns(['action','site'])
+                ->addColumn('status',function ($data) {
+                    $status = $data->status;
+                    if ($status == 0)
+                    {
+                        return '<center><p class = "text-danger">Disable</p></center>';
+                    }
+                    else
+                    {
+                        return '<center><p class = "text-success">Enable</p></center>';
+                    }
+                })
+                ->rawColumns(['action','site','status'])
                 ->make(true);
         }
 
@@ -74,6 +89,7 @@ class CliqnshopVerificationController extends Controller
                     'pid' => ['required'], 
                     'code' => ['required'], 
                     'site' => ['required'],
+                    'asin' => ['required']
                 ]
             );
         
@@ -81,10 +97,19 @@ class CliqnshopVerificationController extends Controller
         $pid = $request->pid;
         $code = $request->code;
         $site = $request->site;
+        $asin = $request->asin;
+
+        DB::connection('cliqnshop')->table('cns_ban_asin')->insert(
+            [
+                'site_id' => $site,
+                'asin'    => $asin,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
 
         commandExecFunc("mosh:remove_exported_asin ${site} ${pid}");
             
-        return back()->with('warning', 'Product added to removable  list command !');
+        return back()->with('warning', $asin .' '.'added to removable  list command ! and added to permanent ban');
         
         
 

@@ -206,9 +206,34 @@ class Search_Product
                  $ignore_cat = DB::connection('cliqnshop')->table('cns_ban_category')->where('site_id',$siteId)->pluck('category_code')->toArray();
 
                  $ignore_brand = DB::connection('cliqnshop')->table('cns_ban_brand')->where('site_id',$siteId)->pluck('brand')->toArray();
+
+                 if ($ignore_brand == [])
+                 {
+                    $ignore_brand = ['Dame','Maude'];
+                 }
                  
                  $ignore_brand_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_brand)), '|');
-                if (isset($cliqnshop_catalog['price']) && $length_package_dimension !== '' && $length_package_dimension < 25 && $width_package_dimension !== '' && $width_package_dimension < 25 && $height_package_dimension !== '' && $height_package_dimension < 25 && isset($cliqnshop_catalog['images']) && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1) {
+
+                 $ignore_asin = DB::connection('cliqnshop')->table('cns_ban_asin')->where('site_id',$siteId)->pluck('asin')->toArray();
+
+                 if ($ignore_asin == [])
+                 {
+                    $ignore_asin = ['B00GGXW720','B09JJLQS7S'];
+                 }
+
+                 $ignore_asin_for_cliqnshop = ucwords(str_replace(',', '|', implode(',',$ignore_asin)), '|');
+
+                if (isset($cliqnshop_catalog['price']) 
+                && $length_package_dimension !== '' 
+                && $length_package_dimension < 25 
+                && $width_package_dimension !== '' 
+                && $width_package_dimension < 25 
+                && $height_package_dimension !== '' 
+                && $height_package_dimension < 25 
+                && isset($cliqnshop_catalog['images']) 
+                && !in_array($cliqnshop_catalog['category_code'],$ignore_cat,true) 
+                && preg_match("(" . strtolower($ignore_brand_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['brand'])) !== 1 
+                && preg_match("(" . strtolower($ignore_asin_for_cliqnshop) . ")", strtolower($cliqnshop_catalog['asin'])) !== 1) {
                     $category = $cliqnshop_catalog['category_code'] ?? 'demo-new';
                     $asin = $cliqnshop_catalog['asin'];
                     $item_name = $cliqnshop_catalog['itemName'];
