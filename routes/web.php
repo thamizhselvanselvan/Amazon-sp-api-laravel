@@ -32,36 +32,50 @@ Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 include_route_files(__DIR__ . '/v2/');
 Route::get('testing', function () {
 
-    $Lead_Sources = [
-        'CKSHOP-Amazon.in',
-        'Amazon.in-Gotech',
-        'Gotech-Saudi',
-        'Gotech UAE',
-        'Amazon.in-MBM',
-        'Amazon.ae-MBM',
-        'Amazon.sa-MBM',
-        'Amazon.ae-Mahzuz',
-        'Amazon.sa-Mahzuz',
-        'Amazon.in-Nitrous',
-        'Flipkart-Cliqkart',
-        'Flipkart -Cliqkart',
-        'Flipkart-Gotech'
-    ];
+    // $feedLists[] = [
+    //     'product_sku' => 'NS_B07XYX72M5',
+    //     'available' => 1
+    // ];
 
-        $start_time = "2022-04-01 00:00:00";
-        $end_time = "2023-03-31 00:00:00";
+    // $PushAvailability = new AmazonFeedProcessAvailability();
+    // $data = $PushAvailability->availabilitySubmit($feedLists, 6, 1, 'IN', 'B07XYX72M5', 1);
+
+
+    // $Lead_Sources = [
+    //     'CKSHOP-Amazon.in',
+    //     'Amazon.in-Gotech',
+    //     'Gotech-Saudi',
+    //     'Gotech UAE',
+    //     'Amazon.in-MBM',
+    //     'Amazon.ae-MBM',
+    //     'Amazon.sa-MBM',
+    //     'Amazon.ae-Mahzuz',
+    //     'Amazon.sa-Mahzuz',
+    //     'Amazon.in-Nitrous',
+    //     'Flipkart-Cliqkart',
+    //     'Flipkart -Cliqkart',
+    //     'Flipkart-Gotech'
+    // ];
+
+    //     $start_time = "2022-04-01 00:00:00";
+    //     $end_time = "2023-03-31 00:00:00";
     
-        $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])
-        ->whereIn('Lead_Source', $Lead_Sources)
-        ->where('nz', 0)
-        // ->limit(30)
-        ->orderBy('Created_Time', 'DESC')->count();
+    //     $mongoDB_data = zoho::whereBetween('Created_Time', [$start_time, $end_time])
+    //     ->whereIn('Lead_Source', $Lead_Sources)
+    //     ->where('nz', 0)
+    //     ->orderBy('Created_Time', 'DESC')->count();
 
-    dd($mongoDB_data);
+    // dd($mongoDB_data);
 
-    exit;
+    // exit;
 
-    $test = (new FeedOrderDetailsApp360)->getFeedStatus(134725019440, 6);
+     $testing = (new AmazonFeedProcessAvailability)->listing('NS_B07CG2XYCR', 6, 'IN');
+     //$testing = (new AmazonFeedProcessAvailability)->getListing('NS_B07CG2XYCR', 6, 'IN');
+
+    dd($testing);
+                                                      //  135513019457
+    $test = (new FeedOrderDetailsApp360)->getFeedStatus('dca04da436064d7bbd27c4824224b745', 6);
+  //  $test = (new FeedOrderDetailsApp360)->listing(6, 'in')(135513019457, 6);
     // $test = (new FeedOrderDetailsApp360)->getLists(6);
 
     // dd($test);

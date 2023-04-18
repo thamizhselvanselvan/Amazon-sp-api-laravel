@@ -169,6 +169,8 @@ class FeedOrderDetailsApp360
 
         $result = json_decode(json_encode($result));
 
+        po($result);
+
         if (isset($result->resultFeedDocumentId)) {
             $feed_doc_id = $result->resultFeedDocumentId;
 
