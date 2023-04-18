@@ -126,7 +126,7 @@ class CatalogAmazonImport extends Command
                         'status' => '2'
                     ];
 
-                    $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'];
+                    $aws_id = $mws_regions[0]['aws_verified'][$auth_count]['id'] ?? 0;
 
                     if ($count == 10) {
 
