@@ -133,7 +133,7 @@ class asin_remove_from_cliqnshop extends Command
                 ->where(['id' => $pid, 'siteid' => $site])
                 ->delete();
                 
-                \Illuminate\Support\Facades\Log::info('product with id: '.$request['pid']. ',is removed From Site : '.$request['site'] );
+                // \Illuminate\Support\Facades\Log::info('product with id: '.$request['pid']. ',is removed From Site : '.$request['site'] );
             }
         // removing mshop_product[main table] if all the domains are handled --end 
         

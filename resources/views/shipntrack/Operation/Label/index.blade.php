@@ -45,86 +45,91 @@
 
     <div class="container-fluid">
         <div class="row d-flex justify-content-center">
-            <div class="col-xl-8 col-lg-8 col-md-9 col-11 text-center">
+            <div class="col-xl-10 col-lg-10 col-md-9 col-11 text-center">
 
                 <div class="card">
-                    <h3 class="text-center mb-4">Label Management</h3>
+                    <h3 class="text-center mb-4">ShipNTrack Label Management</h3>
 
                     <form action="{{ route('shipntrack.label.submit') }}" method="POST">
                         @csrf
                         <div class="row text-left">
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Order Number" type="text" name="order_no"
                                     id="order_no" placeholder="Order Number" onblur="validate(1)" />
                             </div>
-                            <div class=" col-sm-4 flex-column d-flex">
+
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Order Item Number" type="text"
                                     name="order_item_id" id="order_item_id" placeholder="Order Item Number"
                                     onblur="validate(2)" />
                             </div>
-                            <div class=" col-sm-4 flex-column d-flex">
+
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Bag No." type="text" name="bag_no"
                                     id="bag_no" placeholder="Bag No." onblur="validate(3)" />
                             </div>
 
-                        </div>
-
-                        <div class="row text-left">
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Forwarder Name" type="text" name="forwarder"
                                     id="forwarder" placeholder="Forwarder Name" onblur="validate(4)" />
                             </div>
-                            <div class=" col-sm-4 flex-column d-flex">
+
+                        </div>
+
+                        <div class="row text-left">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="AWB No." type="text" name="awb_no"
                                     id="awb_no" placeholder="AWB No." onblur="validate(5)" />
                             </div>
 
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Order Date" type="date" name="order_date"
                                     id="order_date" placeholder="Order Date" min="1997-01-01" max="2030-12-31"
                                     onblur="validate(6)" />
                             </div>
-                        </div>
-                        <div class="row text-left">
 
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Customer Name" type="text"
                                     name="customer_name" id="customer_name" placeholder="Customer Name"
                                     onblur="validate(7)" />
                             </div>
-                            <div class=" col-sm-4 flex-column d-flex">
+
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Address" type="text" name="address"
                                     id="address" placeholder="Address" onblur="validate(8)" />
                             </div>
-                            <div class=" col-sm-4 flex-column d-flex">
+
+                        </div>
+
+                        <div class="row text-left">
+
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="City" type="text" name="city"
                                     id="city" placeholder="City" onblur="validate(9)" />
                             </div>
-                        </div>
-                        <div class="row text-left">
 
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="County" type="text" name="county"
                                     id="county" placeholder="County" onblur="validate(10)" />
                             </div>
 
-                            <div class=" col-sm-4 flex-column d-flex ">
+                            <div class=" col-sm-3 flex-column d-flex ">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Country" name="country" id="country"
                                     placeholder="Country" onblur="validate(11)" />
                             </div>
 
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Phone" type="text" name="phone"
                                     id="phone" placeholder="Phone" onblur="validate(12)" />
@@ -134,24 +139,27 @@
 
                         <div class="row text-left">
 
-                            <div class=" col-sm-4 flex-column d-flex">
+                            <div class=" col-sm-3 flex-column d-flex">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Product Name" type="text"
                                     name="product_name" id="product_name" placeholder="Product Name"
                                     onblur="validate(13)" />
                             </div>
 
-                            <div class=" col-sm-4 flex-column d-flex ">
+                            <div class=" col-sm-3 flex-column d-flex ">
 
                                 <x-adminlte-input class="mb-0 px-3" label="SKU" name="sku" id="sku"
                                     placeholder="SKU" onblur="validate(14)" />
                             </div>
-                            <div class=" col-sm-4 flex-column d-flex ">
+
+                            <div class=" col-sm-3 flex-column d-flex ">
 
                                 <x-adminlte-input class="mb-0 px-3" label="Quantity" name="quantity" id="quantity"
                                     placeholder="Quantity" onblur="validate(15)" />
                             </div>
+
                         </div>
+
                         <div class="row float-right">
                             <x-adminlte-button label="Submit" type="submit" theme="primary" />
                         </div>
@@ -165,7 +173,6 @@
 
         <thead class="table-info">
             {{-- <th>Select All <input type='checkbox' id='select_all'></th> --}}
-            <th>ID</th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
@@ -189,12 +196,6 @@
             searching: false,
             bLengthChange: false,
             columns: [{
-                    data: 'id',
-                    name: 'id',
-                    orderable: false,
-                    searchable: false
-                },
-                {
                     data: 'order_no',
                     name: 'order_no',
                     orderable: false,
@@ -415,4 +416,5 @@
         }
     </script>
 
+    @include('shipntrack.Operation.Label.edit_label_page')
 @stop

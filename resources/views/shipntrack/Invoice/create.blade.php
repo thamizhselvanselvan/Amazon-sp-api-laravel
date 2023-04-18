@@ -62,15 +62,14 @@
         </div>
         <div>
             <!-- <x-adminlte-input label="Mode :" name="mode" type="text" placeholder="mode" value="{{ old('mode') }}" autocomplete="off" /> -->
-            <x-adminlte-select name="mode" label="mode:" id="mode">
+            <x-adminlte-select name="mode" label="mode:" id="mode" >
                 <option value="0">Select Mode</option>
                 <option value="IND2UAE">IND2UAE</option>
                 <option value="USA2UAE">USA2UAE</option>
-
             </x-adminlte-select>
         </div>
         <div>
-            <x-adminlte-input label="Invoice Date :" name="invoice_date" type="text" class="form-control" placeholder=" invoice_date" value="{{ old('invoice_date') }}" autocomplete="off" />
+            <x-adminlte-input label="Invoice Date :" name="invoice_date" type="date" class="form-control" placeholder=" invoice_date" value="{{ old('invoice_date') }}" autocomplete="off" />
         </div>
         <div>
             <x-adminlte-input label="SKU :" name="sku" type="text" placeholder="sku" value="{{ old('sku') }}" autocomplete="off" />
@@ -127,10 +126,16 @@
             <x-adminlte-input label="Grand Total :" name="grand_total" type="text" placeholder="grand_total" value="{{ old('grand_total') }}" autocomplete="off" />
         </div>
         <div>
-            <x-adminlte-input label="Number of Pieces :" name="no_of_pcs" type="text" placeholder="no_of_pcs" value="{{ old('no_of_pcs') }}" autocomplete="off" />
+            <x-adminlte-input label="SR No :" name="sr_no" type="text" placeholder="sr_no" value="{{ old('sr_no') }}" autocomplete="off" />
+        </div>
+        <div>
+            <x-adminlte-input label="Client Code :" name="client_code" type="text" placeholder="client_code" value="{{ old('client_code') }}" autocomplete="off" />
         </div>
         <div>
             <x-adminlte-input label="Packing :" name="packing" type="text" placeholder="packing" value="{{ old('packing') }}" autocomplete="off" />
+        </div>
+        <div>
+            <x-adminlte-input label="Number of Pieces :" name="no_of_pcs" type="text" placeholder="no_of_pcs" value="{{ old('no_of_pcs') }}" autocomplete="off" />
         </div>
         <div>
             <x-adminlte-input label="Dimension :" name="dimension" type="text" placeholder="dimension" value="{{ old('dimension') }}" autocomplete="off" />
@@ -140,12 +145,6 @@
         </div>
         <div>
             <x-adminlte-input label="Charged Weight :" name="charged_weight" type="text" placeholder="charged_weight" value="{{ old('charged_weight') }}" autocomplete="off" />
-        </div>
-        <div>
-            <x-adminlte-input label="SR No :" name="sr_no" type="text" placeholder="sr_no" value="{{ old('sr_no') }}" autocomplete="off" />
-        </div>
-        <div>
-            <x-adminlte-input label="Client Code :" name="client_code" type="text" placeholder="client_code" value="{{ old('client_code') }}" autocomplete="off" />
         </div>
         <div>
             <div>

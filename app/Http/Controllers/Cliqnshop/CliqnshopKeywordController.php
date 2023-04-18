@@ -95,7 +95,18 @@ class CliqnshopKeywordController extends Controller
                 return "<div class='d-flex'><a href='javascript:void(0)' name='id' id='edit' value ='$row->id' data-siteid='$row->site_id' data-keyword='$row->keyword' class='edit btn btn-success btn-sm'><i class='fas fa-edit'></i>Edit</a>"
                 ."<div class='d-flex'><a href='javascript:void(0)' name='id' id='delete' value ='$row->id'  class='delete btn btn-danger btn-sm ml-2'><i class='far fa-trash-alt'></i>Remove</a></div>";
               })
-              ->rawColumns(['action'])
+              ->addColumn('site', function ($data) {
+                $s_code = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid',$data->site_id)->pluck('code')->ToArray();
+                if ($s_code[0] == 'uae')
+                {
+                    return '<p class = "text-danger">UAE</p>';
+                }
+                if ($s_code[0] == 'in')
+                {
+                    return '<p class = "text-success">India</p>';
+                }
+            })
+              ->rawColumns(['action','site'])
               ->make(true);
                     
         }

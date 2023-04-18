@@ -101,8 +101,13 @@ Route::get('shipntrack/invoice/view/{invoice_no}', 'shipntrack\Invoice\SNTInvoic
 Route::POST('shipntrack/invoice/export/pdf', 'shipntrack\Invoice\SNTInvoiceController@pdfexport')->name('export.shipntrack.invoice.pdf');
 Route::get('shipntrack/invoice/dowload/pdf/{invoice_no}', 'shipntrack\Invoice\SNTInvoiceController@sntDownloadPdf')->name('export.shipntrack.invoice.download.pdf');
 Route::get('shipntrack/invoice/download-direct/{invoice_no}', 'shipntrack\Invoice\SNTInvoiceController@directpdfdownload')->name('shipntrack.invoice.direct.download');
+Route::get('shipntrack/invoice/edit/{invoice_no}', 'shipntrack\Invoice\SNTInvoiceController@invoiceeditview')->name('shipntrack.invoice.single.edit.view');
+Route::post('shipntrack/invoice/edit/store', 'shipntrack\Invoice\SNTInvoiceController@invoiceeditstore')->name('shipntrack.invoice.edit.store');
 
 
 Route::get('shipntrack/label', 'ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
 Route::post('shipntrack/submit', 'ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
-Route::get('shipntrack/label/template/{id}', 'ShipnTrackLabelManagementController@LabelTemplate')->name('shipntrack.label.template');
+Route::get('shipntrack/label/template/{id}', 'ShipnTrackLabelManagementController@LabelPdfTemplate')->name('shipntrack.label.template');
+Route::get('shipntrack/label/pdf/download/{id}', 'ShipnTrackLabelManagementController@LabelPdfDownload')->name('shipntrack.label.template');
+Route::get('shipntrack/label/fetch/record/{id}', 'ShipnTrackLabelManagementController@LabelDetails')->name('shipntrack.label.details');
+Route::post('shipntrack/label/edit', 'ShipnTrackLabelManagementController@LabelEdit')->name('shipntrack.label.edit');

@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models\shipntrack\Operation;
+namespace App\Models\ShipNTrack\Operation;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Label extends Model
+class ShipNTrackLabel extends Model
 {
     use HasFactory;
     protected $connection = 'shipntracking';
+    protected $table = 'labels';
     protected $fillable = [
         'order_no',
         'order_item_id',

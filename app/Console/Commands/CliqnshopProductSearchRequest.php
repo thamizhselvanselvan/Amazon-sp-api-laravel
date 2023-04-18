@@ -14,7 +14,7 @@ class CliqnshopProductSearchRequest extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:cliqnshop-product-search {searchKey}';
+    protected $signature = 'mosh:cliqnshop-product-search {searchKey} {site}';
 
     /**
      * The console command description.
@@ -53,10 +53,10 @@ class CliqnshopProductSearchRequest extends Command
 
         $searchKey = $this->argument('searchKey');
         // $siteId = $this->argument('siteId');
-        // $source = $this->argument('source');
+        $site = $this->argument('site');
 
         $ApiCall = new Search_Product();
-        $result = $ApiCall->SearchProductByKey($searchKey);
+        $result = $ApiCall->SearchProductByKey($searchKey,$site);
 
         date_default_timezone_set('Asia/Kolkata');
         // $command_end_time = now();
