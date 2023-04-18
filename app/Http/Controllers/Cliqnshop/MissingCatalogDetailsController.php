@@ -51,7 +51,18 @@ class MissingCatalogDetailsController extends Controller
                         return "<center><p class='status_checks statusButton btn-danger w-75'> Disable </p></center>";
                     }
                 })
-                ->rawColumns(['status'])
+                ->addColumn('site', function ($data) {
+                    $s_code = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid',$data->siteid)->pluck('code')->ToArray();
+                    if ($s_code[0] == 'uae')
+                    {
+                        return '<p class = "text-danger">UAE</p>';
+                    }
+                    if ($s_code[0] == 'in')
+                    {
+                        return '<p class = "text-success">India</p>';
+                    }
+                })
+                ->rawColumns(['status','site'])
                 ->make(true);
         }
 
@@ -101,7 +112,18 @@ class MissingCatalogDetailsController extends Controller
                         return "<center><p class='status_checks statusButton btn-danger w-75'> Disable </p></center>";
                     }
                 })
-                ->rawColumns(['status'])
+                ->addColumn('site', function ($data) {
+                    $s_code = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid',$data->siteid)->pluck('code')->ToArray();
+                    if ($s_code[0] == 'uae')
+                    {
+                        return '<p class = "text-danger">UAE</p>';
+                    }
+                    if ($s_code[0] == 'in')
+                    {
+                        return '<p class = "text-success">India</p>';
+                    }
+                })
+                ->rawColumns(['status','site'])
                 ->make(true);
         }
 

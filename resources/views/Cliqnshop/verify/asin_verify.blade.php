@@ -90,10 +90,10 @@
         <tr class='text-bold bg-info'>
             <th> S.N </th>
             <th>ASIN</th>
-            <th>Product code </th>
-            <th>label </th>
-            <th>site</th>
-            {{-- <th>site</th> --}}
+            <th>SKU </th>
+            <th>Product Name </th>
+            <th>Site</th>
+            <th>Status</th>
             {{-- <th>created-time</th>
             <th>created-by</th> --}}
             <th>Action</th>
@@ -159,10 +159,10 @@
                     data: 'site',
                     name: 'site'
                 },
-                // {
-                //     data: 'siteid',
-                //     name: 'siteid'
-                // },
+                {
+                    data: 'status',
+                    name: 'status'
+                },
                 // {
                 //     data: 'ctime',
                 //     name: 'ctime'
@@ -191,7 +191,7 @@
         label = $(this).data('label');
         shortenlabel = label.substring(0, 20).concat('...');
         
-        return confirm(`Are you sure? Yoy want to delete this  ( ${shortenlabel} ) product! `);
+        return confirm(`Are you sure? You want to ban/delete this  ( ${shortenlabel} ) product! `);
     });
 
     $(document).on('click', ".approveAsin", function(e) {
@@ -199,7 +199,7 @@
         label = $(this).data('label');
         shortenlabel = label.substring(0, 20).concat('...');
         
-        return confirm(`Are you sure? Yoy want to Approve this  ( ${shortenlabel} ) product! `);
+        return confirm(`Are you sure? You want to Approve this  ( ${shortenlabel} ) product! `);
     });
 
     

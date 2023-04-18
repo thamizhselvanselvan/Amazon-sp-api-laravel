@@ -46,6 +46,7 @@
                 <th>ID</th>
                 <th>Asin</th>
                 <th>Product Name</th>
+                <th>Site</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -80,6 +81,10 @@
                     {
                         data: 'label',
                         name: 'label'
+                    },
+                    {
+                        data: 'site',
+                        name: 'site'
                     },
                     {
                         data: 'status',

@@ -153,6 +153,7 @@
                     <tr class="table-info">
                         <th>ID</th>
                         <th>Keyword</th>
+                        <th>Site</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -185,6 +186,10 @@
                     {
                         data: 'keyword',
                         name: 'keyword'
+                    },
+                    {
+                        data: 'site',
+                        name: 'site'
                     },
                     {
                         data: 'action',
