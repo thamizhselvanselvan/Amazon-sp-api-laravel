@@ -104,13 +104,15 @@ Route::get('shipntrack/invoice/download-direct/{invoice_no}', 'shipntrack\Operat
 Route::get('shipntrack/invoice/edit/{invoice_no}', 'shipntrack\Operations\SNTInvoiceController@invoiceeditview')->name('shipntrack.invoice.single.edit.view');
 Route::post('shipntrack/invoice/edit/store', 'shipntrack\Operations\SNTInvoiceController@invoiceeditstore')->name('shipntrack.invoice.edit.store');
 
+Route::get('shipntrack/label/master', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@index')->name('shipntrack.label.master.index');
+Route::post('shipntrack/label/master/submit', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@LabelMasterFormSubmit')->name('shipntrack.label.master.submit');
 
-Route::get('shipntrack/label', 'ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
-Route::post('shipntrack/submit', 'ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
-Route::get('shipntrack/label/template/{id}', 'ShipnTrackLabelManagementController@LabelPdfTemplate')->name('shipntrack.label.template');
-Route::get('shipntrack/label/pdf/download/{id}', 'ShipnTrackLabelManagementController@LabelPdfDownload')->name('shipntrack.label.template');
-Route::get('shipntrack/label/fetch/record/{id}', 'ShipnTrackLabelManagementController@LabelDetails')->name('shipntrack.label.details');
-Route::post('shipntrack/label/edit', 'ShipnTrackLabelManagementController@LabelEdit')->name('shipntrack.label.edit');
+Route::get('shipntrack/label', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
+Route::post('shipntrack/submit', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
+Route::get('shipntrack/label/template/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelPdfTemplate')->name('shipntrack.label.template');
+Route::get('shipntrack/label/pdf/download/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelPdfDownload')->name('shipntrack.label.template');
+Route::get('shipntrack/label/fetch/record/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelDetails')->name('shipntrack.label.details');
+Route::post('shipntrack/label/edit', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelEdit')->name('shipntrack.label.edit');
 
 
 

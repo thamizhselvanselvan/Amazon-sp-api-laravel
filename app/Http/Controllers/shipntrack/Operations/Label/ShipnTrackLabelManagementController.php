@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\shipntrack\Operations\Label;
 
 
 use Illuminate\Http\Request;
@@ -8,6 +8,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\ShipNTrack\Operation\ShipNTrackLabel;
@@ -59,7 +60,7 @@ class ShipnTrackLabelManagementController extends Controller
                 ->rawColumns(['select_all', 'action'])
                 ->make(true);
         }
-        return view('shipntrack.Operation.Label.index');
+        return view('shipntrack.Operation.LabelManagement.Label.index');
     }
 
     public function FormSubmit(Request $request)
@@ -144,7 +145,7 @@ class ShipnTrackLabelManagementController extends Controller
             $bar_code[] = base64_encode($generator->getBarcode($record['awb_no'], $generator::TYPE_CODE_39));
         }
 
-        return view('shipntrack.Operation.Label.LabelPdfTemplate', compact('records', 'bar_code'));
+        return view('shipntrack.Operation.LabelManagement.Label.LabelPdfTemplate', compact('records', 'bar_code'));
     }
 
     public function ShipntrackLabelDataFormatting($label_id)
@@ -212,7 +213,7 @@ class ShipnTrackLabelManagementController extends Controller
         $pdfPath = Storage::path($filePath);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1-40')
             ->scale(1)
