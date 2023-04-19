@@ -16,7 +16,7 @@ class CliqnshopCataloginsert
         try {
             // $display_code = '1';
 
-        $check = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->pluck('id')->ToArray();
+        $check = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->whereIn('editor',['cns_search_from_in','cns_search_from_uae'])->pluck('id')->ToArray();
         if (isset($check[0]))
         {
         $check_status = DB::connection('cliqnshop')->table('mshop_product_list')->where('siteid', $site_id)->where('parentid', $check[0])->pluck('status')->ToArray();
@@ -30,7 +30,7 @@ class CliqnshopCataloginsert
             $display_code = 0;
          }
         }
-            if ($Price_US_IN == '0' || $Price_US_IN == '') {
+            if ($Price_US_IN == '0' || $Price_US_IN == '' || $item_name == '') {
                 $display_code = 0;
             }
             $required = ['Images1','Images2','Images3','Images4','Images5','Images6','Images7','Images8','Images9','Images10'];
