@@ -5,8 +5,7 @@ namespace App\Http\Controllers\shipntrack\Operations;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\ShipNTrack\Inventory\Inward;
-use App\Models\ShipNtrack\Inventory\Outward;
+use App\Models\ShipNTrack\Inventory\Outward;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 
 class SNTOutwardController extends Controller
@@ -21,11 +20,11 @@ class SNTOutwardController extends Controller
                 ->addIndexColumn()
                 ->editColumn('type', function ($row) {
                     if ($row->type == 1) {
-                        return 'Outward form source.';
+                        return 'Outward form source';
                     } else   if ($row->type == 2) {
-                        return 'Outward form Destination.';
+                    return 'Outward form Destination';
                     } else {
-                        return 'Unknown Status.';
+                    return 'Unknown Status';
                     }
                 })
                 // ->addColumn('action', function ($row) {
@@ -36,7 +35,7 @@ class SNTOutwardController extends Controller
                 ->make(true);
         }
 
-        return view('shipntrack.Operation.outward.index');
+        return view('shipntrack.Operation.Outward.index');
     }
     public function outward_view(Request $request)
     {
@@ -45,7 +44,7 @@ class SNTOutwardController extends Controller
             ->groupBy('source', 'destination')
             ->get()
             ->toArray();
-        return view('shipntrack.Operation.outward.outward', compact('destinations'));
+        return view('shipntrack.Operation.Outward.outward', compact('destinations'));
     }
     public function outward_store(Request $request)
     {

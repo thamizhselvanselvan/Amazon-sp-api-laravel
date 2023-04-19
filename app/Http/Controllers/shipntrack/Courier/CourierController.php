@@ -42,7 +42,7 @@ class CourierController extends Controller
     public function courieredit($id)
     {
         $record = Courier::find($id)->toArray();
-        return view('shipntrack.courier.index', compact('record'));
+        return view('shipntrack.Courier.index', compact('record'));
     }
 
     public function courierupdate(Request $request)
