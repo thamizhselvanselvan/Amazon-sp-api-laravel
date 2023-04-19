@@ -394,8 +394,7 @@ class catalog_upload_to_cliqnshop extends Command
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category not found'. "\n");
             }
-            else
-            {
+            else {
                 $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
                 if (!isset($catogory_data[0]))
                 {
@@ -405,50 +404,32 @@ class catalog_upload_to_cliqnshop extends Command
             if ($item_name == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Product Name not found'. "\n");
-            }
-            else
-            {
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Product Name not found, So Imported with Disable Status'. "\n"); 
             }
             if ($brand_label == ' ')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Brand not found'. "\n");
-            }
-            else
-            {
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Brand'. "\n");
             }
             if ($label == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Colour not found'. "\n");
-            }
-            else
-            {
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Colour'. "\n");
             }
             if ($length_unit  == '' && $length_value == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Length not found'. "\n");
-            }
-            else
-            {
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Length'. "\n");
             }
             if ($width_unit  == '' && $width_value == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Width not found'. "\n");
-            }
-            else
-            {
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Width'. "\n");
             }
             if ($Price_US_IN == [] || $Price_US_IN == '0' || $Price_US_IN == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Price not found'. "\n");
-            }
-            else
-            {
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Price not found, So Imported with Disable Status'. "\n");  
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Price not found, So Imported with Disable Status'. "\n");
             }
             $required = ['Images1','Images2','Images3','Images4','Images5','Images6','Images7','Images8','Images9','Images10'];
             if (count(array_intersect_key(array_flip($required), $image[$asin])) === count($required)) {
@@ -464,26 +445,17 @@ class catalog_upload_to_cliqnshop extends Command
              $image[$asin]['Images10'] == '')
              {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Image not found'. "\n");
-             }
-             else
-             {
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Image not found, So Imported with Disable Status'. "\n"); 
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Image not found, So Imported with Disable Status'. "\n");
              }
             }
             if ($long_description == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
-            }
-            else
-            {
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Description'. "\n"); 
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Image not found, So Imported with Disable Status'. "\n");
             }
             if ($generic_keywords == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Generic Keywords not found'. "\n");
-            }
-            else
-            {
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Generic Keywords'. "\n");
             }
             $insert_service->insertdata_cliqnshop(
@@ -538,7 +510,7 @@ class catalog_upload_to_cliqnshop extends Command
                  $image[$asin]['Images9'] !== '' && 
                  $image[$asin]['Images10'] !== '')
                  {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Successfully Imported'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Successfully Imported'. "\n");
                  }
                 }
                 }
@@ -554,9 +526,9 @@ class catalog_upload_to_cliqnshop extends Command
 
                 $slackMessage_s = config('app.url').$url_s;
 
-                slack_notification('monitor', 'Product Import From CSV Error Report testing', $slackMessage);
+                // slack_notification('monitor', 'Product Import From CSV Error Report testing', $slackMessage);
 
-                slack_notification('monitor', 'Product Import From CSV Sucsess Report testing', $slackMessage_s);
+                // slack_notification('monitor', 'Product Import From CSV Sucsess Report testing', $slackMessage_s);
           
         // po($generic_keywords);
         $end_time = microtime(true);
