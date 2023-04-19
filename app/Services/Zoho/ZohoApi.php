@@ -166,7 +166,7 @@ class ZohoApi
 
     public function deleteLead(array $parameters)
     {   
-        //https://www.zohoapis.com/crm/v2/{module_api_name}?ids={record_id1,record_id2,..}
+        
         $response = Http::withoutVerifying()
             ->withHeaders([
                 'Authorization' => 'Zoho-oauthtoken ' . $this->auth_token

@@ -6,6 +6,7 @@ use App\Models\MongoDB\zoho;
 use App\Services\Zoho\ZohoApi;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DumpDataIntoZoho extends Command
 {
@@ -42,7 +43,23 @@ class DumpDataIntoZoho extends Command
      */
     public function handle()
     {
-        $zoho = new ZohoApi(new_zoho: true);
+        $zoho = new ZohoApi(new_zoho: false);
+
+        // $files = json_decode(Storage::get("zoho1.json"), true);
+
+        // $array_data = [];
+
+        // foreach($files as $arr) {
+        //     $array_data[] = $arr["Id"];
+        // }
+
+        // $deletes = array_chunk($array_data, 25);
+
+        // foreach($deletes as $delete) {
+        //     $zoho->deleteLead($delete);
+        // }
+        // $this->info("Finish");
+        // exit;
 
         $Lead_Sources = [
             'CKSHOP-Amazon.in',
