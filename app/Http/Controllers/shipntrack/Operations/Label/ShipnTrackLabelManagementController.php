@@ -6,6 +6,7 @@ namespace App\Http\Controllers\shipntrack\Operations\Label;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
@@ -151,7 +152,7 @@ class ShipnTrackLabelManagementController extends Controller
         foreach ($records as $key => $record) {
 
             $generator = new BarcodeGeneratorPNG();
-            $bar_code[] = base64_encode($generator->getBarcode($record['awb_no'], $generator::TYPE_CODE_39));
+            $bar_code[] = base64_encode($generator->getBarcode($this->CleanupLabelData($record['awb_no'], 'awb'), $generator::TYPE_CODE_39));
         }
 
         return view('shipntrack.Operation.LabelManagement.Label.LabelPdfTemplate', compact('records', 'bar_code'));
@@ -234,5 +235,13 @@ class ShipnTrackLabelManagementController extends Controller
             ->savePdf($pdfPath);
 
         return Storage::download($filePath);
+    }
+
+    public function CleanupLabelData($data, $type)
+    {
+        if ($type == 'awb') {
+            return preg_replace("/[^a-zA-Z0-9]/", "", strtoupper($data));
+        }
+        return $data;
     }
 }
