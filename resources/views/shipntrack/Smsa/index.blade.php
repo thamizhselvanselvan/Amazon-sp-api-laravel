@@ -78,9 +78,9 @@
                 <option value="IN">IN</option>
                 <option value="KSA">KSA</option>
             </x-adminlte-select>
-            <a href="{{ Route('shipntrack.smsa.upload') }}">
+            {{-- <a href="{{ Route('shipntrack.smsa.upload') }}">
                 <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-            </a>
+            </a> --}}
         </h2>
         <table class="table table-bordered yajra-datatable table-striped text-center">
             <thead>
