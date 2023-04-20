@@ -503,5 +503,5 @@
         });
     </script>
 
-    @include('shipntrack.Operation.Label.edit_label_page')
+    @include('shipntrack.Operation.LabelManagement.Label.edit_label_page')
 @stop

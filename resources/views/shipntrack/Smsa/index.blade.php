@@ -91,8 +91,7 @@
                     columns: [{
                             data: 'awb_number',
                             name: 'awb_number',
-                            orderable: false,
-                            searchable: false
+
                         },
                         {
                             data: 'forwarder1_awb',
