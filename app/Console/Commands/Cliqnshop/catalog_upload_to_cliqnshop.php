@@ -55,6 +55,7 @@ class catalog_upload_to_cliqnshop extends Command
         }
 
         $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+       
         $current_time = Carbon::now()->toDateTimeString();
         $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
         if (isset($country['0']->code)) {
@@ -156,6 +157,21 @@ class catalog_upload_to_cliqnshop extends Command
             'pricing_ins.ind_to_uae',
             
             ];
+
+            $check_headers = [
+                'catalognewins.asin',
+                'catalognewins.brand',
+                'catalognewins.images',
+                'catalognewins.item_name',
+                // 'catalognewuss.browse_classification',
+                'catalognewins.dimensions',
+                'catalognewins.attributes',
+                'catalognewins.color',
+                // 'pricing_ins.usa_to_in_b2c',
+                // 'pricing_ins.us_price',
+                'pricing_ins.ind_to_uae',
+                
+                ];
             
             $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
             $result = $table_name->select($headers)
@@ -164,7 +180,9 @@ class catalog_upload_to_cliqnshop extends Command
             ->whereIn('catalognewins.asin', $a)
             ->get()->toArray();
 
-            $check_result = $table_name->select($headers)
+            
+
+            $check_result = $table_name->select($check_headers)
             ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
             ->whereIn('catalognewins.asin', $a)
             ->pluck('asin')->toArray();
@@ -480,55 +498,56 @@ class catalog_upload_to_cliqnshop extends Command
                 $editor,
                 $display_code
             );
+
+            if ($item_name !== '')
+            {
+             if ($brand_label !== ' ')
+             {
+                 if ($generic_keywords !== '' || $generic_keywords !== [])
+                 {
+                     if ($label !== '')
+                     {
+                         if ($length_unit  !== '' && $length_value !== '')
+                         {
+                             if ($width_unit  !== '' && $width_value !== '')
+                             {
+                                if ($Price_US_IN !== [] || $Price_US_IN !== '0' || $Price_US_IN !== '')
+                                {
+                                 if ($long_description !== '')
+                                 {
+                                     if ($category_code !== 'demo-new')
+                                     {
+                                         $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
+                                         if (isset($catogory_data[0]))
+                                         {
+                                 
+                                             if ($image[$asin]['Images1'] !== '' ||
+                                          $image[$asin]['Images2'] !== '' || 
+                                          $image[$asin]['Images3'] !== '' || 
+                                          $image[$asin]['Images4'] !== '' || 
+                                          $image[$asin]['Images5'] !== '' || 
+                                          $image[$asin]['Images6'] !== '' || 
+                                          $image[$asin]['Images7'] !== '' || 
+                                          $image[$asin]['Images8'] !== '' || 
+                                          $image[$asin]['Images9'] !== '' || 
+                                          $image[$asin]['Images10'] !== '')
+                                          {
+                                         fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Successfully Imported'. "\n");
+                                          }
+                                         }
+                                     }
+                                 }
+                                }
+                             }
+                         }
+                     }
+                 }
+             }
+            }
+
         }
     }
-           fclose($file);
-
-           if ($item_name !== '')
-           {
-            if ($brand_label !== ' ')
-            {
-                if ($generic_keywords !== '' || $generic_keywords !== [])
-                {
-                    if ($label !== '')
-                    {
-                        if ($length_unit  !== '' && $length_value !== '')
-                        {
-                            if ($width_unit  !== '' && $width_value !== '')
-                            {
-                               if ($Price_US_IN !== [] || $Price_US_IN !== '0' || $Price_US_IN !== '')
-                               {
-                                if ($long_description !== '')
-                                {
-                                    if ($category_code !== 'demo-new')
-                                    {
-                                        $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
-                                        if (isset($catogory_data[0]))
-                                        {
-                                
-                                            if ($image[$asin]['Images1'] !== '' ||
-                                         $image[$asin]['Images2'] !== '' || 
-                                         $image[$asin]['Images3'] !== '' || 
-                                         $image[$asin]['Images4'] !== '' || 
-                                         $image[$asin]['Images5'] !== '' || 
-                                         $image[$asin]['Images6'] !== '' || 
-                                         $image[$asin]['Images7'] !== '' || 
-                                         $image[$asin]['Images8'] !== '' || 
-                                         $image[$asin]['Images9'] !== '' || 
-                                         $image[$asin]['Images10'] !== '')
-                                         {
-                                        fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Successfully Imported'. "\n");
-                                         }
-                                        }
-                                    }
-                                }
-                               }
-                            }
-                        }
-                    }
-                }
-            }
-           }
+               fclose($file);
                fclose($file_s);
 
                 $url = Storage::url($exportFilePath);
