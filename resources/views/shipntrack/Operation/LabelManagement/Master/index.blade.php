@@ -47,13 +47,14 @@
                         enctype="multipart/form-data">
                         @csrf
                         <x-adminlte-input label="Source" name="source" igroup-size="md" type="text" placeholder="Source"
-                            fgroup-class="col-md-12" maxlength="3" id="source" />
+                            fgroup-class="col-md-12" maxlength="3" id="source" autocomplete="off" required />
 
                         <x-adminlte-input label="Destination" name="destination" igroup-size="md" type="text"
-                            placeholder="Destination" fgroup-class="col-md-12" id="destination" />
+                            placeholder="Destination" fgroup-class="col-md-12" id="destination" autocomplete="off"
+                            required />
 
                         <x-adminlte-input label="Upload Logo" type="file" name="logo" igroup-size="md"
-                            placeholder="Choose a file..." fgroup-class="col-md-12">
+                            placeholder="Choose a file..." fgroup-class="col-md-12" required>
                             <x-slot name="prependSlot">
                                 <div class="input-group-text bg-lightblue">
                                     <i class="fas fa-upload"></i>
@@ -62,7 +63,7 @@
                         </x-adminlte-input>
 
                         <x-adminlte-textarea label="Return Address" name="return_address" igroup-size="md"
-                            placeholder="Enter Return Address" fgroup-class="col-md-12" />
+                            placeholder="Enter Return Address" fgroup-class="col-md-12" autocomplete="off" required />
 
                         <x-adminlte-button class="btn-sm float-right mr-2" type="submit" label="Submit" theme="success"
                             icon="fas fa-lg fa-save" />

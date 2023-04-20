@@ -11,7 +11,7 @@ use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
-use App\Models\ShipNTrack\Operation\ShipNTrackLabel;
+use App\Models\ShipNTrack\Operation\Label\ShipNTrackLabel;
 
 class ShipnTrackLabelManagementController extends Controller
 {
