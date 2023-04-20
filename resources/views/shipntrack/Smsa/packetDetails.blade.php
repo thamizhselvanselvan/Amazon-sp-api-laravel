@@ -101,7 +101,7 @@
     .tracking-details {
         background: white;
         position: absolute;
-        top: 30px;
+        top: 05px;
         right: 50%;
         transform: translate(50%);
         border-radius: 5px;
