@@ -237,7 +237,7 @@
                         <div class=" small return">
 
                             <p class="address"><strong>Return Address:</strong>
-                                Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE
+                                {{ $record['return_address'] }}
                             </p>
 
                         </div>
