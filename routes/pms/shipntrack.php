@@ -115,7 +115,12 @@ Route::get('shipntrack/label/fetch/record/{id}', 'shipntrack\Operations\Label\Sh
 Route::post('shipntrack/label/edit', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelEdit')->name('shipntrack.label.edit');
 
 
-
+//SNT Inwarding
 Route::get('shipntrack/inward', 'shipntrack\Operations\SNTInwardController@index')->name('shipntrack.inward');
 Route::get('shipntrack/inward/create', 'shipntrack\Operations\SNTInwardController@inward_view')->name('shipntrack.inward.create');
 Route::post('shiptrack/inward/store', 'shipntrack\Operations\SNTInwardController@inward_store')->name('shipntrack.inward.store');
+
+//SNT Outwarding
+Route::get('shipntrack/outward', 'shipntrack\Operations\SNTOutwardController@index')->name('shipntrack.outward');
+Route::get('shipntrack/outward/create', 'shipntrack\Operations\SNTOutwardController@outward_view')->name('shipntrack.outward.create');
+Route::post('shiptrack/outward/store', 'shipntrack\Operations\SNTOutwardController@outward_store')->name('shipntrack.outward.store');

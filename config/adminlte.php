@@ -1156,7 +1156,7 @@ return [
                                 [
                                     'text' => 'Outward ',
                                     'icon' => 'far fa fa-minus-square-o',
-                                    'url' => 'shipntrack/Outward',
+                                    'url' => 'shipntrack/outward',
                                     'can' => ['Admin'],
                                 ],
                             ],

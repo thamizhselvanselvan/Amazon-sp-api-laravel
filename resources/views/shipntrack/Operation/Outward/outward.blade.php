@@ -1,13 +1,13 @@
 @extends('adminlte::page')
 
-@section('title', 'SNT Inwarding')
+@section('title', 'SNT Outwarding')
 
 @section('css')
 
 <link rel="stylesheet" href="/css/styles.css">
 @stop
 @section('content_header')
-<h1 class="m-0 text-dark">Shipntrack Inward Shipment</h1>
+<h1 class="m-0 text-dark">Shipntrack Outward Shipment</h1>
 @stop
 @section('content')
 <div class="row">
@@ -38,10 +38,10 @@
     </div>
     <div class="col-2">
         <div class="form-group type d-none">
-            <x-adminlte-select name="type" label="Select Inward Type" id="type">
-                <option value="0">Inward Type</option>
-                <option value="1">Source Inward</option>
-                <option value="2">Destination Inward</option>
+            <x-adminlte-select name="type" label="Select Outward Type" id="type">
+                <option value="0">Outward Type</option>
+                <option value="1">Source Outward</option>
+                <option value="2">Destination Outward</option>
             </x-adminlte-select>
         </div>
     </div>
@@ -153,7 +153,7 @@
             html += "<td name='awb_number[]'>" + strarray[i] + "</td>";
             html += "<td name='mode[]'>" + mode + "</td>";
             html += "<td name='type[]'>" + type + "</td>";
-            html += '<td><input type="text-area" class="w-75" value="Receved At Source Warehouse.." name="status[]" id="status">  </td>'
+            html += '<td><input type="text-area" class="w-75" value="Departed from Warehouse.." name="status[]" id="status">  </td>'
             html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
             html += "</tr>";
         }
@@ -197,7 +197,7 @@
 
             $.ajax({
                 method: 'POST',
-                url: "{{route('shipntrack.inward.store')}}",
+                url: "{{route('shipntrack.outward.store')}}",
                 data: data,
                 processData: false,
                 contentType: false,
@@ -215,6 +215,17 @@
                 }
             });
         }
+
+
+
+
+
+
+
+
+
+
+
 
 
     });

@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'SNT Inward')
+@section('title', 'SNT Outward')
 
 @section('css')
 
@@ -22,7 +22,7 @@
 <div class="row">
     <div class="col-2">
         <div style="margin-top:-0.1rem">
-            <a href="{{route('shipntrack.inward.create')}}">
+            <a href="{{route('shipntrack.outward.create')}}">
                 <x-adminlte-button label="Create Shipment" class="btn-sm" theme="primary" icon="fas fa-plus" />
             </a>
         </div>
@@ -30,7 +30,7 @@
     <div class="col-2"></div>
     <div class="col-6">
 
-        <h1 class="m-0 text-dark"> SNT Inward Shipment</h1>
+        <h1 class="m-0 text-dark"> SNT Outward Shipment</h1>
     </div>
 </div>
 
@@ -54,7 +54,7 @@
             </div>
             @endif
 
-            <div class="alert_display success">
+            <div class="alert_display">
                 @if (request('success'))
                 <div class="alert alert-success alert-block">
                     <button type="button" class="close" data-dismiss="alert">×</button>
@@ -82,8 +82,6 @@
                 </tbody>
             </table>
         </div>
-
-
     </div>
 </div>
 @stop
@@ -100,7 +98,7 @@
         let yajra_table = $('.yajra-datatable').DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{{ route('shipntrack.inward') }}",
+            ajax: "{{ route('shipntrack.outward') }}",
             columns: [{
                     data: 'DT_RowIndex',
                     name: 'DT_RowIndex',
