@@ -221,6 +221,7 @@
 
         <thead class="table-info">
             <th>Select All <input type='checkbox' id='select_all'></th>
+            <th>Mode</th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
@@ -257,6 +258,12 @@
                     name: 'select_all',
                     orderable: false,
                     searchable: false
+                },
+                {
+                    data: 'mode',
+                    name: 'mode',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     data: 'order_no',
