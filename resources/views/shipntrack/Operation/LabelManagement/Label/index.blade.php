@@ -100,7 +100,8 @@
                         onblur="validate(1)">
                         <option value="">Select Mode</option>
                         @foreach ($values as $value)
-                            <option value="{{ $value['id'] }}">{{ $value['source'] . '2' . $value['destination'] }}</option>
+                            <option value="{{ $value['id'] }}">{{ $value['source'] . '2' . $value['destination'] }}
+                            </option>
                         @endforeach
                     </x-adminlte-select>
                 </div>
