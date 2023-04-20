@@ -2,31 +2,39 @@
 
 @section('title', 'Courier Tracking')
 <style>
-    tbody{
-        background:white;
+    tbody {
+        background: white;
     }
-    table{
-        width:100% !important;
+
+    table {
+        width: 100% !important;
     }
-    .table td, .table th {
+
+    .table td,
+    .table th {
         padding: 0.55rem !important;
         border-top: 1px solid #dee2e6;
         font-size: .85rem;
     }
+
     .table-striped tbody tr:nth-of-type(odd) {
         background-color: inherit !important;
     }
-    .table thead{
+
+    .table thead {
         background: #ededed;
     }
-    .table thead th{   
+
+    .table thead th {
         border-bottom: 1px solid #dee2e6 !important;
     }
-    .form-control{
+
+    .form-control {
         height: inherit !important;
         padding: 0.25rem 0.75rem !important;
     }
-    .content .container-fluid{
+
+    .content .container-fluid {
         background: white;
         padding: 10px;
         border-radius: 5px;
@@ -34,7 +42,7 @@
 </style>
 @section('content_header')
     <div class="row">
-        <h1 class="m-0 text-dark col">Courier Tracking</h1>  
+        <h1 class="m-0 text-dark col">Courier Tracking</h1>
     </div>
 @stop
 
@@ -119,6 +127,8 @@
                     columns: [{
                             data: 'awb_number',
                             name: 'awb_number',
+                            orderable: false,
+                            searchable: false
 
                         },
                         {
