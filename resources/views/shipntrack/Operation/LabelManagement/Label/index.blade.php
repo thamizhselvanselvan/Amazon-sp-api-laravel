@@ -268,8 +268,6 @@
                 {
                     data: 'order_no',
                     name: 'order_no',
-                    orderable: false,
-                    searchable: false
                 },
                 {
                     data: 'awb_no',
@@ -278,6 +276,8 @@
                 {
                     data: 'forwarder',
                     name: 'forwarder',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     data: 'order_date',
