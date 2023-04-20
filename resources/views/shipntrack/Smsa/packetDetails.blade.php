@@ -168,7 +168,7 @@
                             <div class="courier-activity">
                                 {{ $record['event_detail'] ?? ($record['update_description'] ?? $record['activity']) }}
                             </div>
-                            <div class="courier-location">{{ $record['location'] ?? $record['update_loaction'] }}</div>
+                            <div class="courier-location">{{ $record['location'] ?? $record['update_location'] }}</div>
                             <div class="courier-name">{{ $record['courier_name'] }}</div>
                         </li>
                     @endforeach
