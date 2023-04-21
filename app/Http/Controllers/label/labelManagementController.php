@@ -659,7 +659,8 @@ class labelManagementController extends Controller
             $qty = $request->input('qty');
 
             foreach ($qty as $key => $value) {
-                Label::where('order_item_id', $key)
+
+                Label::where('order_item_id', (string)$key)
                     ->update(['qty' => $value]);
             }
 

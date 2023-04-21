@@ -123,7 +123,7 @@ class ZohoOrderFormat
         ],
 
         "Amazon.ae-Al Hayba" => [
-            "IN" => "Al Hayba Store",
+            "AE" => "Al Hayba Store",
             "sku" => "AH_",
             "source" => "India",
             "destination" => "UAE"

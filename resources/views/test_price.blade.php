@@ -74,22 +74,27 @@
         let price = $('#price').val();
         let sku = $('#sku').val();
 
-        if (asin == '') {
+        if (store_select == 0) {
+            alert('store Required..!');
+            return false;
+        } else if (asin == '') {
             alert('ASIN Required..!');
             return false;
-        } else if (store_select == 0) {
-            alert('store_select Required..!');
+        } else if (sku == '') {
+            alert('sku Required..!');
             return false;
         } else if (price == '') {
             alert('price Required..!');
             return false;
         }
+        alert('Processing Please Wait..');
         let data = {
             "asin": asin,
             "store_select": store_select,
             "price": price,
             "product_sku": sku,
         };
+      
         $.ajax({
             url: "{{route('sanjay.test')}}",
             method: "get",

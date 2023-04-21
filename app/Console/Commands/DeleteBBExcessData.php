@@ -111,14 +111,25 @@ class DeleteBBExcessData extends Command
 
         foreach($arrs as $arr) {
 
-            $collecs[$tagger][] = [
+            $collecs[] = [
                 "asin" => $arr->asin,
                 "asin_exist_app360" => 1
             ];
+
             if($cnt == $total) {
-                $tagger++;
                 $cnt = 1;
                 print($tagger ."\n");
+
+
+                $this->info(endTime($start) . " Before Upsert");
+    
+                DB::connection('buybox')
+                ->table("product_aa_custom_p2_us_offers")
+                ->upsert($collecs, ["asin"], ["asin_exist_app360"]);
+    
+                $this->info(endTime($start) . " After Upsert");
+             
+                $collecs = [];
             }
 
             $cnt++;
@@ -127,16 +138,7 @@ class DeleteBBExcessData extends Command
         $this->info(endTime($start) . " JSON Loop Finished");
 
 
-        foreach($collecs as $collec) {
-
-            $this->info(endTime($start) . " Before Upsert");
-
-            DB::connection('buybox')
-            ->table("product_aa_custom_p1_us_offers")
-            ->upsert($collec, ["asin"], ["asin_exist_app360"]);
-
-            $this->info(endTime($start) . " After Upsert");
-        }
+        
 
         $this->info("Finished");
 
