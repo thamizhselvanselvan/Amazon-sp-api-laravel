@@ -660,8 +660,8 @@ class labelManagementController extends Controller
 
             foreach ($qty as $key => $value) {
 
-                Label::where('order_item_id', $key)
-                    ->update(['qty' => $value, 'updated_at' => now()]);
+                Label::where('order_item_id', (string)$key)
+                    ->update(['qty' => $value]);
             }
 
             $order = config('database.connections.order.database');
