@@ -595,29 +595,30 @@ class labelManagementController extends Controller
         $order = config('database.connections.order.database');
 
         $order_details = DB::select("SELECT 
-        seller_sku,order_item_identifier,
+        seller_sku,order_item_identifier,title,
         GROUP_CONCAT(DISTINCT shipping_address) as shipping_address
         from $order.orderitemdetails 
         WHERE amazon_order_identifier = '$order_id'
-        GROUP By order_item_identifier, seller_sku
+        GROUP By order_item_identifier, seller_sku,title
         ");
 
         $qty_details = Label::query()->where('order_no', $order_id)
             ->get(['order_no', 'order_item_id', 'qty'])
             ->toArray();
 
-
+        // po($order_details);
         $address = $order_details[0]->shipping_address;
         $sku = [];
-
+        $title = [];
         foreach ($order_details as $value) {
             $sku[$value->order_item_identifier] = $value->seller_sku;
+            $title[$value->order_item_identifier] = $value->title;
         }
 
         $shipping_address = $this->lableDataCleanup($address, 'address');
         $manage = json_decode($shipping_address, true);
 
-        return Response(['address' => $manage, 'qty' => $qty_details, 'sku' => $sku]);
+        return Response(['address' => $manage, 'qty' => $qty_details, 'sku' => $sku, 'title' => $title]);
     }
 
     public function updateOrderAddress(Request $request, $id)
@@ -667,6 +668,15 @@ class labelManagementController extends Controller
                         SET shipping_address = '$shipping_address'
                          WHERE amazon_order_identifier = '$id'
                         ");
+
+            $product_name = $request->input('title');
+            foreach ($product_name as $key => $title) {
+
+                DB::select("UPDATE  $order.orderitemdetails 
+                        SET title = '$title'
+                         WHERE order_item_identifier = '$key'
+                        ");
+            }
 
             Label::where('order_no', $id)
                 ->update(

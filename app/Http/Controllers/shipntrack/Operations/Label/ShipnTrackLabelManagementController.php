@@ -6,12 +6,14 @@ namespace App\Http\Controllers\shipntrack\Operations\Label;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\ShipNTrack\Operation\Label\ShipNTrackLabel;
+use App\Models\ShipNTrack\Operation\LabelMaster\LabelMaster;
 
 class ShipnTrackLabelManagementController extends Controller
 {
@@ -23,25 +25,39 @@ class ShipnTrackLabelManagementController extends Controller
     public function index(Request $request)
     {
 
+        $values = LabelMaster::select('id', 'source', 'destination')
+            ->groupBy('source', 'destination')
+            ->orderBy('id', 'ASC')
+            ->get()
+            ->toArray();
+
         if ($request->ajax()) {
 
             $records = DB::connection('shipntracking')->select("SELECT
-                GROUP_CONCAT(DISTINCT id)as id, order_no,
-                GROUP_CONCAT(DISTINCT order_item_id)as order_item_id,
-                GROUP_CONCAT(DISTINCT order_date)as order_date,
-                GROUP_CONCAT(DISTINCT customer_name)as customer_name,
-                GROUP_CONCAT(DISTINCT bag_no)as bag_no,
-                GROUP_CONCAT(DISTINCT awb_no)as awb_no,
-                GROUP_CONCAT(DISTINCT forwarder)as forwarder,
-                GROUP_CONCAT(DISTINCT order_date)as purchase_date,
-                GROUP_CONCAT(DISTINCT sku)as seller_sku
-                FROM labels        
-                GROUP BY order_no
+                GROUP_CONCAT(DISTINCT sntlabels.id)as id, order_no,
+                GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
+                GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
+                GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
+                GROUP_CONCAT(DISTINCT sntlabels.bag_no)as bag_no,
+                GROUP_CONCAT(DISTINCT sntlabels.awb_no)as awb_no,
+                GROUP_CONCAT(DISTINCT sntlabels.forwarder)as forwarder,
+                GROUP_CONCAT(DISTINCT sntlabels.order_date)as purchase_date,
+                GROUP_CONCAT(DISTINCT sntlabels.sku)as seller_sku,
+                GROUP_CONCAT(DISTINCT master.source)as source,
+                GROUP_CONCAT(DISTINCT master.destination)as destination
+                FROM labels as sntlabels
+                JOIN label_masters as master
+                ON sntlabels.mode=master.id
+                GROUP BY sntlabels.order_no,master.source,master.destination
                 ");
 
             return DataTables::of($records)
                 ->addColumn('select_all', function ($records) {
                     return "<input class='check_options' type='checkbox' value='$records->id' name='options[]' >";
+                })
+                ->addColumn('mode', function ($records) {
+                    $mode =  $records->source . '2' . $records->destination;
+                    return $mode;
                 })
                 ->addColumn('action', function ($records) {
                     $id = $records->id;
@@ -57,30 +73,32 @@ class ShipnTrackLabelManagementController extends Controller
                                 </div>";
                     return $action;
                 })
-                ->rawColumns(['select_all', 'action'])
+                ->rawColumns(['select_all', 'mode', 'action'])
                 ->make(true);
         }
-        return view('shipntrack.Operation.LabelManagement.Label.index');
+        return view('shipntrack.Operation.LabelManagement.Label.index', compact('values'));
     }
 
     public function FormSubmit(Request $request)
     {
         $info = $request->validate([
-            'order_no' => 'required',
+
+            'mode'          => 'required',
+            'order_no'      => 'required',
             'order_item_id' => 'required',
-            'bag_no' => 'required',
-            'forwarder' => 'required',
-            'awb_no' => 'required',
-            'order_date' => 'required',
+            'bag_no'        => 'required',
+            'forwarder'     => 'required',
+            'awb_no'        => 'required',
+            'order_date'    => 'required',
             'customer_name' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'county' => 'required',
-            'country' => 'required',
-            'phone' => 'required',
-            'product_name' => 'required',
-            'sku' => 'required',
-            'quantity' => 'required',
+            'address'       => 'required',
+            'city'          => 'required',
+            'county'        => 'required',
+            'country'       => 'required',
+            'phone'         => 'required',
+            'product_name'  => 'required',
+            'sku'           => 'required',
+            'quantity'      => 'required',
         ]);
 
         ShipNTrackLabel::upsert($info, ['order_item_bag_unique'], [
@@ -142,7 +160,7 @@ class ShipnTrackLabelManagementController extends Controller
         foreach ($records as $key => $record) {
 
             $generator = new BarcodeGeneratorPNG();
-            $bar_code[] = base64_encode($generator->getBarcode($record['awb_no'], $generator::TYPE_CODE_39));
+            $bar_code[] = base64_encode($generator->getBarcode($this->CleanupLabelData($record['awb_no'], 'awb'), $generator::TYPE_CODE_39));
         }
 
         return view('shipntrack.Operation.LabelManagement.Label.LabelPdfTemplate', compact('records', 'bar_code'));
@@ -151,22 +169,25 @@ class ShipnTrackLabelManagementController extends Controller
     public function ShipntrackLabelDataFormatting($label_id)
     {
         $label_records = DB::connection('shipntracking')->select("SELECT 
-                        GROUP_CONCAT(DISTINCT order_no)as order_no,
-                        GROUP_CONCAT(DISTINCT order_item_id)as order_item_id,
-                        GROUP_CONCAT(DISTINCT order_date)as order_date,
-                        GROUP_CONCAT(DISTINCT customer_name)as customer_name,
-                        GROUP_CONCAT(DISTINCT address)as address,
-                        GROUP_CONCAT(DISTINCT city)as city,
-                        GROUP_CONCAT(DISTINCT county)as county,
-                        GROUP_CONCAT(DISTINCT country)as country,
-                        GROUP_CONCAT(DISTINCT phone)as phone,
-                        GROUP_CONCAT(DISTINCT awb_no) as awb_no,
-                        GROUP_CONCAT(DISTINCT forwarder) as forwarder,
-                        GROUP_CONCAT(product_name SEPARATOR '-label-item-') as product_name,
-                        GROUP_CONCAT(sku SEPARATOR '-label-sku-') as sku,
-                        GROUP_CONCAT(quantity SEPARATOR '-label-qty-') as quantity
-                        from labels
-                        WHERE id IN($label_id)
+                        GROUP_CONCAT(DISTINCT sntlabels.order_no)as order_no,
+                        GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
+                        GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
+                        GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
+                        GROUP_CONCAT(DISTINCT sntlabels.address)as address,
+                        GROUP_CONCAT(DISTINCT sntlabels.city)as city,
+                        GROUP_CONCAT(DISTINCT sntlabels.county)as county,
+                        GROUP_CONCAT(DISTINCT sntlabels.country)as country,
+                        GROUP_CONCAT(DISTINCT sntlabels.phone)as phone,
+                        GROUP_CONCAT(DISTINCT sntlabels.awb_no) as awb_no,
+                        GROUP_CONCAT(DISTINCT sntlabels.forwarder) as forwarder,
+                        GROUP_CONCAT(sntlabels.product_name SEPARATOR '-label-item-') as product_name,
+                        GROUP_CONCAT(sntlabels.sku SEPARATOR '-label-sku-') as sku,
+                        GROUP_CONCAT(sntlabels.quantity SEPARATOR '-label-qty-') as quantity,
+                        GROUP_CONCAT(DISTINCT master.return_address)as return_address
+                        FROM labels as sntlabels
+                        JOIN label_masters as master
+                        ON sntlabels.mode=master.id
+                        WHERE sntlabels.id IN($label_id)
                         GROUP BY order_no
                         ");
 
@@ -195,6 +216,7 @@ class ShipnTrackLabelManagementController extends Controller
                 }
             }
         }
+
         return $records;
     }
 
@@ -213,7 +235,7 @@ class ShipnTrackLabelManagementController extends Controller
         $pdfPath = Storage::path($filePath);
 
         Browsershot::url($url)
-            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1-40')
             ->scale(1)
@@ -221,5 +243,13 @@ class ShipnTrackLabelManagementController extends Controller
             ->savePdf($pdfPath);
 
         return Storage::download($filePath);
+    }
+
+    public function CleanupLabelData($data, $type)
+    {
+        if ($type == 'awb') {
+            return preg_replace("/[^a-zA-Z0-9]/", "", strtoupper($data));
+        }
+        return $data;
     }
 }

@@ -26,17 +26,20 @@
 
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">
+                            <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home"
+                                type="button" role="tab" aria-controls="home" aria-selected="true">
                                 Address Edit
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">
+                            <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile"
+                                type="button" role="tab" aria-controls="profile" aria-selected="false">
                                 Tracking Details Edit
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">
+                            <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact"
+                                type="button" role="tab" aria-controls="contact" aria-selected="false">
                                 Quantity Edit
                             </button>
                         </li>
@@ -47,54 +50,63 @@
                         <input type="hidden" name="amazon_order_identifier" id="amazon_order_identifier">
                         @csrf
                         <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel"
+                                aria-labelledby="home-tab">
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="form-group">
                                             <strong>Name:</strong>
-                                            <input type="text" name="name" id="name" class="form-control" placeholder="Name" onchange="validate()">
+                                            <input type="text" name="name" id="name" class="form-control"
+                                                placeholder="Name" onchange="validate()">
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6">
                                         <div class="form-group">
                                             <strong>Phone:</strong>
-                                            <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone" onchange="validate()">
+                                            <input type="text" name="phone" id="phone" class="form-control"
+                                                placeholder="Phone" onchange="validate()">
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6">
                                         <div class="form-group">
                                             <strong>City:</strong>
-                                            <input type="text" name="city" id="city" class="form-control" placeholder="City" onchange="validate()">
+                                            <input type="text" name="city" id="city" class="form-control"
+                                                placeholder="City" onchange="validate()">
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6">
                                         <div class="form-group">
                                             <strong>County:</strong>
-                                            <input type="text" name="county" id="county" class="form-control" placeholder="County" onchange="validate()">
+                                            <input type="text" name="county" id="county" class="form-control"
+                                                placeholder="County" onchange="validate()">
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-6">
                                         <div class="form-group">
                                             <strong>CountryCode:</strong>
-                                            <input type="text" name="countryCode" id="countryCode" class="form-control" placeholder="CountryCode" onchange="validate()">
+                                            <input type="text" name="countryCode" id="countryCode"
+                                                class="form-control" placeholder="CountryCode" onchange="validate()">
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="form-group">
                                             <strong>AddressType:</strong>
-                                            <input type="text" name="addressType" id="addressType" class="form-control" placeholder="AddressType" onchange="validate()">
+                                            <input type="text" name="addressType" id="addressType"
+                                                class="form-control" placeholder="AddressType" onchange="validate()">
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="form-group">
                                             <strong>AddressLine1:</strong>
-                                            <textarea name="addressLine1" id="addressLine1" class="form-control" placeholder="AddressLine1" onchange="validate()"></textarea>
+                                            <textarea name="addressLine1" id="addressLine1" class="form-control" placeholder="AddressLine1"
+                                                onchange="validate()"></textarea>
                                         </div>
                                     </div>
                                     <div class="col-xs-12 col-sm-12 col-md-12">
                                         <div class="form-group">
                                             <strong>AddressLine2:</strong>
-                                            <textarea name="addressLine2" id="addressLine2" class="form-control" placeholder="AddressLine2" onchange="validate()"></textarea>
+                                            <textarea name="addressLine2" id="addressLine2" class="form-control" placeholder="AddressLine2"
+                                                onchange="validate()"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -105,13 +117,15 @@
                                     <div class="col-6">
                                         <div class="form-group">
                                             <strong>Forwarder:</strong>
-                                            <input name="forwarder" id="forwarder" class="form-control" placeholder="Forwarder" onchange="validate()"></input>
+                                            <input name="forwarder" id="forwarder" class="form-control"
+                                                placeholder="Forwarder" onchange="validate()"></input>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="form-group">
                                             <strong>Tracking Id:</strong>
-                                            <input name="tracking_id" id="tracking_id" class="form-control" placeholder="Trackin Id" onchange="validate()"></input>
+                                            <input name="tracking_id" id="tracking_id" class="form-control"
+                                                placeholder="Trackin Id" onchange="validate()"></input>
                                         </div>
                                     </div>
                                 </div>
@@ -123,7 +137,8 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                                <button type="submit" id="btn-update-order" name="btnsave" class="btn btn-primary">Update</button>
+                                <button type="submit" id="btn-update-order" name="btnsave"
+                                    class="btn btn-primary">Update</button>
                                 <a id="closemodal" class="btn btn-danger">Cancel</a>
                             </div>
                         </div>
@@ -154,7 +169,6 @@
         $('#spinner-container').show();
         $.get('/label/edit-order-address/' + amazon_order_identifier + '', function(details) {
 
-            console.log(details);
             let data = details.address;
             $('#order_item_identifier').val(order_item_identifier);
             $('#amazon_order_identifier').val(amazon_order_identifier);
@@ -176,6 +190,7 @@
 
             let qty_detials = details.qty;
             let sku = (details.sku);
+            let product_name = details.title;
 
             let dom = '<strong>Order Id: </strong>' + amazon_order_identifier;
             $.each(qty_detials, function(index, value) {
@@ -187,20 +202,33 @@
                 dom += "<div class='row'>";
                 dom += "<div class = 'col' >";
                 dom += "<div class = 'form-group' > ";
+                dom += "<strong> Product Name: </strong> ";
+                dom += "<input name = 'title[" + order_item_id +
+                    "]' id = ''  class = 'form-control' value = '" +
+                    product_name[order_item_id] + "'></input >";
+                dom += "</div></div></div>";
+
+                dom += "<div class='row'>";
+                dom += "<div class = 'col' >";
+                dom += "<div class = 'form-group' > ";
                 dom += "<strong> Order Item Id: </strong> ";
-                dom += "<input name = '' id = '' readonly='' class = 'form-control' value = '" + order_item_id + "'></input >";
+                dom += "<input name = '' id = '' readonly='' class = 'form-control' value = '" +
+                    order_item_id + "'></input >";
                 dom += "</div></div>";
 
                 dom += "<div class = 'col'>";
                 dom += "<div class = 'form-group' > ";
                 dom += "<strong> SKU: </strong> ";
-                dom += "<input name = 'sku' id = '' disabled='disabled' class = 'form-control' value ='" + sku[order_item_id] + "'></input >";
+                dom +=
+                    "<input name = 'sku' id = '' disabled='disabled' class = 'form-control' value ='" +
+                    sku[order_item_id] + "'></input >";
                 dom += "</div></div>";
 
                 dom += "<div class = 'col'>";
                 dom += "<div class = 'form-group'>";
                 dom += "<strong> Quantity: </strong>";
-                dom += "<input name = 'qty[" + order_item_id + "]' id = '' class = 'form-control' value ='" + qty + "'></input >";
+                dom += "<input name = 'qty[" + order_item_id +
+                    "]' id = '' class = 'form-control' value ='" + qty + "'></input >";
                 dom += "</div></div>";
                 dom += "</div>";
             });

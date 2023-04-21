@@ -337,7 +337,7 @@ Route::get('sanju/test/status', function () {
 });
 
 Route::get('sanju/bbcreds/count', function () {
-   
+
     $sources = ['in', 'us'];
     foreach ($sources as $source) {
         $value = Cache::get('creds_count');
@@ -364,9 +364,11 @@ Route::get('sanju/bbcreds/count', function () {
         po($count);
     }
 });
+
 route::get('sanju/feed/test', function () {
-    $feedback_id = 351275019465;
-    $store_id = 8;
+    // $feedback_id = 136083019467;
+    $feedback_id = 136164019468;
+    $store_id = 6;
 
     $country_code = 'IN';
 
@@ -376,9 +378,12 @@ route::get('sanju/feed/test', function () {
     if ($url) {
 
         $data = file_get_contents($url);
-       
+
         $data_json = json_decode(json_encode(simplexml_load_string($data)), true);
         po($data_json);
-     
     }
 });
+
+Route::get('price/push', 'SanjayTestController@pricepush')->name('sanjay.test');
+Route::get('availability/push', 'SanjayTestController@availability_push')->name('sanjay.availability');
+Route::get('price/feed/check/{feed_id}', 'SanjayTestController@feed_check')->name('sanjay.feed.test');

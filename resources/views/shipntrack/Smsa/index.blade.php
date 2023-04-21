@@ -1,23 +1,48 @@
 @extends('adminlte::page')
 
 @section('title', 'Courier Tracking')
+<style>
+    tbody {
+        background: white;
+    }
 
+    table {
+        width: 100% !important;
+    }
+
+    .table td,
+    .table th {
+        padding: 0.55rem !important;
+        border-top: 1px solid #dee2e6;
+        font-size: .85rem;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: inherit !important;
+    }
+
+    .table thead {
+        background: #ededed;
+    }
+
+    .table thead th {
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+
+    .form-control {
+        height: inherit !important;
+        padding: 0.25rem 0.75rem !important;
+    }
+
+    .content .container-fluid {
+        background: white;
+        padding: 10px;
+        border-radius: 5px;
+    }
+</style>
 @section('content_header')
     <div class="row">
         <h1 class="m-0 text-dark col">Courier Tracking</h1>
-        <h2 class="mb-4 text-right col">
-            <a href="{{ Route('shipntrack.smsa.upload') }}">
-                <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
-            </a>
-        </h2>
-    </div>
-    <div class="row">
-        <x-adminlte-select name="source_destination" id="sourceDestination">
-            <option>Select Option</option>
-            <option value="AE">AE</option>
-            <option value="IN">IN</option>
-            <option value="KSA">KSA</option>
-        </x-adminlte-select>
     </div>
 @stop
 
@@ -46,7 +71,18 @@
         </div>
     </div>
     <div class="pl-2">
-        <table class="table table-bordered yajra-datatable table-striped text-center" style="line-height:12px">
+        <h2 class="text-right col d-flex justify-content-end">
+            <x-adminlte-select name="source_destination" id="sourceDestination" class="mr-2">
+                <option>Select Option</option>
+                <option value="AE">AE</option>
+                <option value="IN">IN</option>
+                <option value="KSA">KSA</option>
+            </x-adminlte-select>
+            {{-- <a href="{{ Route('shipntrack.smsa.upload') }}">
+                <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />
+            </a> --}}
+        </h2>
+        <table class="table table-bordered yajra-datatable table-striped text-center">
             <thead>
                 <tr>
                     <th>AWB No.</th>
@@ -91,6 +127,8 @@
                     columns: [{
                             data: 'awb_number',
                             name: 'awb_number',
+                            orderable: false,
+                            searchable: false
 
                         },
                         {
