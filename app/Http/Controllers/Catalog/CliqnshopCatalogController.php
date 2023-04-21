@@ -178,8 +178,31 @@ class CliqnshopCatalogController extends Controller
         }
 
         $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
+
+        $current_time = Carbon::now()->toDateTimeString();
+        $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
+
         if (isset($country['0']->code)) {
             if (($country['0']->code) == 'in') {
+
+                //Error file
+                $filename = "public/Cliqnshop/IN/Text Area/Asin_Error_Report_IN_$time.txt";
+                if (!Storage::exists($filename)) {
+                    Storage::put($filename, '');
+                }
+                $exportFilePath = $filename;
+                $path = Storage::disk('local')->path($filename);
+                $file = fopen($path, 'w');
+
+                //Success file
+                $filename_s = "public/Cliqnshop/IN/Text Area/Asin_Success_Report_IN_$time.txt";
+                if (!Storage::exists($filename_s)) {
+                    Storage::put($filename_s, '');
+                }
+                $exportFilePath_s = $filename_s;
+                $path_s = Storage::disk('local')->path($filename_s);
+                $file_s = fopen($path_s, 'w');
+
         $headers = [
             'catalognewuss.asin',
             'catalognewuss.brand',
@@ -197,13 +220,44 @@ class CliqnshopCatalogController extends Controller
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
-            ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+            ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $asin)
             ->get()->toArray();
+
+            $check_result = $table_name->select($headers)
+            ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+            ->whereIn('catalognewuss.asin', $asin)
+            ->pluck('asin')->toArray();
+
+            $not_founds = array_diff($asin, $check_result);
+                
+            foreach ($not_founds as $not_found)
+            {
+                fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
+            }
     }
 }
         if (($country['0']->code) == 'uae') {
             if (isset($country['0']->code)) {
+
+                //Error file
+                $filename = "public/Cliqnshop/UAE/Text Area/Asin_Error_Report_UAE_$time.txt";
+                if (!Storage::exists($filename)) {
+                    Storage::put($filename, '');
+                }
+                $exportFilePath = $filename;
+                $path = Storage::disk('local')->path($filename);
+                $file = fopen($path, 'w');
+            
+                //Success file
+                $filename_s = "public/Cliqnshop/UAE/Text Area/Asin_Success_Report_UAE_$time.txt";
+                if (!Storage::exists($filename_s)) {
+                    Storage::put($filename_s, '');
+                }
+                $exportFilePath_s = $filename_s;
+                $path_s = Storage::disk('local')->path($filename_s);
+                $file_s = fopen($path_s, 'w');
+
         $headers = [
         'catalognewins.asin',
         'catalognewins.brand',
@@ -221,10 +275,25 @@ class CliqnshopCatalogController extends Controller
         
         $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
-        ->join('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-        ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+        ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+        ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
         ->whereIn('catalognewins.asin', $asin)
         ->get()->toArray();
+
+        $check_result = $table_name->select($headers)
+        ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+        ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+        ->whereIn('catalognewins.asin', $asin)
+        ->pluck('asin')->toArray();
+
+
+        $not_founds = array_diff($asin, $check_result);
+            
+        foreach ($not_founds as $not_found)
+        {
+            fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
+        }
+
         }
         }
 
@@ -403,6 +472,76 @@ class CliqnshopCatalogController extends Controller
             $editor = 'app360';
             $display_code = 1;
             $insert_service = new CliqnshopCataloginsert();
+            if ($category_code == 'demo-new')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Category Not Found. So Imported in New Arrival Category'. "\n");
+            }
+            else {
+                $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
+                if (!isset($catogory_data[0]))
+                {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database. So Imported in New Arrival Category'. "\n");
+                }
+            }
+            if ($item_name == '')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Product Name not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Product Name not found, So Imported with Disable Status'. "\n"); 
+            }
+            if ($brand_label == ' ')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Brand not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Brand'. "\n");
+            }
+            if ($label == '')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Colour not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Colour'. "\n");
+            }
+            if ($length_unit  == '' && $length_value == '')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Length not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Length'. "\n");
+            }
+            if ($width_unit  == '' && $width_value == '')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Width not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Width'. "\n");
+            }
+            if ($Price_US_IN == [] || $Price_US_IN == '0' || $Price_US_IN == '')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Price not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Price not found, So Imported with Disable Status'. "\n");
+            }
+            $required = ['Images1','Images2','Images3','Images4','Images5','Images6','Images7','Images8','Images9','Images10'];
+            if (count(array_intersect_key(array_flip($required), $image[$asin])) === count($required)) {
+                if ($image[$asin]['Images1'] == '' && 
+             $image[$asin]['Images2'] == '' && 
+             $image[$asin]['Images3'] == '' && 
+             $image[$asin]['Images4'] == '' && 
+             $image[$asin]['Images5'] == '' && 
+             $image[$asin]['Images6'] == '' && 
+             $image[$asin]['Images7'] == '' && 
+             $image[$asin]['Images8'] == '' && 
+             $image[$asin]['Images9'] == '' && 
+             $image[$asin]['Images10'] == '')
+             {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Image not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Image not found, So Imported with Disable Status'. "\n");
+             }
+            }
+            if ($long_description == '')
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Description not found, So Imported with Disable Status'. "\n");
+            }
+            if ($generic_keywords == '' || $generic_keywords == [])
+            {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Generic Keywords not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Generic Keywords'. "\n");
+            }
             $insert_service->insertdata_cliqnshop(
                 $site_id,
                 $category_code,
@@ -425,8 +564,64 @@ class CliqnshopCatalogController extends Controller
                 $editor,
                 $display_code
             );
-        }
 
+            if ($item_name !== '')
+            {
+             if ($brand_label !== ' ')
+             {
+                 if ($generic_keywords !== '' || $generic_keywords !== [])
+                 {
+                     if ($label !== '')
+                     {
+                         if ($length_unit  !== '' && $length_value !== '')
+                         {
+                             if ($width_unit  !== '' && $width_value !== '')
+                             {
+                                if ($Price_US_IN !== [] || $Price_US_IN !== '0' || $Price_US_IN !== '')
+                                {
+                                 if ($long_description !== '')
+                                 {
+                                     if ($category_code !== 'demo-new')
+                                     {
+                                         $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
+                                         if (isset($catogory_data[0]))
+                                         {
+                                 
+                                             if ($image[$asin]['Images1'] !== '' ||
+                                          $image[$asin]['Images2'] !== '' || 
+                                          $image[$asin]['Images3'] !== '' || 
+                                          $image[$asin]['Images4'] !== '' || 
+                                          $image[$asin]['Images5'] !== '' || 
+                                          $image[$asin]['Images6'] !== '' || 
+                                          $image[$asin]['Images7'] !== '' || 
+                                          $image[$asin]['Images8'] !== '' || 
+                                          $image[$asin]['Images9'] !== '' || 
+                                          $image[$asin]['Images10'] !== '')
+                                          {
+                                         fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Successfully Imported'. "\n");
+                                          }
+                                         }
+                                     }
+                                 }
+                                }
+                             }
+                         }
+                     }
+                 }
+             }
+            }
+
+        }
+        
+        fclose($file);
+        fclose($file_s);
+
+        $url = Storage::url($exportFilePath);
+        $slackMessage = config('app.url').$url;
+        $url_s = Storage::url($exportFilePath_s);
+        $slackMessage_s = config('app.url').$url_s;
+        slack_notification('aimeos', 'Product Import From Text Area Error Report testing', $slackMessage);
+        slack_notification('aimeos', 'Product Import From Text Area Sucsess Report testing', $slackMessage_s);
         return back()->with('success', 'uploading please wait... !');
     }
 
