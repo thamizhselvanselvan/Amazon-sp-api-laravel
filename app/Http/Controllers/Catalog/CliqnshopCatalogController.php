@@ -186,7 +186,7 @@ class CliqnshopCatalogController extends Controller
             if (($country['0']->code) == 'in') {
 
                 //Error file
-                $filename = "public/Cliqnshop/IN/Text Area/Asin_Error_Report_IN_$time.txt";
+                $filename = "public/Cliqnshop/IN/Text_Area/Asin_Error_Report_IN_$time.txt";
                 if (!Storage::exists($filename)) {
                     Storage::put($filename, '');
                 }
@@ -195,7 +195,7 @@ class CliqnshopCatalogController extends Controller
                 $file = fopen($path, 'w');
 
                 //Success file
-                $filename_s = "public/Cliqnshop/IN/Text Area/Asin_Success_Report_IN_$time.txt";
+                $filename_s = "public/Cliqnshop/IN/Text_Area/Asin_Success_Report_IN_$time.txt";
                 if (!Storage::exists($filename_s)) {
                     Storage::put($filename_s, '');
                 }
@@ -241,7 +241,7 @@ class CliqnshopCatalogController extends Controller
             if (isset($country['0']->code)) {
 
                 //Error file
-                $filename = "public/Cliqnshop/UAE/Text Area/Asin_Error_Report_UAE_$time.txt";
+                $filename = "public/Cliqnshop/UAE/Text_Area/Asin_Error_Report_UAE_$time.txt";
                 if (!Storage::exists($filename)) {
                     Storage::put($filename, '');
                 }
@@ -250,7 +250,7 @@ class CliqnshopCatalogController extends Controller
                 $file = fopen($path, 'w');
             
                 //Success file
-                $filename_s = "public/Cliqnshop/UAE/Text Area/Asin_Success_Report_UAE_$time.txt";
+                $filename_s = "public/Cliqnshop/UAE/Text_Area/Asin_Success_Report_UAE_$time.txt";
                 if (!Storage::exists($filename_s)) {
                     Storage::put($filename_s, '');
                 }
