@@ -1115,10 +1115,24 @@ return [
                     'submenu' =>
                     [
                         [
-                            'text' => 'Label',
-                            'url' => 'shipntrack/label',
+                            'text' => 'Label Management',
                             'can' => ['Admin'],
                             'icon' => 'fa fa-tag',
+                            'submenu' => [
+
+                                [
+                                    'text' => 'Master',
+                                    'url' => 'shipntrack/label/master',
+                                    'can' => ['Admin'],
+                                    'icon' => 'fa fa-tag',
+                                ],
+                                [
+                                    'text' => 'Label',
+                                    'url' => 'shipntrack/label',
+                                    'can' => ['Admin'],
+                                    'icon' => 'fa fa-tag',
+                                ]
+                            ]
                         ],
                         [
                             'text' => 'Invoice',
