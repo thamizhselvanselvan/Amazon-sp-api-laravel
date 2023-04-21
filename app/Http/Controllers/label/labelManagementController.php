@@ -659,8 +659,9 @@ class labelManagementController extends Controller
             $qty = $request->input('qty');
 
             foreach ($qty as $key => $value) {
+
                 Label::where('order_item_id', $key)
-                    ->update(['qty' => $value]);
+                    ->update(['qty' => $value, 'updated_at' => now()]);
             }
 
             $order = config('database.connections.order.database');
