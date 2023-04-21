@@ -1479,6 +1479,28 @@ return [
                     'icon' => 'far fa fa-server',
 
                 ],
+                [
+                    'text' => 'Amazon Push Test',
+                    'url' => 'price/push',
+                    'can' => ['Admin'],
+                    'icon' => 'far fa fa-wrench',
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Price Push',
+                            'url' => 'price/push',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-money',
+                        ],
+                        [
+                            'text' => 'Availability Push',
+                            'url' => 'availability/push',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-bars',
+                        ],
+                    ],
+
+                ],
             ],
         ],
 
