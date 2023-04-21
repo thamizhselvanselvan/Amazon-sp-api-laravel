@@ -14,7 +14,7 @@
     .table th {
         padding: 0.55rem !important;
         border-top: 1px solid #dee2e6;
-        font-size: .85rem;
+        font-size: 1rem;
     }
 
     .table-striped tbody tr:nth-of-type(odd) {
