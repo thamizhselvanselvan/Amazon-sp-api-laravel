@@ -123,12 +123,12 @@ class catalog_upload_to_cliqnshop extends Command
 
         $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
         $result = $table_name->select($headers)
-            ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+            ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $a)
             ->get()->toArray();
 
             $check_result = $table_name->select($headers)
-            ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+            ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
             ->whereIn('catalognewuss.asin', $a)
             ->pluck('asin')->toArray();
 
@@ -158,34 +158,20 @@ class catalog_upload_to_cliqnshop extends Command
             
             ];
 
-            $check_headers = [
-                'catalognewins.asin',
-                'catalognewins.brand',
-                'catalognewins.images',
-                'catalognewins.item_name',
-                // 'catalognewuss.browse_classification',
-                'catalognewins.dimensions',
-                'catalognewins.attributes',
-                'catalognewins.color',
-                // 'pricing_ins.usa_to_in_b2c',
-                // 'pricing_ins.us_price',
-                'pricing_ins.ind_to_uae',
-                
-                ];
             
             $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
             $result = $table_name->select($headers)
-            ->join('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-            ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+            ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+            ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
             ->whereIn('catalognewins.asin', $a)
             ->get()->toArray();
 
-            
-
-            $check_result = $table_name->select($check_headers)
-            ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+            $check_result = $table_name->select($headers)
+            ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+            ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
             ->whereIn('catalognewins.asin', $a)
             ->pluck('asin')->toArray();
+
 
             $not_founds = array_diff($a, $check_result);
                 
@@ -411,11 +397,13 @@ class catalog_upload_to_cliqnshop extends Command
             if ($category_code == 'demo-new')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category not found'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Category Not Found. So Imported in New Arrival Category'. "\n");
             }
             else {
                 $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
                 if (!isset($catogory_data[0]))
                 {
+                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database'. "\n");
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database. So Imported in New Arrival Category'. "\n");
                 }
             }
