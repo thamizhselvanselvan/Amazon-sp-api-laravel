@@ -12,22 +12,41 @@
         }
 
         .side-nav {
-            box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .light-close-bg {
             position: fixed;
             top: 0;
-            right: 0;
-            background: white;
-            overflow-y: auto;
+            left: 0;
             height: 100vh;
-            display: none;
+            width: 100vw;
+            background: rgba(0, 0, 0, .4);
+            ;
             z-index: 1100;
-            padding: 10px 40px;
+        }
+
+        .form-section {
+            background: white;
+            position: absolute;
+            top: 57px;
+            right: 0;
+            width: 50%;
+            padding: 10px;
+            overflow-y: auto;
+            z-index: 1100;
+            z-index: 1100;
+            padding: 10px;
         }
 
         .shipNtrack-grid-form {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             grid-gap: 10px;
+        }
+
+        .submit-button {
+            margin-top: 31px;
         }
     </style>
 @stop
@@ -67,108 +86,123 @@
     </div>
 
     <div class="side-nav">
-        <a class="close"><i class="fa fa-times" aria-hidden="true"></i></a>
-        <h5 class="text-center mb-4">ShipNTrack Label Management</h5>
+        <div class="light-close-bg"></div>
+        <div class="form-section">
+            <a class="close"><i class="fa fa-times" aria-hidden="true"></i></a>
+            <h5 class="text-center mb-4 font-weight-bold">ShipNTrack Label Management</h5>
 
-        <form action="{{ route('shipntrack.label.submit') }}" method="POST" class="shipNtrack-grid-form">
-            @csrf
+            <form action="{{ route('shipntrack.label.submit') }}" method="POST" class="shipNtrack-grid-form">
+                @csrf
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Order Number" type="text" name="order_no" id="order_no"
-                    placeholder="Order Number" onblur="validate(1)" />
-            </div>
+                    <x-adminlte-select class="mb-0 px-3" label="Choose Mode" type="text" name="mode" id="mode"
+                        onblur="validate(1)">
+                        <option value="">Select Mode</option>
+                        @foreach ($values as $value)
+                            <option value="{{ $value['id'] }}">{{ $value['source'] . '2' . $value['destination'] }}
+                            </option>
+                        @endforeach
+                    </x-adminlte-select>
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Order Item Number" type="text" name="order_item_id"
-                    id="order_item_id" placeholder="Order Item Number" onblur="validate(2)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Order Number" type="text" name="order_no" id="order_no"
+                        placeholder="Order Number" onblur="validate(2)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Bag No." type="text" name="bag_no" id="bag_no"
-                    placeholder="Bag No." onblur="validate(3)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Order Item Number" type="text" name="order_item_id"
+                        id="order_item_id" placeholder="Order Item Number" onblur="validate(3)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Forwarder Name" type="text" name="forwarder" id="forwarder"
-                    placeholder="Forwarder Name" onblur="validate(4)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Bag No." type="text" name="bag_no" id="bag_no"
+                        placeholder="Bag No." onblur="validate(4)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="AWB No." type="text" name="awb_no" id="awb_no"
-                    placeholder="AWB No." onblur="validate(5)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Forwarder Name" type="text" name="forwarder"
+                        id="forwarder" placeholder="Forwarder Name" onblur="validate(5)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Order Date" type="date" name="order_date" id="order_date"
-                    placeholder="Order Date" min="1997-01-01" max="2030-12-31" onblur="validate(6)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="AWB No." type="text" name="awb_no" id="awb_no"
+                        placeholder="AWB No." onblur="validate(6)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Customer Name" type="text" name="customer_name"
-                    id="customer_name" placeholder="Customer Name" onblur="validate(7)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Order Date" type="date" name="order_date" id="order_date"
+                        placeholder="Order Date" min="1997-01-01" max="2030-12-31" onblur="validate(7)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Address" type="text" name="address" id="address"
-                    placeholder="Address" onblur="validate(8)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Customer Name" type="text" name="customer_name"
+                        id="customer_name" placeholder="Customer Name" onblur="validate(8)" />
+                </div>
+
+                <div>
+
+                    <x-adminlte-input class="mb-0 px-3" label="Address" type="text" name="address" id="address"
+                        placeholder="Address" onblur="validate(9)" />
+                </div>
 
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="City" type="text" name="city" id="city"
-                    placeholder="City" onblur="validate(9)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="City" type="text" name="city" id="city"
+                        placeholder="City" onblur="validate(10)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="County" type="text" name="county" id="county"
-                    placeholder="County" onblur="validate(10)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="County" type="text" name="county" id="county"
+                        placeholder="County" onblur="validate(11)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Country" name="country" id="country" placeholder="Country"
-                    onblur="validate(11)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Country" name="country" id="country"
+                        placeholder="Country" onblur="validate(12)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Phone" type="text" name="phone" id="phone"
-                    placeholder="Phone" onblur="validate(12)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Phone" type="text" name="phone" id="phone"
+                        placeholder="Phone" onblur="validate(13)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Product Name" type="text" name="product_name"
-                    id="product_name" placeholder="Product Name" onblur="validate(13)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Product Name" type="text" name="product_name"
+                        id="product_name" placeholder="Product Name" onblur="validate(14)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="SKU" name="sku" id="sku" placeholder="SKU"
-                    onblur="validate(14)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="SKU" name="sku" id="sku" placeholder="SKU"
+                        onblur="validate(15)" />
+                </div>
 
-            <div>
+                <div>
 
-                <x-adminlte-input class="mb-0 px-3" label="Quantity" name="quantity" id="quantity"
-                    placeholder="Quantity" onblur="validate(15)" />
-            </div>
+                    <x-adminlte-input class="mb-0 px-3" label="Quantity" name="quantity" id="quantity"
+                        placeholder="Quantity" onblur="validate(16)" />
+                </div>
 
-            <div>
-                <x-adminlte-button label="Submit" type="submit" theme="primary" />
-            </div>
-        </form>
+                <div class="submit-button">
+                    <x-adminlte-button label="Submit" type="submit" theme="primary" class="btn btn-md" />
+                </div>
+            </form>
 
+        </div>
     </div>
 
     <div class="row ">
@@ -187,6 +221,7 @@
 
         <thead class="table-info">
             <th>Select All <input type='checkbox' id='select_all'></th>
+            <th>Mode</th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
@@ -203,10 +238,10 @@
     <script>
         $(document).ready(function() {
             $(document).on('click', '.add', function() {
-                $('.side-nav').show(1000);
+                $('.side-nav').show();
             });
-            $(document).on('click', '.close', function() {
-                $('.side-nav').hide(1000);
+            $(document).on('click', '.close,.light-close-bg', function() {
+                $('.side-nav').hide();
             });
         });
 
@@ -225,10 +260,14 @@
                     searchable: false
                 },
                 {
+                    data: 'mode',
+                    name: 'mode',
+                    orderable: false,
+                    searchable: false,
+                },
+                {
                     data: 'order_no',
                     name: 'order_no',
-                    orderable: false,
-                    searchable: false
                 },
                 {
                     data: 'awb_no',
@@ -237,6 +276,8 @@
                 {
                     data: 'forwarder',
                     name: 'forwarder',
+                    orderable: false,
+                    searchable: false,
                 },
                 {
                     data: 'order_date',
@@ -267,21 +308,22 @@
         });
 
         function validate(val) {
-            v1 = document.getElementById("order_no");
-            v2 = document.getElementById("order_item_id");
-            v3 = document.getElementById("bag_no");
-            v4 = document.getElementById("forwarder");
-            v5 = document.getElementById("awb_no");
-            v6 = document.getElementById("order_date");
-            v7 = document.getElementById("customer_name");
-            v8 = document.getElementById("address");
-            v9 = document.getElementById("city");
-            v10 = document.getElementById("county");
-            v11 = document.getElementById("country");
-            v12 = document.getElementById("phone");
-            v13 = document.getElementById("product_name");
-            v14 = document.getElementById("sku");
-            v15 = document.getElementById("quantity");
+            v1 = document.getElementById("mode");
+            v2 = document.getElementById("order_no");
+            v3 = document.getElementById("order_item_id");
+            v4 = document.getElementById("bag_no");
+            v5 = document.getElementById("forwarder");
+            v6 = document.getElementById("awb_no");
+            v7 = document.getElementById("order_date");
+            v8 = document.getElementById("customer_name");
+            v9 = document.getElementById("address");
+            v10 = document.getElementById("city");
+            v11 = document.getElementById("county");
+            v12 = document.getElementById("country");
+            v13 = document.getElementById("phone");
+            v14 = document.getElementById("product_name");
+            v15 = document.getElementById("sku");
+            v16 = document.getElementById("quantity");
 
             flag1 = true;
             flag2 = true;
@@ -298,6 +340,7 @@
             flag13 = true;
             flag14 = true;
             flag15 = true;
+            flag16 = true;
 
             if (val >= 1 || val == 0) {
                 if (v1.value == "") {
@@ -437,9 +480,18 @@
                     flag15 = true;
                 }
             }
+            if (val >= 16 || val == 0) {
+                if (v16.value == "") {
+                    v16.style.borderColor = "red";
+                    flag16 = false;
+                } else {
+                    v16.style.borderColor = "green";
+                    flag16 = true;
+                }
+            }
 
             flag = flag1 && flag2 && flag3 && flag4 && flag5 && flag6 && flag7 && flag8 && flag9 && flag10 && flag11 &&
-                flag12 && flag13 && flag14 && flag15;
+                flag12 && flag13 && flag14 && flag15 && flag16;
 
             return flag;
         }
@@ -485,5 +537,5 @@
         });
     </script>
 
-    @include('shipntrack.Operation.Label.edit_label_page')
+    @include('shipntrack.Operation.LabelManagement.Label.edit_label_page')
 @stop
