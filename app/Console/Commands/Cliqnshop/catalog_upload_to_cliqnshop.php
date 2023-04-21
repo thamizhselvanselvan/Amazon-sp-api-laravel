@@ -457,7 +457,7 @@ class catalog_upload_to_cliqnshop extends Command
             if ($long_description == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Description not found, So Imported with Disable Status'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Description'. "\n");
             }
             if ($generic_keywords == '' || $generic_keywords == [])
             {
