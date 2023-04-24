@@ -3,7 +3,7 @@
 namespace App\Services\ShipNTrack\Tracking;
 
 use Illuminate\Support\Facades\Http;
-use App\Models\ShipNTrack\Bombino\BombinoTracking;
+use App\Models\ShipNTrack\CourierTracking\BombinoTracking;
 
 class BombinoTrackingAPI
 {
