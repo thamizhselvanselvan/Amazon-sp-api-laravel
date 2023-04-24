@@ -23,7 +23,7 @@ class catalog_upload_to_cliqnshop extends Command
      *
      * @var string
      */
-    protected $description = 'Fetch ASIN Details From CatalogUSS table And Insert TO Cliqnsqhop Table';
+    protected $description = 'Fetch ASIN Details From catalognewuss/catalognewins table And Insert TO Cliqnsqhop Table';
 
     /**
      * Create a new command instance.
