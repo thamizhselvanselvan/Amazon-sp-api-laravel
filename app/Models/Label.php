@@ -8,14 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Label extends Model
 {
     use HasFactory;
+
     protected $table = 'labels';
     protected $fillable = [
         'status',
         'order_no',
+        'order_item_id',
         'awb_no',
         'inward_awb',
         'bag_no',
         'forwarder',
+        'qty',
         'detect_language'
     ];
 

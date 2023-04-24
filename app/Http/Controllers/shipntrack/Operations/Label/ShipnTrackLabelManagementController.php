@@ -34,22 +34,30 @@ class ShipnTrackLabelManagementController extends Controller
         if ($request->ajax()) {
 
             $records = DB::connection('shipntracking')->select("SELECT
-                GROUP_CONCAT(DISTINCT id)as id, order_no,
-                GROUP_CONCAT(DISTINCT order_item_id)as order_item_id,
-                GROUP_CONCAT(DISTINCT order_date)as order_date,
-                GROUP_CONCAT(DISTINCT customer_name)as customer_name,
-                GROUP_CONCAT(DISTINCT bag_no)as bag_no,
-                GROUP_CONCAT(DISTINCT awb_no)as awb_no,
-                GROUP_CONCAT(DISTINCT forwarder)as forwarder,
-                GROUP_CONCAT(DISTINCT order_date)as purchase_date,
-                GROUP_CONCAT(DISTINCT sku)as seller_sku
-                FROM labels        
-                GROUP BY order_no
+                GROUP_CONCAT(DISTINCT sntlabels.id)as id, order_no,
+                GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
+                GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
+                GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
+                GROUP_CONCAT(DISTINCT sntlabels.bag_no)as bag_no,
+                GROUP_CONCAT(DISTINCT sntlabels.awb_no)as awb_no,
+                GROUP_CONCAT(DISTINCT sntlabels.forwarder)as forwarder,
+                GROUP_CONCAT(DISTINCT sntlabels.order_date)as purchase_date,
+                GROUP_CONCAT(DISTINCT sntlabels.sku)as seller_sku,
+                GROUP_CONCAT(DISTINCT master.source)as source,
+                GROUP_CONCAT(DISTINCT master.destination)as destination
+                FROM labels as sntlabels
+                JOIN label_masters as master
+                ON sntlabels.mode=master.id
+                GROUP BY sntlabels.order_no,master.source,master.destination
                 ");
 
             return DataTables::of($records)
                 ->addColumn('select_all', function ($records) {
                     return "<input class='check_options' type='checkbox' value='$records->id' name='options[]' >";
+                })
+                ->addColumn('mode', function ($records) {
+                    $mode =  $records->source . '2' . $records->destination;
+                    return $mode;
                 })
                 ->addColumn('action', function ($records) {
                     $id = $records->id;
@@ -65,7 +73,7 @@ class ShipnTrackLabelManagementController extends Controller
                                 </div>";
                     return $action;
                 })
-                ->rawColumns(['select_all', 'action'])
+                ->rawColumns(['select_all', 'mode', 'action'])
                 ->make(true);
         }
         return view('shipntrack.Operation.LabelManagement.Label.index', compact('values'));
