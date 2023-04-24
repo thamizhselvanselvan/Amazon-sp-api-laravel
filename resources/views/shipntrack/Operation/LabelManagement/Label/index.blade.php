@@ -82,7 +82,7 @@
     </div>
 
     <div class="d-flex justify-content-end my-3">
-        <x-adminlte-button theme="primary" label="Add" icon="fa fa-plus-circle" class="add" />
+        <x-adminlte-button theme="primary" label="Add Records" icon="fa fa-plus-circle" class="add" />
     </div>
 
     <div class="side-nav">
