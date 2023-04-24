@@ -23,7 +23,7 @@ class catalog_upload_to_cliqnshop extends Command
      *
      * @var string
      */
-    protected $description = 'Fetch ASIN Details From CatalogUSS table And Insert TO Cliqnsqhop Table';
+    protected $description = 'Fetch ASIN Details From catalognewuss/catalognewins table And Insert TO Cliqnsqhop Table';
 
     /**
      * Create a new command instance.
@@ -457,7 +457,7 @@ class catalog_upload_to_cliqnshop extends Command
             if ($long_description == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Description not found, So Imported with Disable Status'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Description'. "\n");
             }
             if ($generic_keywords == '' || $generic_keywords == [])
             {
