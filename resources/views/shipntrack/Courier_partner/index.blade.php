@@ -56,29 +56,29 @@
         </div>
     </div>
     <!-- <div class="pl-2">
-                    <form action="{{ route('snt.courier.index') }}" class="ml-4 mt-1 mr-4" method='post'>
-                        @csrf
-                        <div class="row">
-                            <div class="col">
-                                <x-adminlte-input label="Courier Name" name="c_name" type="text" placeholder="Courier Name" />
+                        <form action="{{ route('snt.courier.index') }}" class="ml-4 mt-1 mr-4" method='post'>
+                            @csrf
+                            <div class="row">
+                                <div class="col">
+                                    <x-adminlte-input label="Courier Name" name="c_name" type="text" placeholder="Courier Name" />
+                                </div>
+                                <div class="col">
+                                    <x-adminlte-input label="Source" name="source" type="text" placeholder="Source" />
+                                </div>
+                                <div class="col">
+                                    <x-adminlte-input label="Destinatioin" name="destination" type="text" placeholder="Destination" />
+                                </div>
+                                <div class="col">
+                                    <x-adminlte-input label="Code" name="code" type="text" placeholder="Code" />
+                                </div>
                             </div>
-                            <div class="col">
-                                <x-adminlte-input label="Source" name="source" type="text" placeholder="Source" />
+                            <div class="row">
+                                <div class="col text-right">
+                                    <x-adminlte-button label="Add New" class='btn-sm' icon='fas fa-plus' type="submit" theme='primary' />
+                                </div>
                             </div>
-                            <div class="col">
-                                <x-adminlte-input label="Destinatioin" name="destination" type="text" placeholder="Destination" />
-                            </div>
-                            <div class="col">
-                                <x-adminlte-input label="Code" name="code" type="text" placeholder="Code" />
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col text-right">
-                                <x-adminlte-button label="Add New" class='btn-sm' icon='fas fa-plus' type="submit" theme='primary' />
-                            </div>
-                        </div>
-                    </form>
-                </div> -->
+                        </form>
+                    </div> -->
 
     <div class="pl-2 pt-1">
         <table class="table table-bordered yajra-datatable table-striped table-sm ">
@@ -127,8 +127,6 @@
                     {
                         data: 'user_name',
                         name: 'user_name',
-                        orderable: false,
-                        searchable: false
                     },
                     {
                         data: 'courier_name',

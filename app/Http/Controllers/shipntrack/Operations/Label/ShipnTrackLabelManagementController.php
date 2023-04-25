@@ -61,7 +61,7 @@ class ShipnTrackLabelManagementController extends Controller
                 })
                 ->addColumn('action', function ($records) {
                     $id = $records->id;
-                    $action = "<div class='d-flex'>
+                    $action = "<div class='d-flex justify-content-center'>
                                     <a href='/shipntrack/label/template/$id 'class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                         <i class='fas fa-eye'></i> View 
                                     </a>
