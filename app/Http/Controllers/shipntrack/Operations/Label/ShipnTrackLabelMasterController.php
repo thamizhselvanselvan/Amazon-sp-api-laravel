@@ -42,7 +42,7 @@ class ShipnTrackLabelMasterController extends Controller
         ];
 
         file_put_contents("image/$file_name", file_get_contents($request->logo));
-        LabelMaster::create($master_records, ['source_destination_unique'], [
+        LabelMaster::upsert($master_records, ['source_destination_unique'], [
             'source',
             'destination',
             'file_path',
