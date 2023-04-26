@@ -39,7 +39,7 @@
                                     required />
 
                                 <x-adminlte-input label="Upload Logo" type="file" name="logo" igroup-size="md"
-                                    placeholder="Choose a file..." fgroup-class="col-md-12" required>
+                                    placeholder="Choose a file..." fgroup-class="col-md-12">
                                     <x-slot name="prependSlot">
                                         <div class="input-group-text bg-lightblue">
                                             <i class="fas fa-upload"></i>

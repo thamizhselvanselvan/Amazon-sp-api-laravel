@@ -22,8 +22,12 @@ class ShipnTrackLabelMasterController extends Controller
 
             return DataTables::of($label_masters)
                 ->editColumn('logo', function ($label_masters) {
+
                     $img = $label_masters['file_path'];
-                    return "<img src='/image/$img' class='img-fluid' alt=$img style='height:30px; width:30px'>";
+                    if (!empty($img)) {
+
+                        return "<img src='/image/$img' class='img-fluid' alt=$img style='height:30px; width:30px'>";
+                    }
                 })
                 ->rawColumns(['logo'])
                 ->make(true);
@@ -33,15 +37,18 @@ class ShipnTrackLabelMasterController extends Controller
 
     public function LabelMasterFormSubmit(Request $request)
     {
-        $file_name = $request->file('logo')->getClientOriginalName();
+
+        $file_name = $request->logo != '' ? $request->file('logo')->getClientOriginalName() : NULL;
         $master_records = [
             'source'            => $request->source,
             'destination'       => $request->destination,
-            'file_path'              => $file_name,
+            'file_path'         => $file_name,
             'return_address'    => $request->return_address
         ];
+        if ($request->logo != '') {
 
-        file_put_contents("image/$file_name", file_get_contents($request->logo));
+            file_put_contents("image/$file_name", file_get_contents($request->logo));
+        }
         LabelMaster::upsert($master_records, ['source_destination_unique'], [
             'source',
             'destination',
