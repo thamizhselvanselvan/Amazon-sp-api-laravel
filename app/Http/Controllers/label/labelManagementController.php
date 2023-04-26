@@ -673,8 +673,9 @@ class labelManagementController extends Controller
             $product_name = $request->input('title');
             foreach ($product_name as $key => $title) {
 
+                $item_title = htmlspecialchars($title);
                 DB::select("UPDATE  $order.orderitemdetails 
-                        SET title = '$title'
+                        SET title = '$item_title'
                          WHERE order_item_identifier = '$key'
                         ");
             }

@@ -132,10 +132,10 @@ Route::get('cliqnshop/brand/missing/{site_id}', 'Cliqnshop\MissingCatalogDetails
 Route::get('cliqnshop/category/missing', 'Cliqnshop\MissingCatalogDetailsController@category_missing_index')->name('cliqnshop.category.missing');
 Route::get('cliqnshop/category/missing/{site_id}', 'Cliqnshop\MissingCatalogDetailsController@category_missing_index')->name('cliqnshop.category.missing');
 
-Route::get('product/test', function () {
-  // $data[] = $key;
-  $searchKey = 'notebook';
-  $ApiCall = new Search_Product();
-  $result = $ApiCall->SearchProductByKey($searchKey);
-});
+// Route::get('product/test', function () {
+//   // $data[] = $key;
+//   $searchKey = 'notebook';
+//   $ApiCall = new Search_Product();
+//   $result = $ApiCall->SearchProductByKey($searchKey);
+// });
 
