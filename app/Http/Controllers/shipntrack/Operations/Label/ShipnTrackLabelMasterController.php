@@ -85,6 +85,6 @@ class ShipnTrackLabelMasterController extends Controller
         }
 
         LabelMaster::where('id', $request->id)->update($master_records);
-        return redirect('shipntrack/label/master')->with('success', 'Record has been inserted successfully!');
+        return redirect('shipntrack/label/master')->with('success', 'Record has been updated successfully!');
     }
 }
