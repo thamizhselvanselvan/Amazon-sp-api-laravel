@@ -106,6 +106,7 @@ Route::post('shipntrack/invoice/edit/store', 'shipntrack\Operations\SNTInvoiceCo
 
 Route::get('shipntrack/label/master', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@index')->name('shipntrack.label.master.index');
 Route::post('shipntrack/label/master/submit', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@LabelMasterFormSubmit')->name('shipntrack.label.master.submit');
+Route::post('shipntrack/label/master/edit', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@LabelMasterFormEdit')->name('shipntrack.label.master.edit');
 
 Route::get('shipntrack/label', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
 Route::post('shipntrack/submit', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
