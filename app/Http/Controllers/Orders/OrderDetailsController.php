@@ -238,17 +238,29 @@ class OrderDetailsController extends Controller
                     }
                 })
                 ->editColumn('zoho_status', function ($row) {
+
                     $zoho_id = $row['zoho_id'];
-                    if ($row['zoho_status'] == '0') {
-                        return "<a href='#' data-toggle='tooltip' title='Not Processed'><i class='fa fa-minus not '  aria-hidden='true'></i> </a>";
-                    } else if ($row['zoho_status'] == '1') {
-                        return "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>" .
+                    $zoho_status = $row['zoho_status'];
+                    $response = "";
+
+                    if ($zoho_status == '0') {
+                        $response = "<a href='#' data-toggle='tooltip' title='Not Processed'><i class='fa fa-minus not '  aria-hidden='true'></i> </a>";
+                    } else if ($zoho_status == '1') {
+                        $response = "<a href='#' data-toggle='tooltip' title='$zoho_id'><i class='fa fa-check click'  aria-hidden='true' ></i> </a>" .
                             '  ' . "<a href='javascript:void(0)' value ='$zoho_id'   class='badge badge-success' id='zoho_clipboard'><i class='fa fa-copy'></i></a>";
-                    } else if ($row['zoho_status'] == '5') {
-                        return "<a href='#' data-toggle='tooltip' title='Under Processing'><i class='fa fa-spinner under' aria-hidden='true'></i> </a>";
+                    } else if ($zoho_status == '5') {
+
+                        $response =  "<a href='#' data-toggle='tooltip' title='Under Processing'><i class='fa fa-spinner under' aria-hidden='true'></i> </a>";
+                        $courier = ($row->courier_awb) ? 1 : 0;
+                        $courier_name = ($row->courier_name == "B2CShip") ? 1 : 0;
+
+                        $response .= "<span id='order_retry' class='badge badge-success cursor-pointer' data-id='". $row->id ."' data-couriername='".$courier_name."' data-awb='".$courier."'>Retry</span>";
+                        
                     } else {
-                        return $row['zoho_status'];
+                        $response = $zoho_status;
                     }
+
+                    return $response;
                 })
                 ->editColumn('order_feed_status', function ($row) {
                     $message = $row['order_feed_status'];
@@ -300,6 +312,26 @@ class OrderDetailsController extends Controller
                 ->make(true);
         }
         return view('orders.statistics', compact('stores', 'request_store_id', 'url'));
+    }
+
+    public function order_retry(Request $request) {
+
+        if ($request->ajax()) {
+
+            $order_row_id = $request->id;
+            $order_courier = [];
+
+            if($request->couriername == 1 && $request->courier == 0) {
+                $order_courier = ["booking_status" => 0];
+            }
+
+            OrderUpdateDetail::where("id", $order_row_id)
+                ->update(["zoho_status" => 0, ...$order_courier]);
+
+            return response()->json(["success" => "order retrying now!"]);
+        }
+
+        return response()->json(["error" => "retry with ajax request"]);
     }
 
 

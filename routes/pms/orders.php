@@ -29,6 +29,7 @@ Route::get('orders/bulk/edit/{id}', 'Orders\OrderDetailsController@bulkedit');
 
 Route::get('orders/statistics', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics');
 Route::get('orders/statistics/{store_id}', 'Orders\OrderDetailsController@orderStatistics')->name('orders.statistics.store_id');
+Route::post('orders/retry', 'Orders\OrderDetailsController@order_retry')->name('orders.retry');
 
 Route::get('orders/file/management/monitor', 'Orders\OrdersDashboardController@OrderFileManagementMonitor')->name('orders.file.management.monitor');
 Route::get('orders/missing/price', 'Orders\OrderMissingDetailsController@index')->name('orders.missing');
