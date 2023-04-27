@@ -816,7 +816,7 @@ class CliqnshopCataloginsert
                 'langid' => 'en',
                 'url' => $product_data['url'],
                 'name' => $product_data['label'],
-                'content' => mb_strtolower($product_data['code']) . '<pre>' . mb_strtolower($product_data['label']) . '<pre>' . $keyword,
+                'content' => mb_strtolower($product_data['code']) . ' ' . mb_strtolower($product_data['label']) . ' ' . $keyword,
                 'mtime' => $date_time,
             ];
             DB::connection('cliqnshop')->table('mshop_index_text')->upsert(
