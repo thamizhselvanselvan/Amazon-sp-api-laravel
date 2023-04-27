@@ -29,8 +29,6 @@ class B2cshipBookingServices
         $this->store_id = $store_id;
         $this->custom_percentage = 65;
 
-        Log::alert($amazon_order_id);
-
         $order_details = DB::connection('order')
             ->select("SELECT
                 oids.*,
@@ -179,7 +177,7 @@ class B2cshipBookingServices
                 slack_notification('app360', 'B2cship Booking', $slackMessage);
                 return false;
             }
-            Log::alert($item_price);
+
             $data['OrderID'] =     $OrderID;
             $data['purchase_date'] =  $purchase_date;
             $data['payment method'] = $payment_method;
@@ -284,7 +282,7 @@ class B2cshipBookingServices
         foreach ($consignee_values as $data) {
 
             $orddate = Carbon::now()->format('d-M-Y');
-            Log::alert('inv val' . $data['invoice_value']);
+
             $xml = '<?xml version="1.0" encoding="UTF-8"?>
                     <ShipmentBookingRequest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="ShipmentBookingRequest.xsd">
 
@@ -418,7 +416,7 @@ class B2cshipBookingServices
                     $asin = $asins[0]->asin;
                     US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
                 }
-            }
+            } 
 
             $slackMessage = "Message: $error_desc,
             Type: $error,
