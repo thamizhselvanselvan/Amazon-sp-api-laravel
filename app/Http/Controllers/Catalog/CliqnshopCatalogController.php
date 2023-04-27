@@ -180,52 +180,52 @@ class CliqnshopCatalogController extends Controller
         $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
         if (isset($country['0']->code)) {
             if (($country['0']->code) == 'in') {
-        $headers = [
-            'catalognewuss.asin',
-            'catalognewuss.brand',
-            'catalognewuss.images',
-            'catalognewuss.item_name',
-            'catalognewuss.browse_classification',
-            'catalognewuss.dimensions',
-            'catalognewuss.attributes',
-            'catalognewuss.color',
-            'pricing_uss.usa_to_in_b2c',
-            'pricing_uss.us_price',
-            'pricing_uss.usa_to_uae',
+            $headers = [
+                'catalognewuss.asin',
+                'catalognewuss.brand',
+                'catalognewuss.images',
+                'catalognewuss.item_name',
+                'catalognewuss.browse_classification',
+                'catalognewuss.dimensions',
+                'catalognewuss.attributes',
+                'catalognewuss.color',
+                'pricing_uss.usa_to_in_b2c',
+                'pricing_uss.us_price',
+                'pricing_uss.usa_to_uae',
 
-        ];
+            ];
 
-        $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
-        $result = $table_name->select($headers)
-            ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
-            ->whereIn('catalognewuss.asin', $asin)
-            ->get()->toArray();
-    }
-}
+            $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
+            $result = $table_name->select($headers)
+                ->join('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+                ->whereIn('catalognewuss.asin', $asin)
+                ->get()->toArray();
+            }
+        }
         if (($country['0']->code) == 'uae') {
             if (isset($country['0']->code)) {
-        $headers = [
-        'catalognewins.asin',
-        'catalognewins.brand',
-        'catalognewins.images',
-        'catalognewins.item_name',
-        'catalognewuss.browse_classification',
-        'catalognewins.dimensions',
-        'catalognewins.attributes',
-        'catalognewins.color',
-        // 'pricing_ins.usa_to_in_b2c',
-        // 'pricing_ins.us_price',
-        'pricing_ins.ind_to_uae',
+            $headers = [
+            'catalognewins.asin',
+            'catalognewins.brand',
+            'catalognewins.images',
+            'catalognewins.item_name',
+            'catalognewuss.browse_classification',
+            'catalognewins.dimensions',
+            'catalognewins.attributes',
+            'catalognewins.color',
+            // 'pricing_ins.usa_to_in_b2c',
+            // 'pricing_ins.us_price',
+            'pricing_ins.ind_to_uae',
+            
+            ];
         
-        ];
-        
-        $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
-        $result = $table_name->select($headers)
-        ->join('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-        ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
-        ->whereIn('catalognewins.asin', $asin)
-        ->get()->toArray();
-        }
+            $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
+            $result = $table_name->select($headers)
+            ->join('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+            ->join('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+            ->whereIn('catalognewins.asin', $asin)
+            ->get()->toArray();
+            }
         }
 
         foreach ($result as $data) {
@@ -436,5 +436,67 @@ class CliqnshopCatalogController extends Controller
         // commandExecFunc('mosh:test_progress');
         // return 'ok';
         return response()->json(['success' => 'You have successfully upload file.']);
+    }
+
+    public function exported_asin_lister(Request $request)
+    {
+         if ($request->ajax()) {
+
+            $exportFiles = [];
+            $folder = $request->catalog;
+            $path = (Storage::path($folder));
+            $files = scandir($path);
+
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    $exportFiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
+            }
+            return response()->json($exportFiles);
+        }
+    }
+     
+     public function exported_asin_link_downloader($fileName)
+    {
+        return Storage::download('Cliqnshop/upload/asin/export/' . $fileName);
+    }
+
+    public function  exported_asin_updater(Request $request)
+    {
+        if ($request->cliqnshop_csv == '' ) {
+            return back()->with('error', "Please upload file to import it to the database ");
+        }
+        $request->validate([
+            'cliqnshop_csv' => 'required',
+        ]);
+
+        $file = file_get_contents($request->cliqnshop_csv);
+        $current_time = Carbon::now()->toDateTimeString();
+        $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
+        $path = "Cliqnshop/upload/asin/update/cliqnshop_updated_asins_$time.csv";
+        
+        Storage::put($path, $file);
+
+        
+        if (!Storage::exists($path)) {
+            return false;
+        } else {
+           
+            $file_info = [
+                'user_id' => Auth::user()->id,
+                'type' => 'Import',
+                'module' => "Cliqnshop_exported_asin_update",
+                'file_path' => $path,
+                'command_name' => "mosh:cliqnshop_exported_asin_update",
+                'command_start_time' => now(),
+                'command_end_time' => now(),
+                'status' => '1'
+            ];
+            FileManagement::create($file_info);
+
+            commandExecFunc("mosh:cliqnshop_exported_asin_update ${path}");
+
+            return back()->with('success', 'Cliqnshop product update request has added to Queue , Wait for Few Minuts to see the channges   !');
+        }
     }
 }
