@@ -77,6 +77,11 @@ Route::get('cliqnshop/category-poc', 'Catalog\CategoryController@index')->name('
 Route::post('cliqnshop/category-export', 'Catalog\CategoryController@export')->name('cliqnshop.category-export');
 
 
+Route::get('cliqnshop/catalog/asin/export/list', 'Catalog\CliqnshopCatalogController@exported_asin_lister')->name('cliqnshop.catalog.asin.export.list');
+Route::get('cliqnshop/catalog/asin/export/list/download/{index}', 'Catalog\CliqnshopCatalogController@exported_asin_link_downloader')->name('cliqnshop.catalog.asin.export.list.download');
+Route::post('cliqnshop/catalog/asin/export/list/update', 'Catalog\CliqnshopCatalogController@exported_asin_updater')->name('cliqnshop.catalog.asin.export.list.update');
+
+
 Route::get('cliqnshop/category-download', function () {
     $exportFilePath = 'test/Categories.csv';
     if (!Storage::exists($exportFilePath)) {
