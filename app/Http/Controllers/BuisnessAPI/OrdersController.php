@@ -173,7 +173,7 @@ class OrdersController extends Controller
                 ->addColumn('total_price', function ($data) {
                     $quantity = $data->quantity;
                     $price = $data->price;
-                    return ($quantity * $price);
+                    return (round($quantity * $price,2));
                 })
                 ->editColumn('site', function ($data) {
                     $id = $data->siteid;

@@ -20,7 +20,7 @@
         <i class="fa fa-check-circle-o"></i> Order Confirmation
     </a>
     <a class="btn btn-lg btn-app bg-warning" style="width:130px" href="{{url('business/ship/confirmation')}}">
-        <i class="fa fa-bell "></i> shipment Notification
+        <i class="fa fa-bell "></i> Shipment Notification
     </a>
 </div>
 {{-- tabs switcher ~end --}}
@@ -121,7 +121,7 @@
             <th>Item Name</th>
             <th>Site</th>
             <th>Quantity</th>
-            <th>Price /th>
+            <th>Price</th>
             <th>Total Price</th>
             <th>Action</th>
         </tr>

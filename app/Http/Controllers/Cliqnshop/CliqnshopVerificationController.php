@@ -48,8 +48,11 @@ class CliqnshopVerificationController extends Controller
                     if ($s_code[0] == 'uae') {
                         return '<center><p class = "text-danger">UAE</p></center>';
                     }
-                    if ($s_code[0] == 'in') {
+                    elseif ($s_code[0] == 'in') {
                         return '<center><p class = "text-success">India</p></center>';
+                    }
+                    else {
+                        return $s_code[0];
                     }
                 })
                 ->addColumn('category', function ($data) {
@@ -63,12 +66,17 @@ class CliqnshopVerificationController extends Controller
                 })
                 ->addColumn('price', function ($data) {
                     $check_price = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $data->id, 'siteid' => $data->siteid])->where('domain', 'price')->pluck('refid')->ToArray();
-
+                if(isset($check_price[0]))
+                {
                     $price_check = DB::connection('cliqnshop')->table('mshop_price')->where(['id' => $check_price[0], 'siteid' => $data->siteid, 'value' => 0.00])->get()->ToArray();
-
                     if ($price_check == []) {
                         return '<span data-toggle="tooltip" data-placement="top" title="Price Found" style="font-size:20px;">&#9989;</span>';
-                    } else {
+                    }
+                    else {
+                        return '<span data-toggle="tooltip" data-placement="top" title="Price Not Found" style="font-size:20px;">&#10060;</span>';
+                    }
+                }
+                     else {
                         return '<span data-toggle="tooltip" data-placement="top" title="Price Not Found" style="font-size:20px;">&#10060;</span>';
                     }
                 })
@@ -91,11 +99,18 @@ class CliqnshopVerificationController extends Controller
                 ->addColumn('description', function ($data) {
                     $description_check = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $data->id, 'siteid' => $data->siteid])->where('domain', 'text')->pluck('refid')->ToArray();
 
-                    $check_description = DB::connection('cliqnshop')->table('mshop_text')->where(['id' => $description_check[0], 'type' => 'long'])->whereNotIn('content', ['', ' '])->get()->ToArray();
+                  if(isset($description_check[0]))
 
+                  {
+                    $check_description = DB::connection('cliqnshop')->table('mshop_text')->where(['id' => $description_check[0], 'type' => 'long'])->whereNotIn('content', ['', ' '])->get()->ToArray();
                     if ($check_description !== []) {
                         return '<span data-toggle="tooltip" data-placement="top" title="Description Found" style="font-size:20px;">&#9989;</span>';
-                    } else {
+                    }
+                    else {
+                        return '<span data-toggle="tooltip" data-placement="top" title="Description Not Found" style="font-size:20px;">&#10060;</span>';
+                    }
+                  }
+                     else {
                         return '<span data-toggle="tooltip" data-placement="top" title="Description Not Found" style="font-size:20px;">&#10060;</span>';
                     }
                 })
