@@ -632,4 +632,66 @@ class CliqnshopCatalogController extends Controller
         // return 'ok';
         return response()->json(['success' => 'You have successfully upload file.']);
     }
+
+    public function exported_asin_lister(Request $request)
+    {
+         if ($request->ajax()) {
+
+            $exportFiles = [];
+            $folder = $request->catalog;
+            $path = (Storage::path($folder));
+            $files = scandir($path);
+
+            foreach ($files as $key => $file) {
+                if ($key > 1) {
+                    $exportFiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
+                }
+            }
+            return response()->json($exportFiles);
+        }
+    }
+     
+     public function exported_asin_link_downloader($fileName)
+    {
+        return Storage::download('Cliqnshop/upload/asin/export/' . $fileName);
+    }
+
+    public function  exported_asin_updater(Request $request)
+    {
+        if ($request->cliqnshop_csv == '' ) {
+            return back()->with('error', "Please upload file to import it to the database ");
+        }
+        $request->validate([
+            'cliqnshop_csv' => 'required',
+        ]);
+
+        $file = file_get_contents($request->cliqnshop_csv);
+        $current_time = Carbon::now()->toDateTimeString();
+        $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
+        $path = "Cliqnshop/upload/asin/update/cliqnshop_updated_asins_$time.csv";
+        
+        Storage::put($path, $file);
+
+        
+        if (!Storage::exists($path)) {
+            return false;
+        } else {
+           
+            $file_info = [
+                'user_id' => Auth::user()->id,
+                'type' => 'Import',
+                'module' => "Cliqnshop_exported_asin_update",
+                'file_path' => $path,
+                'command_name' => "mosh:cliqnshop_exported_asin_update",
+                'command_start_time' => now(),
+                'command_end_time' => now(),
+                'status' => '1'
+            ];
+            FileManagement::create($file_info);
+
+            commandExecFunc("mosh:cliqnshop_exported_asin_update ${path}");
+
+            return back()->with('success', 'Cliqnshop product update request has added to Queue , Wait for Few Minuts to see the channges   !');
+        }
+    }
 }
