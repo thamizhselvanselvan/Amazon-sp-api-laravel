@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\AmazonFeedApiServices;
+namespace App\Services\test;
 
 use Exception;
 use App\Models\Aws_credential;
@@ -21,11 +21,11 @@ use SellingPartnerApi\Model\ListingsV20210801\FulfillmentAvailability;
 use SellingPartnerApi\Model\ListingsV20210801\ListingsItemPatchRequest;
 use SellingPartnerApi\Model\FeedsV20210630\CreateFeedDocumentSpecification;
 
-class AmazonFeedProcessAvailability
+class AvailabilityFeed
 {
     use ConfigTrait;
 
-    public function availabilitySubmit($feedLists, $seller_id, $product_push_id, $regionCode, $asin, $availability)
+    public function availability_feed($feedLists, $seller_id, $regionCode, $asin, $availability)
     {
         $aws = '';
         $aws = Aws_credential::where('seller_id', $seller_id)->where('verified', 1)->with(['mws_region'])->first();
@@ -39,24 +39,7 @@ class AmazonFeedProcessAvailability
         if (!$productFeed) {
             return ['failed' => true];
         }
-
-        Log::alert($productFeed);
-
-        $product_query_model = '';
-        $available_query_model = '';
-
-        // if (strtolower($regionCode) == "in") {
-        //     $product_query_model = Product_Push_in::query();
-        //     $available_query_model = Product_availability_in::query();
-        // } else if (strtolower($regionCode) == "ae") {
-        //     $product_query_model = Product_Push_ae::query();
-        //     $available_query_model = Product_availability_ae::query();
-        // }
-
-        // $product_query_model->where("store_id", $seller_id)->where("asin", $asin)->update(['availability' => $availability]);
-        // $available_query_model->where("id", $product_push_id)->update(['feedback_id' => $productFeed, "push_status" => 1]);
-
-        return ['success' => true];
+        return $productFeed;
     }
 
     public function process($feedLists, $merchant_id, $aws_key, $country_code, $marketplace_ids)

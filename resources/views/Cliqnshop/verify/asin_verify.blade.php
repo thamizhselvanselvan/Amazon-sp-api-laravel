@@ -85,7 +85,7 @@
 </div>
 {{-- collapse filter card -end --}}
 
-<table class="table table-bordered yajra-datatable table-striped" id='orderspending'>
+<table class="table table-bordered yajra-datatable table-striped table-sm" id='orderspending'>
     <thead>
         <tr class='text-bold bg-info'>
             <th> S.N </th>
@@ -93,6 +93,15 @@
             <th>SKU </th>
             <th>Product Name </th>
             <th>Site</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>Brand</th>
+            <th>Description</th>
+            <th>Colour</th>
+            <th>Length</th>
+            <th>Width</th>
+            <th>Generic Keywords</th>
             <th>Status</th>
             {{-- <th>created-time</th>
             <th>created-by</th> --}}
@@ -130,7 +139,6 @@
 
         $.extend($.fn.dataTable.defaults, {
             pageLength: 50,
-
         });
 
         let yajra_table = $('.yajra-datatable').DataTable({
@@ -158,6 +166,42 @@
                 {
                     data: 'site',
                     name: 'site'
+                },
+                {
+                    data: 'category',
+                    name: 'category'
+                },
+                {
+                    data: 'price',
+                    name: 'price'
+                },
+                {
+                    data: 'image',
+                    name: 'image'
+                },
+                {
+                    data: 'brand',
+                    name: 'brand'
+                },
+                {
+                    data: 'description',
+                    name: 'description'
+                },
+                {
+                    data: 'colour',
+                    name: 'colour'
+                },
+                {
+                    data: 'length',
+                    name: 'length'
+                },
+                {
+                    data: 'width',
+                    name: 'width'
+                },
+                {
+                    data: 'generic_keywords',
+                    name: 'generic_keywords'
                 },
                 {
                     data: 'status',

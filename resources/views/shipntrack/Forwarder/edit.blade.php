@@ -148,7 +148,7 @@
 @section('js')
 <script type="text/javascript">
     $("#awb_search").on('click', function(e) {
-
+        $("#awb_search").attr("disabled", true);
         let id = $('#refrence').val();
         let destination = $('#destination').val();
 
@@ -173,15 +173,28 @@
                 if (result.hasOwnProperty('eror_data')) {
                     $('.align').addClass('d-none');
                     alert('Invalid Refrence ID Please Check....!!');
+                    $("#awb_search").attr("disabled", false);
                     return false;
                 }
                 $("#reference").val($("#reference").val() + result.ref_data[0].reference_id);
                 $("#consignor").val($("#consignor").val() + result.ref_data[0].consignor);
                 $("#consignee").val($("#consignee").val() + result.ref_data[0].consignee);
                 $("#forwarder_1_awb").val($("#forwarder_1_awb").val() + result.ref_data[0].forwarder_1_awb);
-                $("#forwarder_2_awb").val($("#forwarder_2_awb").val() + result.ref_data[0].forwarder_2_awb);
-                $("#forwarder_3_awb").val($("#forwarder_3_awb").val() + result.ref_data[0].forwarder_3_awb);
-                $("#forwarder_4_awb").val($("#forwarder_4_awb").val() + result.ref_data[0].forwarder_4_awb);
+                if (result.ref_data[0].forwarder_2_awb == null || result.ref_data[0].forwarder_2_awb == 'null') {
+                    $("#forwarder_2_awb").val($("#forwarder_2_awb").val() + '');
+                } else {
+                    $("#forwarder_2_awb").val($("#forwarder_2_awb").val() + result.ref_data[0].forwarder_2_awb);
+                }
+                if (result.ref_data[0].forwarder_3_awb == null || result.ref_data[0].forwarder_3_awb == 'null') {
+                    $("#forwarder_3_awb").val($("#forwarder_3_awb").val() + '');
+                } else {
+                    $("#forwarder_3_awb").val($("#forwarder_3_awb").val() + result.ref_data[0].forwarder_3_awb);
+                }
+                if (result.ref_data[0].forwarder_4_awb == null || result.ref_data[0].forwarder_4_awb == 'null') {
+                    $("#forwarder_4_awb").val($("#forwarder_4_awb").val() + '');
+                } else {
+                    $("#forwarder_4_awb").val($("#forwarder_4_awb").val() + result.ref_data[0].forwarder_4_awb);
+                }
 
                 $('#forwarder_info_1').empty();
                 $('#forwarder_info_2').empty();
@@ -225,7 +238,12 @@
                 $('#forwarder_info_2').append(forwarder_data_2);
                 $('#forwarder_info_3').append(forwarder_data_3);
                 $('#forwarder_info_4').append(forwarder_data_4);
-            }
+            },
+            error: function(result) {
+                alert('Error Please Check..!');
+                $("#awb_search").attr("disabled", false);
+
+            },
         });
 
     });

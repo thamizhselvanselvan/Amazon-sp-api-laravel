@@ -659,7 +659,8 @@ class labelManagementController extends Controller
             $qty = $request->input('qty');
 
             foreach ($qty as $key => $value) {
-                Label::where('order_item_id', $key)
+
+                Label::where('order_item_id', (string)$key)
                     ->update(['qty' => $value]);
             }
 
@@ -672,8 +673,9 @@ class labelManagementController extends Controller
             $product_name = $request->input('title');
             foreach ($product_name as $key => $title) {
 
+                $item_title = htmlspecialchars($title);
                 DB::select("UPDATE  $order.orderitemdetails 
-                        SET title = '$title'
+                        SET title = '$item_title'
                          WHERE order_item_identifier = '$key'
                         ");
             }

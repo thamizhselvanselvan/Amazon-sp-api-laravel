@@ -8,31 +8,31 @@
 
 
 @section('content')
-    {{-- tabs switcher ~start --}}
-        <div class="row  pt-4 justify-content-center">    
-            <a class="btn btn-lg btn-app bg-secondary" style="width:130px" href ="{{url('business/orders/details')}}">        
-                <i class="fa fa-clock-o"></i> Order Pending
-            </a>
-            <a class="btn btn-lg btn-app bg-success" style="width:130px" href ="{{url('business/booked/details')}}">        
-                <i class="fa fa-check"></i> Order booked
-            </a>
-            <a class="btn btn-lg btn-app bg-info" style="width:130px" href ="{{url('business/orders/confirm')}}">        
-                <i class="fa fa-check-circle-o"></i> Order Confirmation
-            </a>
-            <a class="btn btn-lg btn-app bg-warning" style="width:130px" href ="{{url('business/ship/confirmation')}}">        
-                <i class="fa fa-bell "></i> shipment Notification
-            </a>      
-        </div>
-    {{-- tabs switcher ~end --}}
+{{-- tabs switcher ~start --}}
+<div class="row  pt-4 justify-content-center">
+    <a class="btn btn-lg btn-app bg-secondary" style="width:130px" href="{{url('business/orders/details')}}">
+        <i class="fa fa-clock-o"></i> Order Pending
+    </a>
+    <a class="btn btn-lg btn-app bg-success" style="width:130px" href="{{url('business/booked/details')}}">
+        <i class="fa fa-check"></i> Order booked
+    </a>
+    <a class="btn btn-lg btn-app bg-info" style="width:130px" href="{{url('business/orders/confirm')}}">
+        <i class="fa fa-check-circle-o"></i> Order Confirmation
+    </a>
+    <a class="btn btn-lg btn-app bg-warning" style="width:130px" href="{{url('business/ship/confirmation')}}">
+        <i class="fa fa-bell "></i> shipment Notification
+    </a>
+</div>
+{{-- tabs switcher ~end --}}
 
-    <div class="row ">
-        <div class="col ">
-            <div style="margin: 0.1rem 0; text-align: center" >
-                <h3>Pending Order Details</h3>
-            </div>
+<div class="row ">
+    <div class="col ">
+        <div style="margin: 0.1rem 0; text-align: center">
+            <h3>Pending Order Details</h3>
         </div>
     </div>
-        
+</div>
+
 <div class="loader d-none">
     <div class="sub-loader position-relative ">
         <div class="lds-hourglass"></div>
@@ -80,32 +80,31 @@
 
 {{-- collapse filter card start --}}
 <div class="card card-info " id="filter-card">
-    <div class="card-body" >
+    <div class="card-body">
         <div class="row">
             <div class="col-12">
                 <div>
-                    <form class="form-inline" id="form-log-delete" method="get"
-                        action="{{ route('business.orders.pending.list') }}">
-                        
+                    <form class="form-inline" id="form-log-delete" method="get" action="{{ route('business.orders.pending.list') }}">
+
                         <div class="form-group">
 
-                            <x-adminlte-select name="site_id" id="filterSites"  class="form-control form-control-sm">
+                            <x-adminlte-select name="site_id" id="filterSites" class="form-control form-control-sm">
                                 <option value='' selected>Select the Site to Apply filter</option>
                                 @foreach ($sites as $site)
-                                    @if ($site->code == 'in')
-                                        {{ $site->code = 'India' }}
-                                    @elseif ($site->code == 'uae')
-                                        {{ $site->code = 'UAE' }}
-                                    @endif
-                                    <option value="{{ $site->siteid }}">{{ $site->code }}</option>
+                                @if ($site->code == 'in')
+                                {{ $site->code = 'India' }}
+                                @elseif ($site->code == 'uae')
+                                {{ $site->code = 'UAE' }}
+                                @endif
+                                <option value="{{ $site->siteid }}">{{ $site->code }}</option>
                                 @endforeach
-                            </x-adminlte-select>                                
+                            </x-adminlte-select>
 
 
                         </div>
-                       
+
                         <button type="submit" id="clear_log" class="btn btn-warning mx-2 btn-sm">Apply</button>
-                        <a class="btn btn-default  btn-sm" href="{{route('cliqnshop.category')}}">Reset</a>
+                        <a class="btn btn-default  btn-sm" href="{{route('business.orders.pending.list')}}">Reset</a>
                     </form>
                 </div>
             </div>
@@ -120,9 +119,10 @@
             <th> ID </th>
             <th>ASIN</th>
             <th>Item Name</th>
-            <th>site</th>
+            <th>Site</th>
             <th>Quantity</th>
-            <th>price</th>
+            <th>Price /th>
+            <th>Total Price</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -133,26 +133,24 @@
 @stop
 @section('js')
 <script type="text/javascript">
-
     const filter = {
-            site_id : new URLSearchParams(window.location.search).get('site_id'),
-        }
+        site_id: new URLSearchParams(window.location.search).get('site_id'),
+    }
 
-        let url = `{{ route('business.orders.pending.list') }}?`;  
-        if(!!filter.site_id)
-        {            
-            url += `site_id=${filter.site_id}`  ;
+    let url = `{{ route('business.orders.pending.list') }}?`;
+    if (!!filter.site_id) {
+        url += `site_id=${filter.site_id}`;
 
-            var filterSites = document.getElementById('filterSites'), filterSite, i;
-            for (i = 0; i < filterSites.length; i++) {
-                filterSite = filterSites[i];
-                if (filterSite.value == filter.site_id)
-                {
-                    filterSite.setAttribute('selected', true);
-                }
+        var filterSites = document.getElementById('filterSites'),
+            filterSite, i;
+        for (i = 0; i < filterSites.length; i++) {
+            filterSite = filterSites[i];
+            if (filterSite.value == filter.site_id) {
+                filterSite.setAttribute('selected', true);
             }
         }
-    
+    }
+
     $(function() {
 
         $.extend($.fn.dataTable.defaults, {
@@ -179,7 +177,7 @@
                     name: 'name'
                 },
                 {
-                    data: 'siteid',
+                    data: 'site',
                     name: 'site'
                 },
 
@@ -190,6 +188,10 @@
                 {
                     data: 'price',
                     name: 'price'
+                },
+                {
+                    data: 'total_price',
+                    name: 'total_price'
                 },
                 {
                     data: 'action',
@@ -209,7 +211,7 @@
         let self = $(this);
         let asin = $(this).attr('value');
         let qty = self.parent().parent().prev().prev().text();
-       
+
         $.ajax({
             method: 'GET',
             url: '/business/offers_view/',
@@ -247,7 +249,7 @@
             let asin = $("input[name='asin']").val();
             let name = $("input[name='item_name']").val();
             let quantity = $("input[name='quantity']").val();
-           
+
             $.ajax({
                 method: 'get',
                 url: "/business/order/book/",
