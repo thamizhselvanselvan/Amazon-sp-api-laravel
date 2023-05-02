@@ -122,6 +122,7 @@
             <th>Site</th>
             <th>Quantity</th>
             <th>Price</th>
+            <th>Coupon</th>
             <th>Total Price</th>
             <th>Action</th>
         </tr>
@@ -188,6 +189,10 @@
                 {
                     data: 'price',
                     name: 'price'
+                },
+                {
+                    data: 'coupan',
+                    name: 'coupan'
                 },
                 {
                     data: 'total_price',

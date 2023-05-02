@@ -137,13 +137,14 @@ class OrdersController extends Controller
 
                     ->join('mshop_order_base_product as oid', function ($query) {
                         $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                            ->where('oid.status', '0');
+                            ->where('oid.status', '0')
+                            ->where('oid.price','not like', '%-%');
                     })
                     ->join('mshop_product as pid', function ($query) {
                         $query->on('pid.id', '=', 'oid.prodid');
                     })
                     ->where('mshop_order.siteid', $request->site_id)
-                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
+                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid','oid.baseid')
                     // ->orderBy('oid.mtime','desc')
                     ->get();
             } else {
@@ -152,12 +153,13 @@ class OrdersController extends Controller
 
                     ->join('mshop_order_base_product as oid', function ($query) {
                         $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                            ->where('oid.status', '0');
+                            ->where('oid.status', '0')
+                            ->where('oid.price','not like', '%-%');
                     })
                     ->join('mshop_product as pid', function ($query) {
                         $query->on('pid.id', '=', 'oid.prodid');
                     })
-                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
+                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid','oid.baseid')
                     // ->orderBy('oid.mtime','desc')
                     ->get();
             }
@@ -166,14 +168,40 @@ class OrdersController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
 
+                ->addColumn('coupan', function ($data) {
+                    $s_id = $data->siteid;
+                    $check_coupan = $data->baseid;
+                    $coupan_check = DB::connection('cliqnshop')->table('mshop_order_base_coupon')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->get()->ToArray();
+                    if ($coupan_check !== [])
+                    {
+                        $coupan = DB::connection('cliqnshop')->table('mshop_order_base_product')
+                        ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->where('price' , 'like' , '%-%')->value('price');
+                        return $coupan;
+                    }
+                })
+
                 ->addColumn('action', function ($data) {
                     $id = $data->asin;
                     return  "<div class='d-flex'><a href='javascript:void(0)' id='offers1' value ='$id' class='edit btn btn-success btn-sm offers1'><i class='fas fa-check'></i> Book</a>";
                 })
                 ->addColumn('total_price', function ($data) {
+                    $s_id = $data->siteid;
+                    $check_coupan = $data->baseid;
+                    $coupan_check = DB::connection('cliqnshop')->table('mshop_order_base_coupon')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->get()->ToArray();
+                    if ($coupan_check !== [])
+                    {
+                        $coupan = DB::connection('cliqnshop')->table('mshop_order_base_product')
+                        ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->where('price' , 'like' , '%-%')->value('price');
+                    }
+                    else
+                    {
+                        $coupan = 0;
+                    }
                     $quantity = $data->quantity;
                     $price = $data->price;
-                    return (round($quantity * $price,2));
+                    return (round($quantity * $price + $coupan,2));
                 })
                 ->editColumn('site', function ($data) {
                     $id = $data->siteid;
