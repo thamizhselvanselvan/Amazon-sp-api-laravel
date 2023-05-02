@@ -66,14 +66,14 @@ class Search_Product
             }
 
             $mws_regions = Mws_region::with(['aws_verified'])->where('region_code', $country_code)->get()->toArray();
-            $token = $mws_regions[0]['aws_verified'][1]['auth_code'];
+            $token = $mws_regions[0]['aws_verified'][0]['auth_code'];
             foreach ($getProducts->products as $key => $getProduct) {
 
 
                 if (preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->title) !== 1 && preg_match("(" . $ignore_key_for_cliqnshop . ")", $getProduct->productDescription) !== 1) {
 
 
-                    if ($count2 <= 10) {
+                   
                         // $productTitle[] = $getProduct->title;
                         $ProductPriceRequest = new ProductsRequest();
                         $productPrice = $ProductPriceRequest->getASINpr($getProduct->asin);
@@ -84,19 +84,25 @@ class Search_Product
                             $product_asin[] = $getProduct->asin;
                             $productPrice1[] = isset($prices[0]->listPrice->value) != '' ? $prices[0]->listPrice->value->amount : $prices[0]->price->value->amount;
                         }
+                    
                     }
-
-                    if ($count == 10) {
-
+                }
+                   
+                $array_asins = (array_chunk($product_asin, 10));
+                $array_prices = (array_chunk($productPrice1, 10));
+                foreach ($array_asins as $key => $asin) {
+                    foreach($array_prices as $key => $price)
+                    {
+                        if (!is_array($asin))
+                        {
+                            $asin = array($asin);
+                        }
                         $catalog_for_cliqnshop = new NewCatalog();
-                        $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($product_asin, $country_code, $seller_id, $token, $aws_id);
+                        $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
                         // $count = 0;
 
-                    }
-                    $count++;
-                    $count2++;
-                }
-            }
+                   
+               
 
             $catalog_for_cliqnshop = [];
 
@@ -192,7 +198,7 @@ class Search_Product
                     if (isset($catalog_data['weight'])) {
 
                         $price_convert = new PriceConversion();
-                        $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $productPrice1[$key1]);
+                        $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $price[$key1]);
                     }
                 }
             }
@@ -254,6 +260,8 @@ class Search_Product
 
                     $cliqnshop = new CliqnshopCataloginsert();
                     $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords,$editor, $display_code);
+                       }
+                    }
                 }
             }
         }

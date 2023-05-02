@@ -424,12 +424,18 @@ Route::get('sanju/test/catalog', function () {
         }
     }
     $array_asins = (array_chunk($product_asin, 10));
-
+    $array_prices = (array_chunk($productPrice1, 10));
     foreach ($array_asins as $key => $asin) {
+        foreach($array_prices as $key => $price)
+        {
+            if (!is_array($asin))
+            {
+                $asin = array($asin);
+            }
         $catalog_for_cliqnshop = new NewCatalog();
         $catalogs = $catalog_for_cliqnshop->FetchDataFromCatalog($asin, $country_code, $seller_id, $token, $aws_id);
-
-        $catalog_for_cliqnshop = [];
+Log::warning($catalogs);
+        
         foreach ($catalogs as $key1 => $catalog_data) {
             foreach ($catalog_data as $key2 => $catalog) {
 
@@ -520,7 +526,7 @@ Route::get('sanju/test/catalog', function () {
                 if (isset($catalog_data['weight'])) {
 
                     $price_convert = new PriceConversion();
-                    $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $productPrice1[$key1]);
+                    $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $price[$key1]);
                 }
             }
         }
@@ -586,6 +592,7 @@ Route::get('sanju/test/catalog', function () {
             } else {
                 Log::notice($cliqnshop_catalog);
             }
+        }
         }
     }
 
