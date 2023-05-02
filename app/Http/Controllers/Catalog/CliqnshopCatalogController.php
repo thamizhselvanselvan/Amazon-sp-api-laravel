@@ -647,6 +647,7 @@ class CliqnshopCatalogController extends Controller
                     $exportFiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
                 }
             }
+            array_multisort($exportFiles, SORT_DESC , SORT_REGULAR );
             return response()->json($exportFiles);
         }
     }

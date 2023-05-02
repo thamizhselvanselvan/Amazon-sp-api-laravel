@@ -57,15 +57,15 @@ class cliqnshop_exported_asin_update extends Command
             $category_code = $data['category_code'];
             $asin = $data['asin'];
             $item_name = $data['item_name'];
-            $brand = $data['brand'];
+            $brand = $data['brand_code'];
             $brand_label = $data['brand_label'];
-            $color_key = $data['color_key'];
-            $label = $data['label'];
+            $color_key = $data['color_code'];
+            $label = $data['color_label'];
             $length_unit = $data['length_unit'];
             $length_value = $data['length_value'];
             $width_unit = $data['width_unit'];
             $width_value = $data['width_value'];
-            $Price_US_IN = $data['Price_US_IN'];
+            $Price_US_IN = $data['price'];
 
             $image = Array(
                             $data['asin'] => [
@@ -83,7 +83,7 @@ class cliqnshop_exported_asin_update extends Command
                             
                         );
 
-            $short_description = $data['short_description'];
+            $short_description = '';
             $long_description = $data['long_description'];
 
             $generic_keywords_exploded = explode (",", $data['generic_keywords']); 

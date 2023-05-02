@@ -559,7 +559,7 @@ class catalog_upload_to_cliqnshop extends Command
 
                 slack_notification('aimeos', 'Product Import From CSV Sucsess Report testing', $slackMessage_s);
 
-                $csv_head =  ['site','category_code','asin','item_name','brand','brand_label','color_key','label','length_unit','length_value','width_unit','width_value','Price_US_IN','image','keyword','short_description','long_description','generic_keywords','status'];
+                $csv_head =  ['site','category_code','asin','item_name','brand_code','brand_label','color_code','color_label','length_unit','length_value','width_unit','width_value','price','image','long_description','generic_keywords'];
                 $this->csvExporter($csv_head ,$csv_body);
               // po($generic_keywords);
                 $end_time = microtime(true);
@@ -574,7 +574,6 @@ class catalog_upload_to_cliqnshop extends Command
             $valuesToReplace = ['image1','image2','image3','image4','image5','image6','image7','image8','image9','image10'];
             $csv_head = $this->ArrayContentReplacer(array:$csv_head , valuesToReplace:$valuesToReplace, target: 'image', isKey : false);            
         // building/updating csv hader --end 
-
         
         // building/updating csv body --start
             foreach ($csv_body as $key => $value) {                
@@ -608,16 +607,18 @@ class catalog_upload_to_cliqnshop extends Command
                     $site = $siteQry->code;
                     $csv_body[$key][0] = $site;
                 //code to replace the siteid with sitecode data --end
-
+                    unset($csv_body[$key][23]); //removing keywrd coloumn
+                    unset($csv_body[$key][24]); //removing short_desciption coloumn
                     unset($csv_body[$key][27]); //removing editor coloumn
-                 
+                    unset($csv_body[$key][28]); //removing status coloumn
+                                       
             }
         // building/updating csv body --end
        
-            $maxRowsForSigngleFile = 1000000 ;
+            $maxRowsForSingleFile = 1000000 ;
             $offset = 1;       
 
-            $csv_body_chunks =  array_chunk ($csv_body,$maxRowsForSigngleFile) ;
+            $csv_body_chunks =  array_chunk ($csv_body,$maxRowsForSingleFile) ;
             foreach ($csv_body_chunks as $csv_body_chunk) 
             {
                 $file_name = 'export_'.  date('Y-m-d_H-i-s') .'_file-'. $offset.".csv" ; 
