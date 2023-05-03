@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Cliqnshop;
 
 use Carbon\Carbon;
+use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -23,7 +24,7 @@ class catalog_upload_to_cliqnshop extends Command
      *
      * @var string
      */
-    protected $description = 'Fetch ASIN Details From CatalogUSS table And Insert TO Cliqnsqhop Table';
+    protected $description = 'Fetch ASIN Details From catalognewuss/catalognewins table And Insert TO Cliqnsqhop Table';
 
     /**
      * Create a new command instance.
@@ -46,6 +47,7 @@ class catalog_upload_to_cliqnshop extends Command
 
         $site_id = $this->argument('site_id');
         $file_path = $this->argument('path');
+        $csv_body = array();
 
 
         $csv_data =  CSV_Reader($file_path);
@@ -457,14 +459,15 @@ class catalog_upload_to_cliqnshop extends Command
             if ($long_description == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Description not found, So Imported with Disable Status'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Description'. "\n");
             }
             if ($generic_keywords == '' || $generic_keywords == [])
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Generic Keywords not found'. "\n");
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Generic Keywords'. "\n");
             }
-            $insert_service->insertdata_cliqnshop(
+           
+            $insertable_value = [
                 $site_id,
                 $category_code,
                 $asin,
@@ -485,7 +488,13 @@ class catalog_upload_to_cliqnshop extends Command
                 $generic_keywords,
                 $editor,
                 $display_code
+            ];
+
+            $insert_service->insertdata_cliqnshop(
+               ...$insertable_value
             );
+
+            array_push($csv_body,$insertable_value);
 
             if ($item_name !== '')
             {
@@ -549,10 +558,117 @@ class catalog_upload_to_cliqnshop extends Command
                 slack_notification('aimeos', 'Product Import From CSV Error Report testing', $slackMessage);
 
                 slack_notification('aimeos', 'Product Import From CSV Sucsess Report testing', $slackMessage_s);
-          
-        // po($generic_keywords);
-        $end_time = microtime(true);
+
+                $csv_head =  ['site','category_code','asin','item_name','brand','brand_label','color_key','label','length_unit','length_value','width_unit','width_value','Price_US_IN','image','keyword','short_description','long_description','generic_keywords','status'];
+                $this->csvExporter($csv_head ,$csv_body);
+              // po($generic_keywords);
+                $end_time = microtime(true);
         $execution_time = ($end_time - $start_time);
         Log::info(" Execution time of cns product import from csv = ".$execution_time." sec");
+        
+        }
+
+    public function csvExporter(Array $csv_head ,Array $csv_body)
+    {
+        // building/updating csv hader --start
+            $valuesToReplace = ['image1','image2','image3','image4','image5','image6','image7','image8','image9','image10'];
+            $csv_head = $this->ArrayContentReplacer(array:$csv_head , valuesToReplace:$valuesToReplace, target: 'image', isKey : false);            
+        // building/updating csv hader --end 
+
+        
+        // building/updating csv body --start
+            foreach ($csv_body as $key => $value) {                
+                
+                //  image array  builder  --start
+                    $csvRow = $csv_body[$key];
+                    $image =  $csvRow[13]; 
+                    $asin =  $csvRow[2]; 
+                    $imagesArray = $this->arrayStretch(array : $image[$asin] , totalElemens : 10 );
+                    $csv_new_row = $this->ArrayContentReplacer(array:$csvRow , valuesToReplace:$imagesArray, target: 13, isKey : true);
+                    $csv_body[$key] = $csv_new_row ;
+                //  image array  builder  --end
+
+                // generic keyword imploder --start
+                    $csvRow = $csv_body[$key];
+                    $generic_keyword_row_index = 26; 
+                    $generic_keywords = $csvRow[$generic_keyword_row_index];
+                    
+                    $generic_keywords =  implode(",", array_map(function($item){
+                        return implode ('', $item);
+                    },$generic_keywords));   
+                    
+                    $generic_keywords_array = [ 0 => $generic_keywords];
+                    $insertable_value = $this->ArrayContentReplacer(array:$csvRow , valuesToReplace:$generic_keywords_array, target: $generic_keyword_row_index, isKey : true);
+                    $csv_body[$key] = $insertable_value ;
+                // generic keyword imploder --end  
+                
+                //code to replace the siteid with sitecode data --start 
+                    $site = $csv_body[$key][0]; 
+                    $siteQry = DB::connection('cliqnshop')->table('mshop_locale_site')->select('code')->where('siteid', $site)->first();
+                    $site = $siteQry->code;
+                    $csv_body[$key][0] = $site;
+                //code to replace the siteid with sitecode data --end
+
+                    unset($csv_body[$key][27]); //removing editor coloumn
+                 
+            }
+        // building/updating csv body --end
+       
+            $maxRowsForSigngleFile = 1000000 ;
+            $offset = 1;       
+
+            $csv_body_chunks =  array_chunk ($csv_body,$maxRowsForSigngleFile) ;
+            foreach ($csv_body_chunks as $csv_body_chunk) 
+            {
+                $file_name = 'export_'.  date('Y-m-d_H-i-s') .'_file-'. $offset.".csv" ; 
+                $exportFilePath = "Cliqnshop/upload/asin/export/" . $file_name;
+                if (!Storage::exists($exportFilePath)) {
+                    Storage::put($exportFilePath, '');
+                }
+
+                $csv_writer = Writer::createFromPath(Storage::path($exportFilePath), "w");
+                $csv_writer->insertOne($csv_head);
+                $csv_writer->insertAll($csv_body_chunk);                
+                $offset ++;
+            }        
+            
+            
     }
+
+    public function ArrayContentReplacer(Array $array, Array $valuesToReplace, $target ,bool $isKey = true) :Array
+    {        
+        if( $isKey)
+        {   
+            $index = $target;
+            if ($index !== false) {
+                array_splice($array, $index, 1, $valuesToReplace);
+            }
+            return $array;
+        }
+        else
+        {
+            $index = array_search($target, $array);
+            if ($index !== false) {
+                array_splice($array, $index, 1, $valuesToReplace);
+            }
+            return $array;
+        }        
+    }
+
+    public function arrayStretch(Array $array , int $totalElemens ) :Array
+    {        
+        $filteredArray = array_values(array_filter($array)); 
+        $newArray =  Array();
+        for ($i=1; $i <= $totalElemens; $i++) 
+        { 
+            if(array_key_exists($i-1 , $filteredArray))
+                $newArray[$i] = $filteredArray[$i-1];
+            else
+                $newArray[$i] = '';
+        }
+        
+        return $newArray ;
+    }
+
+   
 }

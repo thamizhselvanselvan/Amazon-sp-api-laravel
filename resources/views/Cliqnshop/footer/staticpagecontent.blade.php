@@ -138,7 +138,7 @@
                     <option value="terms_and_conditions">Terms And Conditions</option>
                     <option value="privacy_policy">Privacy Policy</option>
                     <option value="return _and_refund_policy">Return & Refund Policy</option>
-                    <option value="imprint">Imprint</option> 
+                    {{-- <option value="imprint">Imprint</option>  --}}
                     <option value="disclaimer">Disclaimer</option>
                     <option value="warranty">Warranty</option>
                    

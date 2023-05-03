@@ -43,137 +43,126 @@ class asin_remove_from_cliqnshop extends Command
 
         $request = [
             'site' => $site,
-            'pid'   => $pid 
-        ]; 
+            'pid' => $pid,
+        ];
 
-         
         // \Illuminate\Support\Facades\Log::alert($request);
         // return 0 ;
 
         $domains = [
-            'attribute' =>  [
+            'attribute' => [
                 'table_name' => 'mshop_attribute',
                 'direct_delete' => false,
-                'isHandled' => false
+                'isHandled' => false,
             ],
-            'media' =>  [
+            'media' => [
                 'table_name' => 'mshop_media',
                 'direct_delete' => false,
-                'isHandled' => false
+                'isHandled' => false,
             ],
-            'price' =>  [
+            'price' => [
                 'table_name' => 'mshop_price',
                 'direct_delete' => false,
-                'isHandled' => false
+                'isHandled' => false,
             ],
-            'text' =>  [
+            'text' => [
                 'table_name' => 'mshop_text',
                 'direct_delete' => false,
-                'isHandled' => false
+                'isHandled' => false,
             ],
-            'supplier' =>  [
+            'supplier' => [
                 'table_name' => 'mshop_supplier',
                 'direct_delete' => false,
-                'isHandled' => false
+                'isHandled' => false,
             ],
-            'keyword' =>  [
+            'keyword' => [
                 'table_name' => 'mshop_keyword',
                 'direct_delete' => false,
-                'isHandled' => false
+                'isHandled' => false,
             ],
         ];
 
-        foreach ($domains as $key => $value) 
-        {
-            $domain = $key ;
-            $table_name = $value['table_name']; 
-            $direct_delete = $value['direct_delete']; 
+        $mshop_product_list_for_index = DB::connection('cliqnshop')->table('mshop_product_list')
+            ->where(['parentid' => $pid, 'siteid' => $site])
+            ->select('domain')->distinct()->get();
+
+        $this->index_remove($pid, $site, $mshop_product_list_for_index); //remove index data
+
+        foreach ($domains as $key => $value) {
+            $domain = $key;
+            $table_name = $value['table_name'];
+            $direct_delete = $value['direct_delete'];
 
             // \Illuminate\Support\Facades\Log::alert('table_name:'. $table_name . ',domain:'.$domain. 'direct_delete:'.$direct_delete);
 
-        
             $mshop_product_list = DB::connection('cliqnshop')->table('mshop_product_list')
-            ->where(['parentid' => $pid, 'domain' => $domain,  'siteid' => $site])
-            ->select('refid','domain')->get();
+                ->where(['parentid' => $pid, 'domain' => $domain, 'siteid' => $site])
+                ->select('refid', 'domain')->get();
 
-            
+            if ($this->byAsinDomainRemover($domain, $table_name, $direct_delete, $request, $mshop_product_list)) {
+                DB::connection('cliqnshop')->table('mshop_product_list')
+                    ->where(['parentid' => $pid, 'domain' => $domain, 'siteid' => $site])
+                    ->delete();
 
-                if($this->byAsinDomainRemover($domain,$table_name,$direct_delete,$request,$mshop_product_list))
-                {                    
-                    DB::connection('cliqnshop')->table('mshop_product_list')
-                    ->where(['parentid' => $pid, 'domain' => $domain,  'siteid' => $site])
-                    ->delete();              
-                    
-                }
+            }
 
-                $value['isHandled'] = true;
-                $domains[$domain] = $value;
-                        
-                    
+            $value['isHandled'] = true;
+            $domains[$domain] = $value;
+
         }
 
         // removing mshop_product[main table] if all the domains are handled --start
-            $allHandled = true;
-            foreach ($domains as $domain ) 
-            {
-                if(!$domain['isHandled'])
-                {
-                    $allHandled = false ;
-                    break;
-                }            
+        $allHandled = true;
+        foreach ($domains as $domain) {
+            if (!$domain['isHandled']) {
+                $allHandled = false;
+                break;
             }
-            if($allHandled)
-            {
+        }
+        if ($allHandled) {
 
-                $qryMshopStockRemove = DB::connection('cliqnshop')->table('mshop_stock')
+            $qryMshopStockRemove = DB::connection('cliqnshop')->table('mshop_stock')
                 ->where(['prodid' => $pid, 'siteid' => $site])
                 ->delete();
 
-                $qryMshopProductRemove = DB::connection('cliqnshop')->table('mshop_product')
+            $qryMshopProductRemove = DB::connection('cliqnshop')->table('mshop_product')
                 ->where(['id' => $pid, 'siteid' => $site])
                 ->delete();
-                
-                // \Illuminate\Support\Facades\Log::info('product with id: '.$request['pid']. ',is removed From Site : '.$request['site'] );
-            }
-        // removing mshop_product[main table] if all the domains are handled --end 
-        
+
+            // \Illuminate\Support\Facades\Log::info('product with id: '.$request['pid']. ',is removed From Site : '.$request['site'] );
+        }
+        // removing mshop_product[main table] if all the domains are handled --end
+
         return 0;
     }
 
-
-    public function byAsinDomainRemover($domain,$table_name,$direct_delete,$request,$mshop_product_list) :bool 
+    public function byAsinDomainRemover($domain, $table_name, $direct_delete, $request, $mshop_product_list): bool
     {
-        
-        if ($direct_delete) 
-        {
 
-            foreach ($mshop_product_list as $singleItem ) 
-            {
+        if ($direct_delete) {
+
+            foreach ($mshop_product_list as $singleItem) {
                 $refId = $singleItem->refid;
                 $site = $request['site'];
-                $domainListRemoverQry =  DB::connection('cliqnshop')->table($table_name)
-                        ->where(['id' => $refId, 'siteid' => $site])
-                        ->delete();
-                                
+                $domainListRemoverQry = DB::connection('cliqnshop')->table($table_name)
+                    ->where(['id' => $refId, 'siteid' => $site])
+                    ->delete();
+
             }
             return true;
-           
-        }
-        else
-        {
-            foreach ($mshop_product_list as $singleItem ) 
-            {
+
+        } else {
+            foreach ($mshop_product_list as $singleItem) {
                 $refId = $singleItem->refid;
                 $site = $request['site'];
                 $productId = $request['pid'];
 
                 $domainListRemoverQry = DB::connection('cliqnshop')->table('mshop_product_list')
-                ->where([ 'domain' => $domain,  'siteid' => $site , 'refid' => $refId])
-                ->whereNotIn('parentid' , [$productId])
-                ->select('refid','domain','parentid')->get();
+                    ->where(['domain' => $domain, 'siteid' => $site, 'refid' => $refId])
+                    ->whereNotIn('parentid', [$productId])
+                    ->select('refid', 'domain', 'parentid')->get();
 
-                if(count($domainListRemoverQry)==0)
-                {
+                if (count($domainListRemoverQry) == 0) {
                     DB::connection('cliqnshop')->table($table_name)
                         ->where(['id' => $refId, 'siteid' => $site])
                         ->delete();
@@ -185,8 +174,17 @@ class asin_remove_from_cliqnshop extends Command
         }
 
         return false;
-        
+
     }
 
-    
+    public function index_remove($pid, $site, $mshop_product_list_for_index)
+    {
+        foreach ($mshop_product_list_for_index as $singleItem) {
+            $index_domain = $singleItem->domain;
+            if ($index_domain !== 'media') {
+                DB::connection('cliqnshop')->table('mshop_index_' . $index_domain)->where(['prodid' => $pid, 'siteid' => $site])->delete();
+            }
+        }
+    }
+
 }
