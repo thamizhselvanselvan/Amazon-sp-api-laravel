@@ -171,9 +171,18 @@ class OrdersController extends Controller
                 ->addColumn('rebate', function ($data) {
                     $s_id = $data->siteid;
                     $check_rebate = $data->baseid;
+                    $base_count =  DB::connection('cliqnshop')->table('mshop_order_base_product')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_rebate])->where('price','not like', '%-%')->count();
                     $rebate_check = DB::connection('cliqnshop')->table('mshop_order_base')
                     ->where(['siteid' => $s_id, 'id' => $check_rebate])->value('rebate');
+                    if($base_count == 1)
+                    {
                     return $rebate_check;
+                    }
+                    else
+                    {
+                        return "<p class='bg-info'>$rebate_check</p>";
+                    }
                 })
 
                 ->addColumn('action', function ($data) {
@@ -208,7 +217,7 @@ class OrdersController extends Controller
                         return $s_code;
                     }
                 })
-                ->rawColumns(['action', 'site', 'total_price'])
+                ->rawColumns(['action', 'site', 'total_price','rebate'])
                 ->make(true);
         }
 
