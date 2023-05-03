@@ -341,7 +341,6 @@ class B2cshipBookingServices
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
 
-            Log::warning($xml);
             $this->verifyApiResponse($this->getawb($xml));
         }
     }
@@ -367,7 +366,6 @@ class B2cshipBookingServices
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
             $data = curl_exec($ch);
-            Log::warning($data);
             return $data;
         } catch (Exception $e) {
 
@@ -427,7 +425,6 @@ class B2cshipBookingServices
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
 
-            Log::warning($slackMessage);
             slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
             $awb_no = $data['AWBNo'];
