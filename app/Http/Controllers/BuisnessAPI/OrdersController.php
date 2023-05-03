@@ -168,17 +168,12 @@ class OrdersController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
 
-                ->addColumn('coupan', function ($data) {
+                ->addColumn('rebate', function ($data) {
                     $s_id = $data->siteid;
-                    $check_coupan = $data->baseid;
-                    $coupan_check = DB::connection('cliqnshop')->table('mshop_order_base_coupon')
-                    ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->get()->ToArray();
-                    if ($coupan_check !== [])
-                    {
-                        $coupan = DB::connection('cliqnshop')->table('mshop_order_base_product')
-                        ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->where('price' , 'like' , '%-%')->value('price');
-                        return $coupan;
-                    }
+                    $check_rebate = $data->baseid;
+                    $rebate_check = DB::connection('cliqnshop')->table('mshop_order_base')
+                    ->where(['siteid' => $s_id, 'id' => $check_rebate])->value('rebate');
+                    return $rebate_check;
                 })
 
                 ->addColumn('action', function ($data) {
@@ -187,21 +182,19 @@ class OrdersController extends Controller
                 })
                 ->addColumn('total_price', function ($data) {
                     $s_id = $data->siteid;
-                    $check_coupan = $data->baseid;
-                    $coupan_check = DB::connection('cliqnshop')->table('mshop_order_base_coupon')
-                    ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->get()->ToArray();
-                    if ($coupan_check !== [])
+                    $check_total = $data->baseid;
+                    $base_count =  DB::connection('cliqnshop')->table('mshop_order_base_product')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_total])->where('price','not like', '%-%')->count();
+                    $total_price = DB::connection('cliqnshop')->table('mshop_order_base')
+                    ->where(['siteid' => $s_id, 'id' => $check_total])->value('price');
+                    if($base_count == 1)
                     {
-                        $coupan = DB::connection('cliqnshop')->table('mshop_order_base_product')
-                        ->where(['siteid' => $s_id, 'baseid' => $check_coupan])->where('price' , 'like' , '%-%')->value('price');
+                    return $total_price;
                     }
                     else
                     {
-                        $coupan = 0;
+                        return "<p class='bg-info'>$total_price</p>";
                     }
-                    $quantity = $data->quantity;
-                    $price = $data->price;
-                    return (round($quantity * $price + $coupan,2));
                 })
                 ->editColumn('site', function ($data) {
                     $id = $data->siteid;
