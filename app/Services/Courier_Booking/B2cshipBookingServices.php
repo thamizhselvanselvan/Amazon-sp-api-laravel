@@ -338,6 +338,7 @@ class B2cshipBookingServices
                         </PCSDescriptionDetail>
                     </PCSDescriptionDetails>
                 </ShipmentBookingRequest>';
+
             $this->verifyApiResponse($this->getawb($xml));
         }
     }
@@ -363,7 +364,6 @@ class B2cshipBookingServices
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
             $data = curl_exec($ch);
-
             return $data;
         } catch (Exception $e) {
 
@@ -404,7 +404,7 @@ class B2cshipBookingServices
 
         if (array_key_exists('ErrorDetailCode', $data)) {
 
-
+            Log::warning($data);
             $error = $data['ErrorDetailCode'];
             $error_desc = $data['ErrorDetailCodeDesc'];
             $order_id = $this->amazon_order_id;
@@ -422,6 +422,7 @@ class B2cshipBookingServices
             Type: $error,
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
+
             slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
             $awb_no = $data['AWBNo'];

@@ -41,19 +41,30 @@ class BuyBoxPriorityCounter extends Command
      */
     public function handle()
     {
-        $codes = ['in' => '11', 'us' => '4'];
 
-        $counts = [];
-        foreach ($codes as $key => $code) {
-            $counts[$key] = Aws_credential::query()
-                ->where(['mws_region_id' => $code, 'verified' => 1])
-                ->selectRaw('count(case when credential_priority = "1" then 1 end) as "1", count(case when credential_priority = "2" then 1 end) as "2",
-            count(case when credential_priority = "3" then 1 end) as "3",   count(case when credential_priority = "4" then 1 end) as "4"')
-                ->first()->toArray();
-        }
-        // Cache::put('creds_count', $counts);
-        cache()->rememberForever('creds_count', function () use ($counts) {
-            return $counts;
+        $aws_creds = Aws_credential::query()
+            ->select("aws_credentials.country_priority", "aws_credentials.mws_region_id", "aws_credentials.credential_priority")
+            ->join('mws_regions as regions', function ($query) {
+                $query->on('aws_credentials.mws_region_id', '=', 'regions.id');
+            })
+            ->where("auth_code", '!=', "Patch")
+            ->where('verified',  1)
+            ->get()->groupBy("credential_priority")->toArray();
+        
+        $results = [];
+        foreach($aws_creds as $cred_priority =>  $aws_cred) {
+
+            $aws_c = collect($aws_cred);
+            
+            $results["in"][$cred_priority - 1] = $aws_c->whereIn("country_priority", "IN")->count(); 
+            $results["us"][$cred_priority - 1] = $aws_c->whereIn("country_priority", "US")->count(); 
+      
+        }     
+
+        Cache::put('creds_count', $results);
+
+        cache()->rememberForever('creds_count', function () use ($results) {
+            return $results;
         });
     }
 }

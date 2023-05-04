@@ -1313,3 +1313,16 @@ if (!function_exists('ServicesClass')) {
         return $services;
     }
 }
+
+if (!function_exists("country_code_region_wise")) {
+
+    function country_code_region_wise(): array
+    {
+
+        return [
+            'FE' => ["SG", "AU", "JP"],
+            'NA' => ["BR", "CA", "MX", "US"],
+            'EU' => ["AE", "DE", "EG", "ES", "FR", "UK",  "IN", "IT", "NL", "PL", "SA", "SE", "TR"]
+        ];
+    }
+}
