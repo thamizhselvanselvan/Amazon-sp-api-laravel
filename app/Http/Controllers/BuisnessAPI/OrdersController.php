@@ -137,13 +137,14 @@ class OrdersController extends Controller
 
                     ->join('mshop_order_base_product as oid', function ($query) {
                         $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                            ->where('oid.status', '0');
+                            ->where('oid.status', '0')
+                            ->where('oid.price','not like', '%-%');
                     })
                     ->join('mshop_product as pid', function ($query) {
                         $query->on('pid.id', '=', 'oid.prodid');
                     })
                     ->where('mshop_order.siteid', $request->site_id)
-                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
+                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid','oid.baseid')
                     // ->orderBy('oid.mtime','desc')
                     ->get();
             } else {
@@ -152,12 +153,13 @@ class OrdersController extends Controller
 
                     ->join('mshop_order_base_product as oid', function ($query) {
                         $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                            ->where('oid.status', '0');
+                            ->where('oid.status', '0')
+                            ->where('oid.price','not like', '%-%');
                     })
                     ->join('mshop_product as pid', function ($query) {
                         $query->on('pid.id', '=', 'oid.prodid');
                     })
-                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
+                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid','oid.baseid')
                     // ->orderBy('oid.mtime','desc')
                     ->get();
             }
@@ -166,14 +168,42 @@ class OrdersController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
 
+                ->addColumn('rebate', function ($data) {
+                    $s_id = $data->siteid;
+                    $check_rebate = $data->baseid;
+                    $base_count =  DB::connection('cliqnshop')->table('mshop_order_base_product')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_rebate])->where('price','not like', '%-%')->count();
+                    $rebate_check = DB::connection('cliqnshop')->table('mshop_order_base')
+                    ->where(['siteid' => $s_id, 'id' => $check_rebate])->value('rebate');
+                    if($base_count == 1)
+                    {
+                    return $rebate_check;
+                    }
+                    else
+                    {
+                        return "<p class='bg-info'>$rebate_check</p>";
+                    }
+                })
+
                 ->addColumn('action', function ($data) {
                     $id = $data->asin;
                     return  "<div class='d-flex'><a href='javascript:void(0)' id='offers1' value ='$id' class='edit btn btn-success btn-sm offers1'><i class='fas fa-check'></i> Book</a>";
                 })
                 ->addColumn('total_price', function ($data) {
-                    $quantity = $data->quantity;
-                    $price = $data->price;
-                    return ($quantity * $price);
+                    $s_id = $data->siteid;
+                    $check_total = $data->baseid;
+                    $base_count =  DB::connection('cliqnshop')->table('mshop_order_base_product')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_total])->where('price','not like', '%-%')->count();
+                    $total_price = DB::connection('cliqnshop')->table('mshop_order_base')
+                    ->where(['siteid' => $s_id, 'id' => $check_total])->value('price');
+                    if($base_count == 1)
+                    {
+                    return $total_price;
+                    }
+                    else
+                    {
+                        return "<p class='bg-info'>$total_price</p>";
+                    }
                 })
                 ->editColumn('site', function ($data) {
                     $id = $data->siteid;
@@ -187,7 +217,7 @@ class OrdersController extends Controller
                         return $s_code;
                     }
                 })
-                ->rawColumns(['action', 'site', 'total_price'])
+                ->rawColumns(['action', 'site', 'total_price','rebate'])
                 ->make(true);
         }
 

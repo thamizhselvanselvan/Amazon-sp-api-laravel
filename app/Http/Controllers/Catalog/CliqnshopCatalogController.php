@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
 use App\Services\Cliqnshop\CliqnshopCataloginsert;
 use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
+use App\Services\Cliqnshop\CSV_Exporter;
 
 class CliqnshopCatalogController extends Controller
 {
@@ -170,6 +171,7 @@ class CliqnshopCatalogController extends Controller
 
         $asin = preg_split('/[\r\n| |:|,]/', $request->order_ids_text, -1, PREG_SPLIT_NO_EMPTY);
         $site_id = $request->text_country;
+        $csvExporter = new CSV_Exporter();
 
         if (empty($asin) || $site_id == '') {
             return back()->with('error', "Please upload ASIN or no Country choosen");
@@ -203,40 +205,40 @@ class CliqnshopCatalogController extends Controller
                 $path_s = Storage::disk('local')->path($filename_s);
                 $file_s = fopen($path_s, 'w');
 
-        $headers = [
-            'catalognewuss.asin',
-            'catalognewuss.brand',
-            'catalognewuss.images',
-            'catalognewuss.item_name',
-            'catalognewuss.browse_classification',
-            'catalognewuss.dimensions',
-            'catalognewuss.attributes',
-            'catalognewuss.color',
-            'pricing_uss.usa_to_in_b2c',
-            'pricing_uss.us_price',
-            'pricing_uss.usa_to_uae',
+                $headers = [
+                    'catalognewuss.asin',
+                    'catalognewuss.brand',
+                    'catalognewuss.images',
+                    'catalognewuss.item_name',
+                    'catalognewuss.browse_classification',
+                    'catalognewuss.dimensions',
+                    'catalognewuss.attributes',
+                    'catalognewuss.color',
+                    'pricing_uss.usa_to_in_b2c',
+                    'pricing_uss.us_price',
+                    'pricing_uss.usa_to_uae',
 
-        ];
+                ];
 
-        $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
-        $result = $table_name->select($headers)
-            ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
-            ->whereIn('catalognewuss.asin', $asin)
-            ->get()->toArray();
+                $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
+                $result = $table_name->select($headers)
+                    ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+                    ->whereIn('catalognewuss.asin', $asin)
+                    ->get()->toArray();
 
-            $check_result = $table_name->select($headers)
-            ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
-            ->whereIn('catalognewuss.asin', $asin)
-            ->pluck('asin')->toArray();
+                    $check_result = $table_name->select($headers)
+                    ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
+                    ->whereIn('catalognewuss.asin', $asin)
+                    ->pluck('asin')->toArray();
 
-            $not_founds = array_diff($asin, $check_result);
-                
-            foreach ($not_founds as $not_found)
-            {
-                fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
+                    $not_founds = array_diff($asin, $check_result);
+                        
+                    foreach ($not_founds as $not_found)
+                    {
+                        fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
+                    }
             }
-    }
-}
+        }
         if (($country['0']->code) == 'uae') {
             if (isset($country['0']->code)) {
 
@@ -258,43 +260,43 @@ class CliqnshopCatalogController extends Controller
                 $path_s = Storage::disk('local')->path($filename_s);
                 $file_s = fopen($path_s, 'w');
 
-        $headers = [
-        'catalognewins.asin',
-        'catalognewins.brand',
-        'catalognewins.images',
-        'catalognewins.item_name',
-        'catalognewuss.browse_classification',
-        'catalognewins.dimensions',
-        'catalognewins.attributes',
-        'catalognewins.color',
-        // 'pricing_ins.usa_to_in_b2c',
-        // 'pricing_ins.us_price',
-        'pricing_ins.ind_to_uae',
-        
-        ];
-        
-        $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
-        $result = $table_name->select($headers)
-        ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-        ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
-        ->whereIn('catalognewins.asin', $asin)
-        ->get()->toArray();
+                $headers = [
+                'catalognewins.asin',
+                'catalognewins.brand',
+                'catalognewins.images',
+                'catalognewins.item_name',
+                'catalognewuss.browse_classification',
+                'catalognewins.dimensions',
+                'catalognewins.attributes',
+                'catalognewins.color',
+                // 'pricing_ins.usa_to_in_b2c',
+                // 'pricing_ins.us_price',
+                'pricing_ins.ind_to_uae',
+                
+                ];
+                
+                $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
+                $result = $table_name->select($headers)
+                ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+                ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+                ->whereIn('catalognewins.asin', $asin)
+                ->get()->toArray();
 
-        $check_result = $table_name->select($headers)
-        ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-        ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
-        ->whereIn('catalognewins.asin', $asin)
-        ->pluck('asin')->toArray();
+                $check_result = $table_name->select($headers)
+                ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+                ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+                ->whereIn('catalognewins.asin', $asin)
+                ->pluck('asin')->toArray();
 
 
-        $not_founds = array_diff($asin, $check_result);
-            
-        foreach ($not_founds as $not_found)
-        {
-            fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
-        }
+                $not_founds = array_diff($asin, $check_result);
+                    
+                foreach ($not_founds as $not_found)
+                {
+                    fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
+                }
 
-        }
+            }
         }
 
         foreach ($result as $data) {
@@ -542,7 +544,8 @@ class CliqnshopCatalogController extends Controller
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Generic Keywords not found'. "\n");
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Generic Keywords'. "\n");
             }
-            $insert_service->insertdata_cliqnshop(
+
+            $insertable_value = [
                 $site_id,
                 $category_code,
                 $asin,
@@ -563,7 +566,15 @@ class CliqnshopCatalogController extends Controller
                 $generic_keywords,
                 $editor,
                 $display_code
+            ];
+
+            $insert_service->insertdata_cliqnshop(
+                ...$insertable_value
             );
+
+            
+            $csvExporter->set_csv_body($insertable_value);           
+
 
             if ($item_name !== '')
             {
@@ -612,6 +623,13 @@ class CliqnshopCatalogController extends Controller
             }
 
         }
+
+        $csv_head =  ['site','category_code','asin','item_name','brand_code','brand_label','color_code','color_label','length_unit','length_value','width_unit','width_value','price','image','long_description','generic_keywords'];
+        
+        $csvExporter->set_csv_head($csv_head);
+        $csvExporter->set_file_path('Cliqnshop/upload/asin/exported_from_textarea/');
+        $csvExporter->set_file_name_prefix('textarea_export_');
+        $csvExporter->generate();
         
         fclose($file);
         fclose($file_s);
@@ -647,6 +665,7 @@ class CliqnshopCatalogController extends Controller
                     $exportFiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
                 }
             }
+            array_multisort($exportFiles, SORT_DESC , SORT_REGULAR );
             return response()->json($exportFiles);
         }
     }
@@ -654,6 +673,11 @@ class CliqnshopCatalogController extends Controller
      public function exported_asin_link_downloader($fileName)
     {
         return Storage::download('Cliqnshop/upload/asin/export/' . $fileName);
+    }
+
+    public function textarea_exported_asin_link_downloader($fileName)
+    {
+        return Storage::download('Cliqnshop/upload/asin/exported_by_textarea/' . $fileName);
     }
 
     public function  exported_asin_updater(Request $request)

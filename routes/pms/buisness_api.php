@@ -79,6 +79,8 @@ Route::post('cliqnshop/category-export', 'Catalog\CategoryController@export')->n
 
 Route::get('cliqnshop/catalog/asin/export/list', 'Catalog\CliqnshopCatalogController@exported_asin_lister')->name('cliqnshop.catalog.asin.export.list');
 Route::get('cliqnshop/catalog/asin/export/list/download/{index}', 'Catalog\CliqnshopCatalogController@exported_asin_link_downloader')->name('cliqnshop.catalog.asin.export.list.download');
+Route::get('cliqnshop/catalog/asin/text-area-export/list/download/{index}', 'Catalog\CliqnshopCatalogController@textarea_exported_asin_link_downloader')->name('cliqnshop.catalog.asin.text-area-export.list.download');
+
 Route::post('cliqnshop/catalog/asin/export/list/update', 'Catalog\CliqnshopCatalogController@exported_asin_updater')->name('cliqnshop.catalog.asin.export.list.update');
 
 

@@ -83,9 +83,11 @@ class CliqnshopCategoryController extends Controller
                     {
                         return '<p class = "text-danger">UAE</p>';
                     }
-                    if ($s_code[0] == 'in')
-                    {
+                    elseif ($s_code[0] == 'in') {
                         return '<p class = "text-success">India</p>';
+                    }
+                    else {
+                        return $s_code[0];
                     }
                 })
                 ->rawColumns(['action','site'])
