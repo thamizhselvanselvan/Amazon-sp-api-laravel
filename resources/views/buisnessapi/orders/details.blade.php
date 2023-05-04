@@ -122,6 +122,7 @@
             <th>Site</th>
             <th>Quantity</th>
             <th>Price</th>
+            <th>Rebate</th>
             <th>Total Price</th>
             <th>Action</th>
         </tr>
@@ -188,6 +189,10 @@
                 {
                     data: 'price',
                     name: 'price'
+                },
+                {
+                    data: 'rebate',
+                    name: 'rebate'
                 },
                 {
                     data: 'total_price',
