@@ -88,7 +88,7 @@ class AvailabilityFeed
                     <Inventory>
                         <SKU>' . $feedlist['product_sku'] . '</SKU>
                         <Available >' . $feedlist['available'] . ' </Available>
-                            <FulfillmentLatency>0</FulfillmentLatency>
+                            <FulfillmentLatency>10</FulfillmentLatency>
                     </Inventory>
                 </Message>';
 
