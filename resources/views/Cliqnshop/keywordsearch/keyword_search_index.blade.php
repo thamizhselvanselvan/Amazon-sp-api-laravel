@@ -85,6 +85,7 @@
         <tr class="table-info">
             <th>ID</th>
             <th>Search Keyword</th>
+            <th>User</th>
             <th>Ip Address</th>
             <th>site_code</th>
             <th>Searched On </th>
@@ -123,6 +124,10 @@
                 {
                     data: 'search_term',
                     name: 'search_term'
+                },
+                {
+                    data: 'user',
+                    name: 'user'
                 },
                 {
                     data: 'ip_address',
