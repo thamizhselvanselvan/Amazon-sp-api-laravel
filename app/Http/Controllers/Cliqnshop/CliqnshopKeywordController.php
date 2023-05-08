@@ -28,7 +28,7 @@ class CliqnshopKeywordController extends Controller
 
                 })
                 ->addColumn('user', function ($data) {
-                    $user = DB::connection('cliqnshop')->table('users')->where('id', $data->user_id)->value('name');
+                    $user = DB::connection('cliqnshop')->table('users')->where('id', $data->user_id)->where('name', 'not like', '%@%')->value('name');
                     $user_email = DB::connection('cliqnshop')->table('users')->where('id', $data->user_id)->value('email');
                     if ($user !== null) {
                         return "<p class = 'text-success'>$user (<a href='mailto:$user_email'>$user_email</a>)</p>";
