@@ -156,7 +156,7 @@ class CourierTrackingController extends Controller
         ];
 
         $forwarder1_record = [];
-        if ($result[0]['forwarder_1_awb'] != '' && $result[0]['forwarder_1_flag'] == 0) {
+        if ($result[0]['forwarder_1_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_1_awb'];
             $courier_name = $result[0]['courier_partner1']['courier_names']['courier_name'];
@@ -193,7 +193,7 @@ class CourierTrackingController extends Controller
         }
 
         $forwarder2_record = [];
-        if ($result[0]['forwarder_2_awb'] != '' && $result[0]['forwarder_2_flag'] == 0) {
+        if ($result[0]['forwarder_2_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_2_awb'];
             $courier_name = $result[0]['courier_partner2']['courier_names']['courier_name'];
@@ -228,7 +228,7 @@ class CourierTrackingController extends Controller
             }
         }
         $forwarder3_record = [];
-        if ($result[0]['forwarder_3_awb'] != '' && $result[0]['forwarder_3_flag'] == 0) {
+        if ($result[0]['forwarder_3_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_3_awb'];
             $courier_name = $result[0]['courier_partner3']['courier_names']['courier_name'];
@@ -265,7 +265,7 @@ class CourierTrackingController extends Controller
         }
 
         $forwarder4_record = [];
-        if ($result[0]['forwarder_4_awb'] != '' && $result[0]['forwarder_4_flag'] == 0) {
+        if ($result[0]['forwarder_4_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_4_awb'];
             $courier_name = $result[0]['courier_partner4']['courier_names']['courier_name'];
