@@ -310,40 +310,40 @@ class CourierTrackingController extends Controller
         return Redirect::back()->with('success', 'Fetching details please wait..');
     }
 
-    public function uploadAwb()
-    {
-        return view('shipntrack.Smsa.upload');
-    }
+    // public function uploadAwb()
+    // {
+    //     return view('shipntrack.Smsa.upload');
+    // }
 
-    public function GetTrackingDetails(Request $request)
-    {
-        $request->validate([
-            'smsa_awbNo' => 'required|min:10',
-        ]);
+    // public function GetTrackingDetails(Request $request)
+    // {
+    //     $request->validate([
+    //         'smsa_awbNo' => 'required|min:10',
+    //     ]);
 
-        $tracking_id = $request->smsa_awbNo;
+    //     $tracking_id = $request->smsa_awbNo;
 
-        $datas = preg_split('/[\r\n| |:|,]/', $tracking_id, -1, PREG_SPLIT_NO_EMPTY);
-        $datas = array_unique($datas);
+    //     $datas = preg_split('/[\r\n| |:|,]/', $tracking_id, -1, PREG_SPLIT_NO_EMPTY);
+    //     $datas = array_unique($datas);
 
-        $count = 0;
-        $awbNo_array = [];
+    //     $count = 0;
+    //     $awbNo_array = [];
 
-        $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
-        $queue_type = 'tracking';
+    //     $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
+    //     $queue_type = 'tracking';
 
-        foreach ($datas as $awbNo) {
-            if ($count == 5) {
+    //     foreach ($datas as $awbNo) {
+    //         if ($count == 5) {
 
-                jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
-                $awbNo_array = [];
-                $count = 0;
-            }
-            $awbNo_array[] = $awbNo;
-            $count++;
-        }
+    //             jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
+    //             $awbNo_array = [];
+    //             $count = 0;
+    //         }
+    //         $awbNo_array[] = $awbNo;
+    //         $count++;
+    //     }
 
-        jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
-        return redirect()->intended('/shipntrack/smsa')->with('success', 'Tracking Details Saved');
-    }
+    //     jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
+    //     return redirect()->intended('/shipntrack/smsa')->with('success', 'Tracking Details Saved');
+    // }
 }
