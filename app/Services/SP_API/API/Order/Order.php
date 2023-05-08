@@ -81,7 +81,27 @@ class Order
 
         $apiInstance = new OrdersV0Api($config);
 
-        $subDays = getSystemSettingsValue('dump_order_subDays', 5);
+        // $subDays = getSystemSettingsValue('dump_order_subDays', 5);
+        $startTime = '06:00 PM';
+        $endTime = '06:30 PM';
+        $second_start = '07:00 AM';
+        $second_end = '08:00 AM';
+        $checkTime =  date('h:i A', strtotime(now()));
+
+        $startTimeStamp = strtotime($startTime);
+        $endTimeStamp = strtotime($endTime);
+        $second_start_stamp = strtotime($second_start);
+        $second_end_stamp = strtotime($second_end);
+        $checkTimeStamp = strtotime($checkTime);
+
+        $subDays = '2';
+        if ($checkTimeStamp >= $startTimeStamp && $checkTimeStamp <= $endTimeStamp ||  $checkTimeStamp >= $second_start_stamp && $checkTimeStamp <= $second_end_stamp) {
+            $subDays = '5';
+        } else {
+            $subDays = getSystemSettingsValue('dump_order_subDays', 5);
+        }
+        Log::notice($subDays);
+
         $startTime = Carbon::now()->subDays($subDays)->toISOString();
 
         $createdAfter = $startTime;
