@@ -83,7 +83,8 @@ class OrderMissingDetailsController extends Controller
         }
         //zoho api update
         $zoho = new ZohoApi(new_zoho: false);
-        $zoho_lead_search = $zoho->search($order_id, $item_id);
+        $type = 'price Update Through app360';
+        $zoho_lead_search = $zoho->search($order_id, $item_id, $type);
 
         if (!isset($zoho_lead_search['data'][0]['id'])) {
 
@@ -91,7 +92,8 @@ class OrderMissingDetailsController extends Controller
         }
 
         $lead_id = $zoho_lead_search['data'][0]['id'];
-        $zoho->updateLead($lead_id, ["Product_Cost" => $price]);
+        $type = 'price Update Through app360';
+        $zoho->updateLead($lead_id, ["Product_Cost" => $price], $type);
 
         //table zoho_pricing Update
         ZohoMissing::where(['amazon_order_id' => $order_id, 'order_item_id' => $item_id, 'asin' => $asin])
@@ -243,8 +245,8 @@ class OrderMissingDetailsController extends Controller
 
         $table_name = table_model_create(country_code: 'us', model: 'Pricing', table_name: 'pricing_');
 
-         $table_name->where('asin',$asin)
-         ->update(['us_price'=>$price]);
+        $table_name->where('asin', $asin)
+            ->update(['us_price' => $price]);
 
         OrderUpdateDetail::where([
             ['amazon_order_id', $order_id],
@@ -259,6 +261,5 @@ class OrderMissingDetailsController extends Controller
             ->update(['price' => $price, 'status' => '1']);
 
         return response()->json(['data' => 'success']);
-
     }
 }

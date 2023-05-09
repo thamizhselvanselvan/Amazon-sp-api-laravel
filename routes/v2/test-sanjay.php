@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use App\Models\TestZoho;
 use App\Models\Mws_region;
 use App\Events\EventManager;
 use App\Models\Admin\Backup;
@@ -28,9 +29,9 @@ use App\Http\Controllers\Inventory\StockController;
 use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
+use JeroenNoten\LaravelAdminLte\View\Components\Widget\Card;
 use App\Services\AWS_Business_API\AWS_POC\Search_Product_Request;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
-use JeroenNoten\LaravelAdminLte\View\Components\Widget\Card;
 
 Route::get('sanju/test/order/{order_id}/{seller_id}/{country_code}', 'TestController@getOrder');
 Route::get('sanju/test/controller', 'SanjayTestController@index');
@@ -598,17 +599,19 @@ Route::get('sanju/test/catalog', function () {
     }
 });
 
-Route::get('vb', function () {
+Route::get('vsb', function () {
+    $data = 'test';
+    TestZoho::create(['opertaion_type'=> 'test','api_called_through' => 'test','time'=> Carbon::now()]);
     // $time = date('h:i A', strtotime(now()));
     // $checkTime = date('Y-m-d H:i:s');;
-
-
+po('dd');
+exit;
     $startTime = '06:00 PM';
     $endTime = '06:30 PM';
     $second_start = '07:00 AM';
     $second_end = '08:00 AM';
     $checkTime =  date('h:i A', strtotime(now()));
-    
+
     $startTimeStamp = strtotime($startTime);
     $endTimeStamp = strtotime($endTime);
     $second_start_stamp = strtotime($second_start);
@@ -621,5 +624,5 @@ Route::get('vb', function () {
     } else {
         $subDays = getSystemSettingsValue('dump_order_subDays', 5);
     }
-  po($subDays);
+    po($subDays);
 });
