@@ -6,9 +6,10 @@ $method = ['get', 'post'];
 
 Route::get('shipntrack/courier/tracking', 'shipntrack\Tracking\CourierTrackingController@index')->name('shipntrack.courier.tracking');
 Route::get('shipntrack/courier/moredetails/{sourceDestination}/{awbno}', 'shipntrack\Tracking\CourierTrackingController@PacketMoreDetails');
-Route::get('shipntrack/smsa/upload', 'shipntrack\Tracking\CourierTrackingController@uploadAwb')->name('shipntrack.smsa.upload');
-Route::post('shipntrack/smsa/gettracking', 'shipntrack\Tracking\CourierTrackingController@GetTrackingDetails')->name('shipntrack.smsa.gettracking');
 Route::get('shipntrack/courier/track', 'shipntrack\Tracking\CourierTrackingController@getDetails')->name('shipntrack.courier.track');
+
+// Route::get('shipntrack/smsa/upload', 'shipntrack\Tracking\CourierTrackingController@uploadAwb')->name('shipntrack.smsa.upload');
+// Route::post('shipntrack/smsa/gettracking', 'shipntrack\Tracking\CourierTrackingController@GetTrackingDetails')->name('shipntrack.smsa.gettracking');
 
 Route::get('shipntrack/bombino', 'shipntrack\Bombino\BombinoExpressController@index')->name('shipntrack.bombino');
 Route::get('shipntrack/bombino/upload', 'shipntrack\Bombino\BombinoExpressController@upload')->name('shipntrack.bombino.upload');
