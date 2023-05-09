@@ -46,7 +46,7 @@ class ZohoOrder
 
             return $notes;
         }
-
+        Log::notice($amazon_order_id);
         $amazon_order_id = ($amazon_order_id) ? $amazon_order_id : $order_items->amazon_order_id;
         $order_item_identifier = isset($order_items->order_item_id) ? $order_items->order_item_id : null;
 
