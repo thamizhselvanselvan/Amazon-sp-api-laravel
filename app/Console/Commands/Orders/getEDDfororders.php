@@ -114,14 +114,15 @@ class getEDDfororders extends Command
 
                             $item_id =   $data['order_item_identifier'];
                             $zoho = new ZohoApi(new_zoho: false);
-                            $zoho_lead_search = $zoho->search($order_id, $item_id);
+                            $type = 'EDD Update Through Command';
+                            $zoho_lead_search = $zoho->search($order_id, $item_id,$type);
 
                             if (isset($zoho_lead_search['data'][0]['id'])) {
                                 $lead_id = $zoho_lead_search['data']['0']['id'];
                                 $value = Carbon::parse($latest_delivery_date)->format('Y-m-d');
+                                $type = 'EDD Update Through Command';
+                                $zoh =    $zoho->updateLead($lead_id, ["US_EDD" => $value], $type);
 
-                                $zoh =    $zoho->updateLead($lead_id, ["US_EDD" => $value]);
-                            
                                 Order::where('amazon_order_identifier', $order_id)->update(['latest_delivery_date' => $latest_delivery_date]);
                             } else {
                                 Log::info("Not A valid Key For EDD(zoho) " . ' ' . $order_id);

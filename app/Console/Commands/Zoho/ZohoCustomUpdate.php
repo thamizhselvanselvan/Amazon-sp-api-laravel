@@ -51,7 +51,7 @@ class ZohoCustomUpdate extends Command
         // exit;
 
         $zoho = new ZohoApi(new_zoho: false);
-       // $zohoOrder = new ZohoOrder;
+        // $zohoOrder = new ZohoOrder;
 
         $cnt = 0;
 
@@ -71,7 +71,8 @@ class ZohoCustomUpdate extends Command
             $item_price = $record['item_price'];
             $item_tax = $record['item_tax'];
 
-            $exists = $zoho->search($amazon_order_id, $order_item_id);
+            $type_search = 'custom search';
+            $exists = $zoho->search($amazon_order_id, $order_item_id, $type_search);
 
             if ($exists && array_key_exists('data', $exists) && array_key_exists(0, $exists['data']) && array_key_exists('id', $exists['data'][0])) {
 
@@ -79,8 +80,8 @@ class ZohoCustomUpdate extends Command
 
                 $price  = $this->prices($source, $asin, $amazon_order_id, $order_item_id, $store_name, $amount_paid_by_customer);
 
-                if($price != 0) {
-                    
+                if ($price != 0) {
+
                     $lead_exists[] = [
                         "amazon_order_identifier" => $amazon_order_id,
                         'order_item_identifier' => $order_item_id,
@@ -93,12 +94,11 @@ class ZohoCustomUpdate extends Command
 
                     $lead_id  = $exists['data'][0]['id'];
                     $parameters['Product_Cost']  = $price;
-
-                    $zoho->updateLead($lead_id, $parameters);
+                    $type = 'zohocustom update';
+                    $zoho->updateLead($lead_id, $parameters, $type);
 
                     po("Amazon Order ID: $amazon_order_id Order Item ID: $order_item_id. Product Cost Updated: $price");
                     print("\n");
-
                 } else {
 
                     $list_zeros[] = [
@@ -154,7 +154,8 @@ class ZohoCustomUpdate extends Command
         CSV_Write("lead_exists.csv", $headers, $lead_exists);
     }
 
-    public function prices($source, $asin, $order_identifier, $order_item_identifier, $store_name, $amount_paid_by_customer) {
+    public function prices($source, $asin, $order_identifier, $order_item_identifier, $store_name, $amount_paid_by_customer)
+    {
 
         if ($source == "US") {
 
