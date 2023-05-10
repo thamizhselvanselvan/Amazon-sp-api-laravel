@@ -27,8 +27,6 @@ class ExportPriceViaVolumetricWeight
     private $record_per_csv = 1000000;
     private $price_convert;
 
-
-
     public function index($countryCode, $fmID, $priority)
     {
         $this->price_convert = new PriceConversion();
@@ -165,7 +163,6 @@ class ExportPriceViaVolumetricWeight
                         $poundToKg = poundToKg($weight);
                         $volKg = VolumetricIntoKG($packet_dimensions);
                         $actual_weight_kg = $poundToKg > $volKg ? $poundToKg : $volKg;
-
 
                         $in_price = $catalog_detail['in_price'] ?? 0;
                         $asin_data[$key]['AVAILABLE'] = $in_price != 0 ? $catalog_detail['available'] : 0;
@@ -315,6 +312,7 @@ class ExportPriceViaVolumetricWeight
         $file_path = Storage::path($path);
 
         if (!Storage::exists($path)) {
+
             Storage::put($path, '');
         } else {
             unlink(Storage::path($path));
