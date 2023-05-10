@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\ZohoViaMongoDB;
 
+use App\Models\MongoDB\NewZoho;
 use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
@@ -56,7 +57,7 @@ class SubmitRequestToZohoApi extends Command
 
         // Process Management end
 
-        $records = zoho::count();
+        $records = NewZoho::count();
         $page = $records == 0 ? 1 : 4;
 
         $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
