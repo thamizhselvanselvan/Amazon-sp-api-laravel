@@ -199,7 +199,7 @@ class ZohoOrderFormat
 
         $prod_array["Mobile"]      = isset($buyerDtls->Phone) ? substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10) : '1234567890';
 
-        $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code);
+        $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code, $store_name);
         $prod_array["City"]        = $buyerDtls->City;
         $prod_array['State']       = $this->get_state_pincode($country_code, $buyerDtls);
         $prod_array['Zip_Code']    = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
@@ -370,19 +370,21 @@ class ZohoOrderFormat
         return 'http://www.amazon.com/gp/product/' . $asin;
     }
 
-    public function get_address($shipping_address, $country_code)
+    public function get_address($shipping_address, $country_code, $store_name)
     {
         $buyerDtls = (object)$shipping_address;
         $address = '';
 
         if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
-            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
-        } else {
-            $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
+            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2;
+        } else if(isset($buyerDtls->AddressLine1) && !isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine1;
+        } else if(!isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine2;
         }
 
-        $name =  $buyerDtls->Name ?? "";
-        $city = $buyerDtls->City ?? "";
+        $name =  isset($buyerDtls->Name) ? $buyerDtls->Name : "";
+        $city = isset($buyerDtls->City) ? $buyerDtls->City : "";
         $state = $this->get_state_pincode($country_code, $buyerDtls);
         $pincode = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
 
@@ -405,18 +407,22 @@ class ZohoOrderFormat
         if ($country_code == 'AE') {
 
             if ($return == "state") {
-                return $buyerDtls->City;
+                return isset($buyerDtls->City) ? $buyerDtls->City : '';
             }
 
             return '00000';
         }
 
         if ($return == "state") {
-            //Log::info(json_encode($buyerDtls));
-            return $buyerDtls->StateOrRegion ?? $buyerDtls->County;
+
+            if(isset($buyerDtls->StateOrRegion)) {
+                return $buyerDtls->StateOrRegion;
+            }
+
+            return isset($buyerDtls->County) ? $buyerDtls->County : '';
         }
 
-        return $buyerDtls->PostalCode ?? '00000';
+        return isset($buyerDtls->PostalCode) ? $buyerDtls->PostalCode : '00000';
     }
 
     public function get_catalog($amazon_order_identifier, $amazon_order_item_identifier, $asin, $country_code, $store_name, $fulfillment_channel = null, $amount_paid_by_customer = null)
