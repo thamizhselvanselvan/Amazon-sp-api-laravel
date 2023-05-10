@@ -1,6 +1,6 @@
 <?php
 
-use App\Services\ZohoOrderFormat;
+use App\Services\Zoho\ZohoOrderFormat;
 use App\Models\order\OrderItemDetails;
 use App\Models\order\OrderUpdateDetail;
 

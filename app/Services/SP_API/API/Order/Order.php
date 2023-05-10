@@ -100,7 +100,6 @@ class Order
         } else {
             $subDays = getSystemSettingsValue('dump_order_subDays', 5);
         }
-        Log::notice($subDays);
 
         $startTime = Carbon::now()->subDays($subDays)->toISOString();
 
