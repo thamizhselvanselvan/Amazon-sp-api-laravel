@@ -50,7 +50,7 @@ class ZohoBulkDump extends Command
      */
     public function handle()
     {
-        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
+        $this->token = json_decode(Storage::get("new_zoho/access_token.txt"), true)["access_token"];
         // $zoho_id = $this->ReadZohoTextFile();
         $zoho_id = $this->argument('zoho_id');
         $status = $this->argument('zoho_state');

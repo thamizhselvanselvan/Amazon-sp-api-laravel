@@ -57,10 +57,11 @@ class SubmitRequestToZohoApi extends Command
 
         // Process Management end
 
-        $records = NewZoho::count();
-        $page = $records == 0 ? 1 : 4;
+        // $records = NewZoho::count();
+        // $page = $records == 0 ? 1 : 4;
+        $page = 1;
 
-        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
+        $this->token = json_decode(Storage::get("new_zoho/access_token.txt"), true)["access_token"];
 
         $payload = [
             "callback" => [
