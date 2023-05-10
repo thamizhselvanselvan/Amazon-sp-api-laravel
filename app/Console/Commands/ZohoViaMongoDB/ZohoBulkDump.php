@@ -6,7 +6,6 @@ use ZipArchive;
 use Carbon\Carbon;
 use League\Csv\Reader;
 use App\Models\MongoDB\zoho;
-use App\Models\MongoDB\NewZoho;
 use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
@@ -50,7 +49,7 @@ class ZohoBulkDump extends Command
      */
     public function handle()
     {
-        $this->token = json_decode(Storage::get("new_zoho/access_token.txt"), true)["access_token"];
+        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
         // $zoho_id = $this->ReadZohoTextFile();
         $zoho_id = $this->argument('zoho_id');
         $status = $this->argument('zoho_state');
@@ -152,7 +151,7 @@ class ZohoBulkDump extends Command
 
         foreach ($csv_data as $data) {
 
-            NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+            zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
         }
         Log::debug(count($csv_data));
 

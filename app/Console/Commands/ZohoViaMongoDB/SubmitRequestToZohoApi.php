@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands\ZohoViaMongoDB;
 
-use App\Models\MongoDB\NewZoho;
 use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
 use App\Models\ProcessManagement;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
@@ -57,11 +57,10 @@ class SubmitRequestToZohoApi extends Command
 
         // Process Management end
 
-        // $records = NewZoho::count();
-        // $page = $records == 0 ? 1 : 4;
-        $page = 1;
+        $records = zoho::count();
+        $page = $records == 0 ? 1 : 4;
 
-        $this->token = json_decode(Storage::get("new_zoho/access_token.txt"), true)["access_token"];
+        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
 
         $payload = [
             "callback" => [
@@ -79,7 +78,8 @@ class SubmitRequestToZohoApi extends Command
             "Content-Type" => "application/json"
         ])->post($this->url, $payload);
 
-        // $response = $headers->json();
+        $response = $headers->json();
+        Log::debug($response);
         // Storage::put($this->file_path, json_encode($response));
         // return $response;
     }
