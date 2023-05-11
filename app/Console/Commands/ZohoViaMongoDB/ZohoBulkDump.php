@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands\ZohoViaMongoDB;
 
+use App\Models\MongoDB\NewZoho;
 use ZipArchive;
 use Carbon\Carbon;
 use League\Csv\Reader;
@@ -23,7 +24,7 @@ class ZohoBulkDump extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:zoho-bulk-dump {zoho_id} {zoho_state} {page} {more_records}';
+    protected $signature = 'mosh:zoho-bulk-dump {zoho_id} {zoho_state} {page} {more_records} {token_file_name} {callback_url}';
 
     /**
      * The console command description.
@@ -49,13 +50,15 @@ class ZohoBulkDump extends Command
      */
     public function handle()
     {
-        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
         // $zoho_id = $this->ReadZohoTextFile();
         $zoho_id = $this->argument('zoho_id');
         $status = $this->argument('zoho_state');
         $page = $this->argument('page');
         $more_records = $this->argument('more_records');
+        $token_file = $this->argument('token_file_name');
+        $callback_url = $this->argument('callback_url');
 
+        $this->token = json_decode(Storage::get("$token_file/access_token.txt"), true)["access_token"];
 
         Log::debug('zoho_id =>' . $zoho_id);
         Log::debug('status =>' . $status);
@@ -65,11 +68,11 @@ class ZohoBulkDump extends Command
 
             if ($status == "COMPLETED") {
 
-                $this->DownloadZohoFile($zoho_id);
+                $this->DownloadZohoFile($zoho_id, $token_file);
 
                 if ($more_records == 1) {
 
-                    $this->MakeRequestIntoZoho($page + 1);
+                    $this->MakeRequestIntoZoho($page + 1, $callback_url);
                 }
             }
         }
@@ -89,7 +92,7 @@ class ZohoBulkDump extends Command
     //     return $zoho_id;
     // }
 
-    public function MakeRequestIntoZoho($page = 1)
+    public function MakeRequestIntoZoho($page = 1, $callback_url)
     {
         $process_manage = [
             'module'             => 'Zoho Dump',
@@ -101,7 +104,7 @@ class ZohoBulkDump extends Command
 
         $payload = [
             "callback" => [
-                "url" => "https://app.360ecom.io/api/zoho/webhook",
+                "url" => $callback_url,
                 "method" => "post"
             ],
             "query" => [
@@ -129,7 +132,7 @@ class ZohoBulkDump extends Command
     //     return $response;
     // }
 
-    public function DownloadZohoFile($zoho_id)
+    public function DownloadZohoFile($zoho_id, $token_file)
     {
         Log::debug('download');
         $Response = Http::withoutVerifying()->withHeaders([
@@ -138,20 +141,31 @@ class ZohoBulkDump extends Command
 
         Storage::put("zohocsv/$zoho_id.zip", $Response);
         if ($this->ExtractZipFile("zohocsv/$zoho_id.zip")) {
-            $this->csvReader("zohocsv/$zoho_id.csv");
+            $this->csvReader("zohocsv/$zoho_id.csv", $token_file);
         }
     }
 
-    public function csvReader($csv_path)
+    public function csvReader($csv_path, $token_file)
     {
         Log::debug('csv_read');
         $csv_data =  Reader::createFromPath(Storage::path($csv_path), 'r');
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
 
-        foreach ($csv_data as $data) {
+        Log::debug($token_file);
 
-            zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+        if ($token_file == "zoho") {
+
+            foreach ($csv_data as $data) {
+
+                zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+            }
+        } else {
+            foreach ($csv_data as $data) {
+
+                NewZoho::insert($data);
+                // NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+            }
         }
         Log::debug(count($csv_data));
 

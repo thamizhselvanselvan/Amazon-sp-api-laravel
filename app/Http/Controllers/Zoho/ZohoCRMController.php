@@ -18,12 +18,13 @@ class ZohoCRMController extends Controller
         $page = $request['result']['page'];
         $more_records = isset($request['result']['more_records']) && !empty($request['result']['more_records']) ? $request['result']['more_records'] : '0';
 
-        $token_file = "zoho";
+        $token_file_name = "zoho";
         $callback_url = "https://app.360ecom.io/api/zoho/webhook";
 
-        // commandExecFunc("mosh:zoho-bulk-dump ${zoho_id} ${zoho_state} ${page} ${more_records}");
-        $zoho_bulk_api = new ZohoBulkReadAPI();
-        $zoho_bulk_api->zohoDump($zoho_id, $zoho_state, $page, $more_records, $token_file, $callback_url);
+        commandExecFunc("mosh:zoho-bulk-dump ${zoho_id} ${zoho_state} ${page} ${more_records} ${token_file_name} ${callback_url}");
+
+        // $zoho_bulk_api = new ZohoBulkReadAPI();
+        // $zoho_bulk_api->zohoDump($zoho_id, $zoho_state, $page, $more_records, $token_file, $callback_url);
     }
 
     public function NewZohoWebhook(Request $request)
@@ -35,11 +36,12 @@ class ZohoCRMController extends Controller
         $page = $request['result']['page'];
         $more_records = isset($request['result']['more_records']) && !empty($request['result']['more_records']) ? $request['result']['more_records'] : '0';
 
-        $token_file = "new_zoho";
+        $token_file_name = "new_zoho";
         $callback_url = "https://app.360ecom.io/api/zoho/new/webhook";
 
-        // commandExecFunc("mosh:zoho-bulk-dump ${zoho_id} ${zoho_state} ${page} ${more_records}");
-        $zoho_bulk_api = new ZohoBulkReadAPI();
-        $zoho_bulk_api->zohoDump($zoho_id, $zoho_state, $page, $more_records, $token_file, $callback_url);
+        commandExecFunc("mosh:zoho-bulk-dump ${zoho_id} ${zoho_state} ${page} ${more_records} ${token_file_name} ${callback_url}");
+
+        // $zoho_bulk_api = new ZohoBulkReadAPI();
+        // $zoho_bulk_api->zohoDump($zoho_id, $zoho_state, $page, $more_records, $token_file, $callback_url);
     }
 }
