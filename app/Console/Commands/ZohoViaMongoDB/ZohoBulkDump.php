@@ -164,7 +164,7 @@ class ZohoBulkDump extends Command
             foreach ($csv_data as $data) {
 
                 // NewZoho::insert($data);
-                NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('Product_ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+                NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('Product_ASIN', $data['Product_ASIN'])->update($data, ['upsert' => true]);
             }
         }
         Log::debug(count($csv_data));
