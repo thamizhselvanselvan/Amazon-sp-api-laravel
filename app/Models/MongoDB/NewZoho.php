@@ -2,8 +2,8 @@
 
 namespace App\Models\MongoDB;
 
+use Jenssegers\Mongodb\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class NewZoho extends Model
 {

@@ -81,10 +81,13 @@ class ZohoBulkReadAPI
 
     public function csvReader($csv_path, $token_file)
     {
-        // Log::debug('csv_read');
+        Log::debug('csv_read');
         $csv_data =  Reader::createFromPath(Storage::path($csv_path), 'r');
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
+
+        Log::debug($token_file);
+
         if ($token_file == "zoho") {
 
             foreach ($csv_data as $data) {
@@ -95,7 +98,8 @@ class ZohoBulkReadAPI
 
             foreach ($csv_data as $data) {
 
-                NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+                NewZoho::insert($data);
+                // NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
             }
         }
         Log::debug(count($csv_data));
