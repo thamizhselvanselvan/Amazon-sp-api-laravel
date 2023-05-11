@@ -5,6 +5,7 @@ namespace App\Services\Zoho;
 use ZipArchive;
 use League\Csv\Reader;
 use App\Models\MongoDB\zoho;
+use App\Models\MongoDB\NewZoho;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
@@ -15,9 +16,9 @@ class ZohoBulkReadAPI
     private $url = "https://www.zohoapis.com/crm/bulk/v2/read";
     private $token;
 
-    public function zohoDump($zoho_id, $status, $page, $more_records)
+    public function zohoDump($zoho_id, $status, $page, $more_records, $token_file, $url)
     {
-        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
+        $this->token = json_decode(Storage::get("$token_file/access_token.txt"), true)["access_token"];
 
         Log::debug('zoho_id =>' . $zoho_id);
         Log::debug('status =>' . $status);
@@ -27,17 +28,17 @@ class ZohoBulkReadAPI
 
             if ($status == "COMPLETED") {
 
-                $this->DownloadZohoFile($zoho_id);
+                $this->DownloadZohoFile($zoho_id, $token_file);
 
                 if ($more_records == 1) {
 
-                    $this->MakeRequestIntoZoho($page + 1);
+                    $this->MakeRequestIntoZoho($page + 1, $url);
                 }
             }
         }
     }
 
-    public function MakeRequestIntoZoho($page = 1)
+    public function MakeRequestIntoZoho($page = 1, $url)
     {
         $process_manage = [
             'module'             => 'Zoho Dump',
@@ -47,9 +48,10 @@ class ZohoBulkReadAPI
         ];
         ProcessManagement::create($process_manage)->toArray();
 
+        Log::debug($url);
         $payload = [
             "callback" => [
-                "url" => "https://app.360ecom.io/api/zoho/webhook",
+                "url" => $url,
                 "method" => "post"
             ],
             "query" => [
@@ -64,7 +66,7 @@ class ZohoBulkReadAPI
         ])->post($this->url, $payload);
     }
 
-    public function DownloadZohoFile($zoho_id)
+    public function DownloadZohoFile($zoho_id, $token_file)
     {
         Log::debug('download');
         $Response = Http::withoutVerifying()->withHeaders([
@@ -73,20 +75,28 @@ class ZohoBulkReadAPI
 
         Storage::put("zohocsv/$zoho_id.zip", $Response);
         if ($this->ExtractZipFile("zohocsv/$zoho_id.zip")) {
-            $this->csvReader("zohocsv/$zoho_id.csv");
+            $this->csvReader("zohocsv/$zoho_id.csv", $token_file);
         }
     }
 
-    public function csvReader($csv_path)
+    public function csvReader($csv_path, $token_file)
     {
         Log::debug('csv_read');
         $csv_data =  Reader::createFromPath(Storage::path($csv_path), 'r');
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
+        if ($token_file == "zoho") {
 
-        foreach ($csv_data as $data) {
+            foreach ($csv_data as $data) {
 
-            zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+                zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+            }
+        } else {
+
+            foreach ($csv_data as $data) {
+
+                NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
+            }
         }
         Log::debug(count($csv_data));
 
