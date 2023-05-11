@@ -81,7 +81,7 @@ class ZohoBulkReadAPI
 
     public function csvReader($csv_path, $token_file)
     {
-        Log::debug('csv_read');
+        // Log::debug('csv_read');
         $csv_data =  Reader::createFromPath(Storage::path($csv_path), 'r');
         $csv_data->setDelimiter(',');
         $csv_data->setHeaderOffset(0);
