@@ -72,7 +72,11 @@
                                 @endforeach
                             </x-adminlte-select>                                
 
-
+                            <x-adminlte-select name="editor" id="editor"  class="ml-2 form-control form-control-sm">
+                                <option value='' selected>Select the Editor to Apply filter</option>
+                                <option value="all">ALL</option>
+                                <option value="search">Product Search</option>
+                            </x-adminlte-select>
                         </div>
                        
                         <button type="submit" id="clear_log" class="btn btn-warning mx-2 btn-sm">Apply</button>
@@ -118,9 +122,10 @@
 
     const filter = {
             site_id : new URLSearchParams(window.location.search).get('site_id'),
+            editor : new URLSearchParams(window.location.search).get('editor'),
         }
 
-        let url = `{{ route('cliqnshop.verify.asin') }}?`;  
+        let url = `{{ route('cliqnshop.verify.asin') }}?`; 
         if(!!filter.site_id)
         {            
             url += `site_id=${filter.site_id}`  ;
@@ -131,6 +136,20 @@
                 if (filterSite.value == filter.site_id)
                 {
                     filterSite.setAttribute('selected', true);
+                }
+            }
+        }
+
+        if(!!filter.editor)
+        {            
+            url += `&editor=${filter.editor}`  ;
+
+            var filterEditors = document.getElementById('editor'), filterEditor, i;
+            for (i = 0; i < filterEditors.length; i++) {
+                filterEditor = filterEditors[i];
+                if (filterEditor.value == filter.editor)
+                {
+                    filterEditor.setAttribute('selected', true);
                 }
             }
         }
