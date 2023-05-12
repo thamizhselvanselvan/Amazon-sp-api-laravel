@@ -13,6 +13,32 @@
         padding: 2;
         padding-left: 5px;
     }
+    .list-group-item {
+                padding: 0.3rem 1.25rem !important;
+    }
+    .list-group-custom
+    {
+        max-height: 125px;
+        overflow-y:  scroll;
+    }
+    .list-group-custom::-webkit-scrollbar {
+        width: 10px;
+        }
+
+    /* Track */
+    .list-group-custom::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+    }
+    
+    /* Handle */
+    .list-group-custom::-webkit-scrollbar-thumb {
+    background: #3ea695; 
+    }
+
+    /* Handle on hover */
+    .list-group-custom::-webkit-scrollbar-thumb:active {
+    background: #254e47; 
+    }
 </style>
 @stop
 @section('title', 'Cliqnshop KYC Details')
@@ -22,7 +48,7 @@
     <h3>Cliqnshop KYC Details</h3>
 </div>
 <div class="modal fade" id="kyc_modal" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="customerCrudModal">Validate KYC</h4>
@@ -61,17 +87,53 @@
                     @csrf
                     <div class="form-group">
                         <label for="kyc">KYC Status</label>
-                        <select id="kyc_status" name="kyc_status" class="form-select ml-4" aria-label="Default select example">
+                        <select id="kyc_status" name="kyc_status" class="form-control " aria-label="Default select example">
                             <option value='0'>Select Status :</option>
                             <option value="1">Accept</option>
                             <option value="2">Reject</option>
                         </select>
                     </div>
 
+                    <div class="form-group reject-reason">
+                        <label for="kyc">Choose Reject Reason : </label>
+                        <div class="list-group mb-3 list-group-custom" >
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <small>
+                                    Poor Quality Documents: The images or scans of your KYC documents were not clear, or the documents were not in the required format.
+                                </small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <small>
+                                    Mismatched Information: The information provided in your KYC documents does not match the information you provided during registration.
+                                </small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <small>
+                                    Invalid Documents: The KYC documents you provided are invalid, expired, or have been tampered with.
+                                </small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <small>
+                                    Incomplete Documents: The KYC documents you provided are missing some important information, such as your name, date of birth, or address.
+                                </small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <small>
+                                    Non-Verifiable Documents: The KYC documents you provided are not verifiable by our verification system, or they do not meet our verification requirements.
+                                </small>
+                            </a>
+                            <a href="#" class="list-group-item list-group-item-action">
+                                <small>
+                                    Suspicious Activity: Our system has detected suspicious activity associated with your account or your KYC documents.
+                                </small>
+                            </a>                        
+                        </div>
+                    </div>
+
                     <div class="col-xs-12 col-sm-12 col-md-12">
                         <div class="form-group rea">
                             <strong>Reason For Rejecting:</strong>
-                            <textarea name="reason" id="reason" class="form-control" placeholder="Please Enter The Reason For Rejecting The KYC"></textarea>
+                            <textarea name="reason" id="reason" selected class="form-control" placeholder="Please Enter The Reason For Rejecting The KYC"></textarea>
                         </div>
                     </div>
 
@@ -196,6 +258,7 @@
     });
     
     $('.rea').hide();
+    $('.reject-reason').hide();
     $(document).on('click', '#kyc_aprove', function() {
 
         let selected_date = $('#search_date').val();
@@ -238,11 +301,26 @@
         $('#kyc_modal').modal('hide');
     });
 
+    
+    
 
     $('#kyc_status').on('change', function() {
         let status = $('#kyc_status').val();
         if (status == '2') {
-            $('.rea').show();
+            $('.reject-reason').show();
+            const listItems = document.querySelectorAll('.list-group-item');
+            listItems.forEach(item => {
+                item.addEventListener('click', () => {
+                const text = item.textContent.trim();
+                // do something with the retrieved text
+            
+                $('.reject-reason').hide(); // hide the list group
+                $('#reason').val(text);
+                $('.rea').show();
+                $('#reason').select();
+                });
+            });
+            
         } else if (status == '1' || status == 0) {
             $('.rea').hide();
         }
