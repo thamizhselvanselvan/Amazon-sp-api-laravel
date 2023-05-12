@@ -2,31 +2,28 @@
 
 namespace App\Console\Commands\ZohoViaMongoDB;
 
-use App\Models\MongoDB\zoho;
 use Illuminate\Console\Command;
-use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
-class SubmitRequestToZohoApi extends Command
+class SendRequestToNewZohoApi extends Command
 {
-    private $file_path = "ZohoResponse/zoho-response.txt";
     private $url = "https://www.zohoapis.com/crm/bulk/v2/read";
-    public $token;
+    private $token;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'mosh:submit-request-to-zoho';
+    protected $signature = 'mosh:send-request-to-new-zoho';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Send requset to zoho api for downloading the zoho data';
+    protected $description = 'Command description';
 
     /**
      * Create a new command instance.
@@ -45,26 +42,15 @@ class SubmitRequestToZohoApi extends Command
      */
     public function handle()
     {
-        // Process Management begin
+        // $records = zoho::count();
+        // $page = $records == 0 ? 1 : 4;
+        $page = 1;
 
-        $process_manage = [
-            'module'             => 'Zoho Dump',
-            'description'        => 'Dump data into App360 database from zoho database',
-            'command_name'       => 'mosh:submit-request-to-zoho',
-            'command_start_time' => now(),
-        ];
-        ProcessManagement::create($process_manage)->toArray();
-
-        // Process Management end
-
-        $records = zoho::count();
-        $page = $records == 0 ? 1 : 4;
-
-        $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
+        $this->token = json_decode(Storage::get("new_zoho/access_token.txt"), true)["access_token"];
 
         $payload = [
             "callback" => [
-                "url" => "https://app.360ecom.io/api/zoho/webhook",
+                "url" => "https://app.360ecom.io/api/zoho/new/webhook",
                 "method" => "post"
             ],
             "query" => [

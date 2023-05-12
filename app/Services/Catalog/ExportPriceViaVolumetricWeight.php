@@ -27,8 +27,6 @@ class ExportPriceViaVolumetricWeight
     private $record_per_csv = 1000000;
     private $price_convert;
 
-
-
     public function index($countryCode, $fmID, $priority)
     {
         $this->price_convert = new PriceConversion();
@@ -70,8 +68,6 @@ class ExportPriceViaVolumetricWeight
             'UPDATED_AT'
         ];
         $query_limit = 10000;
-
-
 
         $us_destination  = table_model_create(country_code: $this->countryCode, model: 'Asin_destination', table_name: 'asin_destination_');
         $total_asin_count = $us_destination->when($this->priority != 'All', function ($query) {
@@ -150,17 +146,8 @@ class ExportPriceViaVolumetricWeight
             $length = 0;
             $width = 0;
             $packet_dimensions = 0;
-            // $dimension = (array) json_decode($catalog_detail['dimensions'], true);
 
             try {
-
-                // if (array_key_exists('package', $dimension[0]) && gettype($dimension[0]) == 'array') {
-                //     if (isset($dimension[0]['package']['weight']['value']) || isset($dimension[0]['package']['height']['value']) || isset($dimension[0]['package']['length']['value']) || isset($dimension[0]['package']['width']['value'])) {
-
-                // $weight = $dimension[0]['package']['weight']['value'] ?? 0;
-                // $length = $dimension[0]['package']['length']['value'] ?? 0;
-                // $width = $dimension[0]['package']['width']['value'] ?? 0;
-                // $height = $dimension[0]['package']['height']['value'] ?? 0;
 
                 $weight = $catalog_detail['weight'];
                 $length = $catalog_detail['length'];
@@ -176,7 +163,6 @@ class ExportPriceViaVolumetricWeight
                         $poundToKg = poundToKg($weight);
                         $volKg = VolumetricIntoKG($packet_dimensions);
                         $actual_weight_kg = $poundToKg > $volKg ? $poundToKg : $volKg;
-
 
                         $in_price = $catalog_detail['in_price'] ?? 0;
                         $asin_data[$key]['AVAILABLE'] = $in_price != 0 ? $catalog_detail['available'] : 0;
@@ -220,8 +206,6 @@ class ExportPriceViaVolumetricWeight
                         $asin_data[$key]['UPDATED_AT'] = date("Y-m-d H:i:s", strtotime($catalog_detail['updated_at']));
                     }
                 }
-                //     }
-                // }
             } catch (Exception $e) {
             }
         }
@@ -326,9 +310,14 @@ class ExportPriceViaVolumetricWeight
         $zip = new ZipArchive;
         $path = "excel/downloads/catalog_price/" . $this->countryCode . '/' . $this->priority . '/zip/' . $this->countryCode . "_CatalogPrice.zip";
         $file_path = Storage::path($path);
+
         if (!Storage::exists($path)) {
+
             Storage::put($path, '');
+        } else {
+            unlink(Storage::path($path));
         }
+
         if ($zip->open($file_path, ZipArchive::CREATE) === TRUE) {
             foreach ($this->totalFile as $key => $value) {
 
