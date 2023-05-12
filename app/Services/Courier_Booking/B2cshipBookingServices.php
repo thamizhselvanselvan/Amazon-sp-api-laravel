@@ -423,7 +423,8 @@ class B2cshipBookingServices
             Order_id: $order_id,
             Operation: 'B2Cship Booking Response'";
 
-            slack_notification('app360', 'B2cship Booking', $slackMessage);
+            Log::error($slackMessage);
+            // slack_notification('app360', 'B2cship Booking', $slackMessage);
         } else {
             $awb_no = $data['AWBNo'];
             OrderUpdateDetail::where([
