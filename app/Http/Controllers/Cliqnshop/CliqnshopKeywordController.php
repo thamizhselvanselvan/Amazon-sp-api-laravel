@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Cliqnshop;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
 
 class CliqnshopKeywordController extends Controller
@@ -28,7 +27,20 @@ class CliqnshopKeywordController extends Controller
                     return $diw = \Carbon\Carbon::parse($data->created_at)->diffForHumans();
 
                 })
-
+                ->addColumn('user', function ($data) {
+                    $user = DB::connection('cliqnshop')->table('users')->where('id', $data->user_id)->where('name', 'not like', '%@%')->value('name');
+                    $user_email = DB::connection('cliqnshop')->table('users')->where('id', $data->user_id)->value('email');
+                    if ($user !== null) {
+                        return "<p class = 'text-success'>$user (<a href='mailto:$user_email'>$user_email</a>)</p>";
+                    } else {
+                        if ($user_email !== null) {
+                            return "<p class = 'text-success'><a href='mailto:$user_email'>$user_email</a></p>";
+                        } else {
+                            return "<p class = 'text-danger'>Guest</p>";
+                        }
+                    }
+                })
+                ->rawColumns(['user'])
                 ->make(true);
         }
 
@@ -78,7 +90,7 @@ class CliqnshopKeywordController extends Controller
         $url = "/cliqnshop/keyword/ban";
 
         if ($site_id != null) {
-            $url = "/cliqnshop/keyword/ban/".$site_id;
+            $url = "/cliqnshop/keyword/ban/" . $site_id;
 
             $data = DB::connection('cliqnshop')->table('cns_ban_keywords')->where('site_id', $site_id)
                 ->orderBy('created_at', 'desc')
@@ -89,33 +101,30 @@ class CliqnshopKeywordController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->get();
         }
-        if ($request->ajax()) {         
+        if ($request->ajax()) {
             return Datatables::of($data)
-            ->addColumn('action', function ($row) {
-                return "<div class='d-flex'><a href='javascript:void(0)' name='id' id='edit' value ='$row->id' data-siteid='$row->site_id' data-keyword='$row->keyword' class='edit btn btn-success btn-sm'><i class='fas fa-edit'></i>Edit</a>"
-                ."<div class='d-flex'><a href='javascript:void(0)' name='id' id='delete' value ='$row->id'  class='delete btn btn-danger btn-sm ml-2'><i class='far fa-trash-alt'></i>Remove</a></div>";
-              })
-              ->addColumn('site', function ($data) {
-                $s_code = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid',$data->site_id)->pluck('code')->ToArray();
-                if ($s_code[0] == 'uae')
-                {
-                    return '<p class = "text-danger">UAE</p>';
-                }
-                elseif ($s_code[0] == 'in') {
-                    return '<p class = "text-success">India</p>';
-                }
-                else {
-                    return $s_code[0];
-                }
-            })
-              ->rawColumns(['action','site'])
-              ->make(true);
-                    
+                ->addColumn('action', function ($row) {
+                    return "<div class='d-flex'><a href='javascript:void(0)' name='id' id='edit' value ='$row->id' data-siteid='$row->site_id' data-keyword='$row->keyword' class='edit btn btn-success btn-sm'><i class='fas fa-edit'></i>Edit</a>"
+                        . "<div class='d-flex'><a href='javascript:void(0)' name='id' id='delete' value ='$row->id'  class='delete btn btn-danger btn-sm ml-2'><i class='far fa-trash-alt'></i>Remove</a></div>";
+                })
+                ->addColumn('site', function ($data) {
+                    $s_code = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $data->site_id)->pluck('code')->ToArray();
+                    if ($s_code[0] == 'uae') {
+                        return '<p class = "text-danger">UAE</p>';
+                    } elseif ($s_code[0] == 'in') {
+                        return '<p class = "text-success">India</p>';
+                    } else {
+                        return $s_code[0];
+                    }
+                })
+                ->rawColumns(['action', 'site'])
+                ->make(true);
+
         }
         $sites = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
 
-        return view('Cliqnshop.keywordsearch.ban_keywords_index', compact('sites','url'));
-    
+        return view('Cliqnshop.keywordsearch.ban_keywords_index', compact('sites', 'url'));
+
     }
 
     public function store_ban_keywords(Request $request)
@@ -142,12 +151,12 @@ class CliqnshopKeywordController extends Controller
             'keyword' => 'required',
         ]);
         DB::connection('cliqnshop')->table('cns_ban_keywords')
-        ->where('id',$keyword['id'],)
-        ->update([
-            'site_id' => $keyword['site'],
-            'keyword' => $keyword['keyword'],
-            'updated_at' => now(),
-        ]);
+            ->where('id', $keyword['id'], )
+            ->update([
+                'site_id' => $keyword['site'],
+                'keyword' => $keyword['keyword'],
+                'updated_at' => now(),
+            ]);
         return response()->json(['Successfully']);
     }
 
@@ -157,8 +166,8 @@ class CliqnshopKeywordController extends Controller
             'id' => 'required',
         ]);
         DB::connection('cliqnshop')->table('cns_ban_keywords')
-        ->where('id',$keyword['id'],)
-        ->delete();
+            ->where('id', $keyword['id'], )
+            ->delete();
         return response()->json(['Successfully']);
-    }    
+    }
 }

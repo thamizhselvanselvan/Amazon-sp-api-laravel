@@ -13,14 +13,37 @@ class CliqnshopVerificationController extends Controller
     {
         if ($request->ajax()) {
 
-            if ($request->has("site_id")) {
+            if ($request->has("site_id") && $request->has("editor") && $request->editor !== "search")
+            {
+                $data = DB::connection('cliqnshop')->table('mshop_product')
+                    ->where(['siteid' => $request->site_id])
+                    ->orderBy('mtime', 'desc');
+            }
+            elseif ($request->has("site_id") && $request->has("editor") && $request->editor !== "all")
+            {
+                $data = DB::connection('cliqnshop')->table('mshop_product')
+                    ->where(['siteid' => $request->site_id])
+                    ->whereIn('editor', ['cns_search_from_in', 'cns_search_from_uae'])
+                    ->orderBy('mtime', 'desc');
+            }
+            elseif ($request->has("site_id")) {
                 //  \Illuminate\Support\Facades\Log::alert('validation failed');
 
                 $data = DB::connection('cliqnshop')->table('mshop_product')
                     ->where(['siteid' => $request->site_id])
                     ->whereIn('editor', ['cns_search_from_in', 'cns_search_from_uae'])
                     ->orderBy('mtime', 'desc');
-            } else {
+            }
+            elseif ($request->has("editor") && $request->editor !== "all") {
+                $data = DB::connection('cliqnshop')->table('mshop_product')
+                    ->whereIn('editor', ['cns_search_from_in', 'cns_search_from_uae'])
+                    ->orderBy('mtime', 'desc');
+            }
+            elseif ($request->has("editor") && $request->editor !== "search") {
+                $data = DB::connection('cliqnshop')->table('mshop_product')
+                    ->orderBy('mtime', 'desc');
+            }
+            else {
                 $data = DB::connection('cliqnshop')->table('mshop_product')
                     ->whereIn('editor', ['cns_search_from_in', 'cns_search_from_uae'])
                     ->orderBy('mtime', 'desc');
