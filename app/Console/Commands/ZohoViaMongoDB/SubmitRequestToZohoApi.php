@@ -49,7 +49,7 @@ class SubmitRequestToZohoApi extends Command
 
         $process_manage = [
             'module'             => 'Zoho Dump',
-            'description'        => 'Dump data into App360 database from zoho database',
+            'description'        => 'Dump data into MongoDB database from old zoho database',
             'command_name'       => 'mosh:submit-request-to-zoho',
             'command_start_time' => now(),
         ];
