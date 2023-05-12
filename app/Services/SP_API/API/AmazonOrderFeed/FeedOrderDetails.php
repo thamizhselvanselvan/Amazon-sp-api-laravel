@@ -61,7 +61,7 @@ class FeedOrderDetails
             $store_data = DB::connection('aws')
                 ->select("SELECT amazon_order_id, courier_awb, order_item_id, purchase_date, quantity
                     FROM
-                        ${store_name}_amazon_order_details
+                        {$store_name}_amazon_order_details
                     WHERE courier_awb <> ''
                              AND
                         order_status = 'unshipped'
@@ -173,11 +173,11 @@ class FeedOrderDetails
         $response = json_decode(json_encode($response));
         $feed_id = $response->feedId;
 
-        Log::info("${amazon_order_id} updated on amazon: ${feed_id}");
+        Log::info("{$amazon_order_id} updated on amazon: {$feed_id}");
         $table_update_string = 'updated on amazon: ' . $feed_id;
 
         DB::connection('aws')
-            ->select("UPDATE ${store_name}_amazon_order_details
+            ->select("UPDATE {$store_name}_amazon_order_details
                 SET
                     order_status = '$table_update_string'
                 WHERE

@@ -156,7 +156,7 @@ class CourierTrackingController extends Controller
         ];
 
         $forwarder1_record = [];
-        if ($result[0]['forwarder_1_awb'] != '' && $result[0]['forwarder_1_flag'] == 0) {
+        if ($result[0]['forwarder_1_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_1_awb'];
             $courier_name = $result[0]['courier_partner1']['courier_names']['courier_name'];
@@ -193,7 +193,7 @@ class CourierTrackingController extends Controller
         }
 
         $forwarder2_record = [];
-        if ($result[0]['forwarder_2_awb'] != '' && $result[0]['forwarder_2_flag'] == 0) {
+        if ($result[0]['forwarder_2_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_2_awb'];
             $courier_name = $result[0]['courier_partner2']['courier_names']['courier_name'];
@@ -228,7 +228,7 @@ class CourierTrackingController extends Controller
             }
         }
         $forwarder3_record = [];
-        if ($result[0]['forwarder_3_awb'] != '' && $result[0]['forwarder_3_flag'] == 0) {
+        if ($result[0]['forwarder_3_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_3_awb'];
             $courier_name = $result[0]['courier_partner3']['courier_names']['courier_name'];
@@ -265,7 +265,7 @@ class CourierTrackingController extends Controller
         }
 
         $forwarder4_record = [];
-        if ($result[0]['forwarder_4_awb'] != '' && $result[0]['forwarder_4_flag'] == 0) {
+        if ($result[0]['forwarder_4_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_4_awb'];
             $courier_name = $result[0]['courier_partner4']['courier_names']['courier_name'];
@@ -310,40 +310,40 @@ class CourierTrackingController extends Controller
         return Redirect::back()->with('success', 'Fetching details please wait..');
     }
 
-    public function uploadAwb()
-    {
-        return view('shipntrack.Smsa.upload');
-    }
+    // public function uploadAwb()
+    // {
+    //     return view('shipntrack.Smsa.upload');
+    // }
 
-    public function GetTrackingDetails(Request $request)
-    {
-        $request->validate([
-            'smsa_awbNo' => 'required|min:10',
-        ]);
+    // public function GetTrackingDetails(Request $request)
+    // {
+    //     $request->validate([
+    //         'smsa_awbNo' => 'required|min:10',
+    //     ]);
 
-        $tracking_id = $request->smsa_awbNo;
+    //     $tracking_id = $request->smsa_awbNo;
 
-        $datas = preg_split('/[\r\n| |:|,]/', $tracking_id, -1, PREG_SPLIT_NO_EMPTY);
-        $datas = array_unique($datas);
+    //     $datas = preg_split('/[\r\n| |:|,]/', $tracking_id, -1, PREG_SPLIT_NO_EMPTY);
+    //     $datas = array_unique($datas);
 
-        $count = 0;
-        $awbNo_array = [];
+    //     $count = 0;
+    //     $awbNo_array = [];
 
-        $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
-        $queue_type = 'tracking';
+    //     $class = 'ShipNTrack\\SMSA\\SmsaGetTracking';
+    //     $queue_type = 'tracking';
 
-        foreach ($datas as $awbNo) {
-            if ($count == 5) {
+    //     foreach ($datas as $awbNo) {
+    //         if ($count == 5) {
 
-                jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
-                $awbNo_array = [];
-                $count = 0;
-            }
-            $awbNo_array[] = $awbNo;
-            $count++;
-        }
+    //             jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
+    //             $awbNo_array = [];
+    //             $count = 0;
+    //         }
+    //         $awbNo_array[] = $awbNo;
+    //         $count++;
+    //     }
 
-        jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
-        return redirect()->intended('/shipntrack/smsa')->with('success', 'Tracking Details Saved');
-    }
+    //     jobDispatchFunc(class: $class, parameters: $awbNo_array, queue_type: $queue_type);
+    //     return redirect()->intended('/shipntrack/smsa')->with('success', 'Tracking Details Saved');
+    // }
 }

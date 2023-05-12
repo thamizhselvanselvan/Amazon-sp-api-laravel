@@ -32,16 +32,16 @@ class CatalogDashboardService
 
             $delist_asin_count = [];
             $source = strtolower($source);
-            $destination_table = "asin_destination_${source}s";
-            $catalog_table = "catalog${source}s";
-            $catalog_price = "pricing_${source}s";
+            $destination_table = "asin_destination_{$source}s";
+            $catalog_table = "catalog{$source}s";
+            $catalog_price = "pricing_{$source}s";
 
             $Total_catalogs = DB::connection('catalog')
-                ->select("SELECT count(${destination_table}.asin) as asin_catalog,
-                ${destination_table}.priority from ${destination_table}
-                    join ${catalog_table}
-                    ON ${destination_table}.asin = ${catalog_table}.asin
-                    group by ${destination_table}.priority
+                ->select("SELECT count({$destination_table}.asin) as asin_catalog,
+                {$destination_table}.priority from {$destination_table}
+                    join {$catalog_table}
+                    ON {$destination_table}.asin = {$catalog_table}.asin
+                    group by {$destination_table}.priority
             ");
 
             foreach ($Total_catalogs as $total_catalog) {
@@ -50,7 +50,7 @@ class CatalogDashboardService
             }
 
             $priority_wise = DB::connection('catalog')
-                ->select("SELECT count(asin) as priority_wise, priority from ${destination_table} 
+                ->select("SELECT count(asin) as priority_wise, priority from {$destination_table} 
             group by priority");
 
             foreach ($priority_wise as $priority) {
@@ -75,10 +75,10 @@ class CatalogDashboardService
                             $asins[] = "'$delist_asin->asin'";
                         }
                         $asin = implode(',', $asins);
-                        $buybox_table = "bb_product_aa_custom_p${priority}_${source}_offers";
+                        $buybox_table = "bb_product_aa_custom_p{$priority}_{$source}_offers";
                         $delist_asin_count[] = DB::connection('buybox')
                             ->select("SELECT count(asin)as asin_delist
-                            FROM ${buybox_table} 
+                            FROM {$buybox_table} 
                             WHERE asin IN ($asin)
                             and delist = 1
                         ");
@@ -97,7 +97,7 @@ class CatalogDashboardService
                         //buybox asin unavailable start
                         $bb_unavailable_asins[] = DB::connection('buybox')
                             ->select("SELECT count(asin)as asin_unavailable
-                    FROM ${buybox_table}
+                    FROM {$buybox_table}
                     WHERE asin IN ($asin)
                     AND delist = 0
                     AND available != 1
@@ -134,10 +134,10 @@ class CatalogDashboardService
             $cat_pricings = DB::connection('catalog')
                 ->select("SELECT count({$destination_table}.asin) as price, 
                 {$destination_table}.priority from {$destination_table}
-            join ${catalog_price}
-            ON ${destination_table}.asin = ${catalog_price}.asin
-            where ${catalog_price}.available = 1
-            group by ${destination_table}.priority
+            join {$catalog_price}
+            ON {$destination_table}.asin = {$catalog_price}.asin
+            where {$catalog_price}.available = 1
+            group by {$destination_table}.priority
             ");
             foreach ($cat_pricings as $cat_pricing) {
                 $pr_priority = $cat_pricing->priority;
