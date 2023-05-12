@@ -25,7 +25,6 @@ Route::get('test/code', function () {
 
     $page = ceil(200001 / 200000);
     po($page);
-
     exit;
     $string = 'OUT FOR DELIVERY';
     $string = preg_replace('/\s+/', '', $string);
