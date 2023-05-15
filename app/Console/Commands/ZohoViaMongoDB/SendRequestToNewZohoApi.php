@@ -77,8 +77,7 @@ class SendRequestToNewZohoApi extends Command
             "Content-Type" => "application/json"
         ])->post($this->url, $payload);
 
-        $response = $headers->json();
-        Log::debug($response);
+        // $response = $headers->json();
         // Storage::put($this->file_path, json_encode($response));
         // return $response;
     }
