@@ -7,7 +7,6 @@ use App\Models\MongoDB\zoho;
 use GuzzleHttp\Psr7\Request;
 use App\Models\Catalog\PricingIn;
 use App\Models\ProcessManagement;
-use App\Models\ShipNTrack\Courier\StatusManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +14,20 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
+use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 use App\Models\ShipNTrack\CourierTracking\SmsaTracking;
 use App\Models\ShipNTrack\CourierTracking\AramexTracking;
-use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
+use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
+
+Route::get('BusinessAPI/{asin}', function ($asin) {
+
+    $business_api = new ProductsRequest();
+    $data = $business_api->getASINpr($asin);
+    po($data);
+});
 
 Route::get('test/code', function () {
 
