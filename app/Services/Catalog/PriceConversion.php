@@ -99,9 +99,9 @@ class PriceConversion
         $weight = (float)$weight;
         $bb_price = (float)$bb_price;
 
-        if ($weight < 1) {
+        if ($weight < 0.5) {
 
-            $weight = 1;
+            $weight = 0.5;
         }
 
         $duty_rate = $this->exchange_rate_data[6]['duty_rate'] / 100;
