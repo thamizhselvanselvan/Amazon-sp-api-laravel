@@ -25,7 +25,7 @@ use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
 
 Route::get('BusinessAPI/{asin}', function ($asin) {
 
-    $results = ProductSearch::search($asin);
+    $results = ProductSearch::search_offers($asin);
 
    // po($results);
 
