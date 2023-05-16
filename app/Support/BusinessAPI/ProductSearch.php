@@ -10,12 +10,12 @@ use AmazonBusinessApi\Api\ProductSearchV20200826Api;
 
 class ProductSearch {
 
-    public static function search() {
+    public static function search($asin) {
 
         $api = new ProductSearchV20200826Api(BusinessAPI::config());
 
         try {
-            $result = $api->productsRequest('B0B96H7LGX', 'US', 'en_US', 'nitrouspurchases@gmail.com');
+            $result = $api->productsRequest($asin, 'US', 'en_US', 'nitrouspurchases@gmail.com');
 
             $results = json_decode(json_encode($result));
 
