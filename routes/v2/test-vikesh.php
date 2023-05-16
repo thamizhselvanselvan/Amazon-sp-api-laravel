@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Support\BusinessAPI\ProductSearch;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
@@ -23,6 +24,12 @@ use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 use App\Services\AWS_Business_API\AWS_POC\ProductsRequest;
 
 Route::get('BusinessAPI/{asin}', function ($asin) {
+
+    $results = ProductSearch::search($asin);
+
+   // po($results);
+
+    exit;
 
     $business_api = new ProductsRequest();
     $data = $business_api->getASINpr($asin);

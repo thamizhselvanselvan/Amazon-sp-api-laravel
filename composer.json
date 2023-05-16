@@ -19,6 +19,7 @@
         "google/cloud-translate": "^1.12",
         "graham-campbell/digitalocean": "^8.4",
         "guzzlehttp/guzzle": "^7.4",
+        "highsidelabs/amazon-business-api": "^1.0",
         "jenssegers/mongodb": "^3.8",
         "jeroennoten/laravel-adminlte": "^3.7",
         "jlevers/selling-partner-api": "^5.5",
