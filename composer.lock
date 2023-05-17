@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05c8626b0161c12675738d122fbccd21",
+    "content-hash": "d57bd40f8884b83a322e05ef8028e1db",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -3691,6 +3691,63 @@
                 "source": "https://github.com/hamcrest/hamcrest-php/tree/v2.0.1"
             },
             "time": "2020-07-09T08:09:16+00:00"
+        },
+        {
+            "name": "highsidelabs/amazon-business-api",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/highsidelabs/amazon-business-api.git",
+                "reference": "c758628ef140ae0c9c020e21a8fb8cb8465d09cd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/highsidelabs/amazon-business-api/zipball/c758628ef140ae0c9c020e21a8fb8cb8465d09cd",
+                "reference": "c758628ef140ae0c9c020e21a8fb8cb8465d09cd",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.185",
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "guzzlehttp/guzzle": "^6.0|^7.0",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AmazonBusinessApi\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Highside Labs",
+                    "homepage": "https://highsidelabs.co"
+                }
+            ],
+            "description": "PHP client for Amazon's Business API",
+            "keywords": [
+                "ab-api",
+                "amazon",
+                "amazon-business-api",
+                "api",
+                "ecommerce",
+                "rest",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/highsidelabs/amazon-business-api/issues",
+                "source": "https://github.com/highsidelabs/amazon-business-api/tree/v1.0.3"
+            },
+            "time": "2023-03-14T05:45:42+00:00"
         },
         {
             "name": "intervention/image",
