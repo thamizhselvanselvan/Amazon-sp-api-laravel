@@ -22,6 +22,10 @@ use App\Models\ShipNTrack\CourierTracking\AramexTracking;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 Route::get('test/code', function () {
+
+    $page = ceil(200001 / 200000);
+    po($page);
+    exit;
     $string = 'OUT FOR DELIVERY';
     $string = preg_replace('/\s+/', '', $string);
     if (strlen($string) > 10) {
