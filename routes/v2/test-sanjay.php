@@ -399,6 +399,8 @@ Route::get('price/push', 'SanjayTestController@pricepush')->name('sanjay.test');
 Route::get('availability/push', 'SanjayTestController@availability_push')->name('sanjay.availability');
 Route::get('price/feed/check/{feed_id}', 'SanjayTestController@feed_check')->name('sanjay.feed.test');
 
+Route::get('test/b-api-catalog/{asin}', 'SanjayTestController@businessapi_catalog')->name('test.busines.api.catalog');
+
 //cliqnshop B-API And Catalog API Limit Increase
 Route::get('sanju/test/catalog', function () {
     $display_code = 0;
@@ -601,11 +603,11 @@ Route::get('sanju/test/catalog', function () {
 
 Route::get('vsb', function () {
     $data = 'test';
-    TestZoho::create(['opertaion_type'=> 'test','api_called_through' => 'test','time'=> Carbon::now()]);
+    TestZoho::create(['opertaion_type' => 'test', 'api_called_through' => 'test', 'time' => Carbon::now()]);
     // $time = date('h:i A', strtotime(now()));
     // $checkTime = date('Y-m-d H:i:s');;
-po('dd');
-exit;
+    po('dd');
+    exit;
     $startTime = '06:00 PM';
     $endTime = '06:30 PM';
     $second_start = '07:00 AM';

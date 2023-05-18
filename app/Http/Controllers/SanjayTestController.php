@@ -7,6 +7,7 @@ use App\Models\Aws_credential;
 use App\Services\test\PriceFeed;
 use Illuminate\Support\Facades\Log;
 use App\Services\test\AvailabilityFeed;
+use App\Support\BusinessAPI\ProductSearch;
 use App\Models\order\OrderSellerCredentials;
 use App\Services\SP_API\API\CategoryTreeReport;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
@@ -101,5 +102,12 @@ class SanjayTestController extends Controller
             po($data_json);
         }
         return view('test_feed');
+    }
+
+    public function businessapi_catalog($asin)
+    {
+        // $asin = 'B000068O1A';
+        $data = (new ProductSearch())->search_1($asin);
+        po($data);
     }
 }
