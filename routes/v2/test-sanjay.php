@@ -181,7 +181,7 @@ Route::get('price/push', 'SanjayTestController@pricepush')->name('sanjay.test');
 Route::get('availability/push', 'SanjayTestController@availability_push')->name('sanjay.availability');
 Route::get('price/feed/check/{feed_id}', 'SanjayTestController@feed_check')->name('sanjay.feed.test');
 
-Route::get('test/b-api-catalog/{asin}', 'SanjayTestController@businessapi_catalog')->name('test.busines.api.catalog');
+Route::get('test/b-api-catalog', 'SanjayTestController@businessapi_catalog')->name('test.busines.api.catalog');
 
 //cliqnshop B-API And Catalog API Limit Increase
 Route::get('sanju/test/catalog', function () {

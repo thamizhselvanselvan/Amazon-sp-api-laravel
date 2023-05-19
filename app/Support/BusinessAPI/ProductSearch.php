@@ -45,7 +45,7 @@ class ProductSearch {
 
             $results = json_decode(json_encode($result));
 
-            po($results);
+            return ($results);
          
         } catch (Exception $e) {
             echo 'Exception when calling ProductSearchApi->productsRequest: ', $e->getMessage(), PHP_EOL;
@@ -73,7 +73,7 @@ class ProductSearch {
 
             $results = json_decode(json_encode($result));
             
-            po($results);
+            return ($results);
         } catch (Exception $e) {
             echo 'Exception when calling ProductSearchV20200826Api->searchOffersRequest: ', $e->getMessage(), PHP_EOL;
         }

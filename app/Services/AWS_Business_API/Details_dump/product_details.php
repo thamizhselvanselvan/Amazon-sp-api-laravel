@@ -25,27 +25,27 @@ class product_details
             $asin = $data;
             $data = $ApiCall->getASINpr($asin);
 
-            // $asin = '';
-            // $asin_type = '';
-            // $signedProductId = '';
-            // $offers = '';
+            $asin = '';
+            $asin_type = '';
+            $signedProductId = '';
+            $offers = '';
             $availability = '';
-            // $buyingGuidance = '';
-            // $fulfillmentType = '';
-            // $merchant = '';
-            // $offerId = '';
-            // $price = '';
-            // $listPrice = '';
-            // $productCondition = '';
-            // $condition = '';
-            // $quantityLimits = '';
-            // $deliveryInformation = '';
-            // $features = '';
-            // $taxonomies = '';
-            // $title = '';
-            // $url = '';
-            // $productOverview = '';
-            // $productVariations = '';
+            $buyingGuidance = '';
+            $fulfillmentType = '';
+            $merchant = '';
+            $offerId = '';
+            $price = '';
+            $listPrice = '';
+            $productCondition = '';
+            $condition = '';
+            $quantityLimits = '';
+            $deliveryInformation = '';
+            $features = '';
+            $taxonomies = '';
+            $title = '';
+            $url = '';
+            $productOverview = '';
+            $productVariations = '';
 
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
                 $asin = 'Not Found';
