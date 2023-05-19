@@ -25,29 +25,27 @@ class product_details
             $asin = $data;
             $data = $ApiCall->getASINpr($asin);
 
-            $asin = '';
-            $asin_type = '';
-            $signedProductId = '';
-            $offers = '';
+            // $asin = '';
+            // $asin_type = '';
+            // $signedProductId = '';
+            // $offers = '';
             $availability = '';
-            $buyingGuidance = '';
-            $fulfillmentType = '';
-            $merchant = '';
-            $offerId = '';
-            $price = '';
-            $listPrice = '';
-            $productCondition = '';
-            $condition = '';
-            $quantityLimits = '';
-            $deliveryInformation = '';
-            $features = '';
-            $taxonomies = '';
-            $title = '';
-            $url = '';
-            $productOverview = '';
-            $productVariations = '';
-
-
+            // $buyingGuidance = '';
+            // $fulfillmentType = '';
+            // $merchant = '';
+            // $offerId = '';
+            // $price = '';
+            // $listPrice = '';
+            // $productCondition = '';
+            // $condition = '';
+            // $quantityLimits = '';
+            // $deliveryInformation = '';
+            // $features = '';
+            // $taxonomies = '';
+            // $title = '';
+            // $url = '';
+            // $productOverview = '';
+            // $productVariations = '';
 
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
                 $asin = 'Not Found';
@@ -72,32 +70,29 @@ class product_details
                 $productOverview = 'Not Found';
                 $productVariations = 'Not Found';
             } else if (property_exists($data, "errors") && $data->errors[0]->message == "You exceeded your quota for the requested resource.") {
-                // Log::warning('429');
+                Log::warning('429  B-api');
                 sleep(10);
                 break;
             } else {
                 if (isset($data->asin)) {
-
-
                     $asin = ($data->asin);
-
                     $asin_type = ($data->asinType);
                     $signedProductId  = ($data->signedProductId);
                     if ($data->includedDataTypes->OFFERS == []) {
-                        $offers = 'null';
-                        $availability = 'null';
-                        $buyingGuidance = 'null';
-                        $fulfillmentType = 'null';
-                        $merchant = 'null';
-                        $offerId = 'null';
-                        $price = 'null';
-                        $listPrice = 'null';
-                        $productCondition = 'null';
-                        $condition = 'null';
-                        $quantityLimits = 'null';
-                        $deliveryInformation = 'null';
+                        $offers = null;
+                        $availability = null;
+                        $buyingGuidance = null;
+                        $fulfillmentType = null;
+                        $merchant = null;
+                        $offerId = null;
+                        $price = null;
+                        $listPrice = null;
+                        $productCondition = null;
+                        $condition = null;
+                        $quantityLimits = null;
+                        $deliveryInformation = null;
                     } else {
-                        Log::notice('unmatched');
+                        // Log::notice('unmatched');
                     }
                 } else   if (property_exists($data, "errors") && $data->errors[0]->code == "You exceeded your quota for the requested resource.") {
                     $end_time = endTime($start_time);
