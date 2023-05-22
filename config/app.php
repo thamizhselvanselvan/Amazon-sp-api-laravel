@@ -66,6 +66,12 @@ return [
     'aws_sp_api_access_secret_id' => env('AWS_SP_API_ACCESS_SECRET_KEY'),
     'aws_sp_api_role_arn' => env('AWS_SP_API_ROLE_ARN'),
 
+    'aws_business_api_client_id' => env("AWS_BUSINESS_API_CLIENT_ID"),
+    'aws_business_api_client_secret' => env("AWS_BUSINESS_API_CLIENT_SECRET"),
+    'aws_business_api_access_key_id' => env("AWS_BUSINESS_API_ACCESS_KEY_ID"),
+    'aws_business_api_access_secret_id' => env("AWS_BUSINESS_API_ACCESS_SECRET_KEY"),
+    'aws_business_api_role_arn' => env("AWS_BUSINESS_API_ROLE_ARN"),
+
     'zoho_client_id' => env('ZOHO_CLIENT_ID'),
     'zoho_secret' => env('ZOHO_SECRET'),
     'zoho_refresh_token' => env('ZOHO_REFRESH_TOKEN'),

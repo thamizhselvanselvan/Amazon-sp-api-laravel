@@ -57,47 +57,6 @@ class DeleteBBExcessData extends Command
             "in" => [1, 2, 3] 
         ];
 
-        // foreach($arrays as $country_source => $array) {
-
-        //     $asin_destination_model = table_model_create(country_code: $country_source, model: 'Asin_destination', table_name: 'asin_destination_');
-
-        //     foreach($array as $priority) {
-
-        //         $this->info($country_source . " " .$priority);
-
-        //         $this->info(endTime($start) . " Chunk Start ");
-        //         $asin_destination_model->select('id', 'asin')
-        //         ->where('priority', $priority)
-        //         ->chunkbyid(3000, function ($result) use ($priority, $country_source, $start) {
-        //             $this->info(endTime($start) . " Chunk Inside ");
-
-        //             $collecs = []; 
-        //             foreach($result->toArray() as $arrs) {
-        //                 $collecs[] = [
-        //                     "asin" => $arrs['asin'],
-        //                     "asin_exist_app360" => 1,
-        //                     "import_type" => "UP"
-        //                 ];
-        //             }   
-
-        //             $this->info(endTime($start) . " Chunk Outside Loop ");
-        //             $this->info(endTime($start) . " Upsert Started ");
-
-        //             DB::connection('buybox')
-        //             ->table("product_aa_custom_p{$priority}_{$country_source}_offers")
-        //             ->upsert($collecs, ["asin"], ["asin_exist_app360", "import_type"]);
-
-        //             $this->info(endTime($start) . " Upsert Finished ");
-
-        //         });
-
-
-        //     }
-
-
-        // }
-
- 
 
         $this->info(endTime($start) . " JSON Read ");
         $tagger = 0;
@@ -124,7 +83,7 @@ class DeleteBBExcessData extends Command
                 $this->info(endTime($start) . " Before Upsert");
     
                 DB::connection('buybox')
-                ->table("product_aa_custom_p2_us_offers")
+                ->table("product_aa_custom_p1_us_offers")
                 ->upsert($collecs, ["asin"], ["asin_exist_app360"]);
     
                 $this->info(endTime($start) . " After Upsert");
@@ -137,7 +96,10 @@ class DeleteBBExcessData extends Command
 
         $this->info(endTime($start) . " JSON Loop Finished");
 
-
+        DB::connection('buybox')
+                ->table("product_aa_custom_p1_us_offers")
+                ->where("asin_exist_app360", 0)
+                ->delete();
         
 
         $this->info("Finished");
