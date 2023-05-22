@@ -60,10 +60,6 @@
     </div>
 </div>
 
-
-
-
-
 <div class="modal fade" id="price_missing" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -81,6 +77,7 @@
                         <h5> <b> ASIN : </b><a name="asin" id="asin"></a> </h5>
                         <h5> <b>Amazon Order ID : </b><a name="order_id" id="order_id"></a> </h5>
                         <h5 hidden="hidden"> <b>Order Item ID : </b><a name="order_item_id" id="order_item_id"></a> </h5>
+                        <h5 hidden="hidden"> <b>Country Code : </b><a name="country_code" id="country_code"></a> </h5>
                     </div>
                 </div>
                 <div class="col-12">
@@ -101,6 +98,8 @@
     <thead>
         <tr class="table-info">
             <th>ID</th>
+            <th>Country Code</th>
+            <th>Title</th>
             <th>ASIN</th>
             <th>Amazon Order ID</th>
             <th>Price</th>
@@ -121,14 +120,21 @@
         $(document).ready(function() {
             $('[data-toggle="tooltip"]').tooltip();
         });
-        $(document).on('click', '#asin', function() {
+
+        $(document).on('click', '.copy_clipboard', function() {
+
             data = $(this).attr('value');
             navigator.clipboard.writeText(data);
         });
-        $(document).on('click', '#order_id', function() {
-            data = $(this).attr('value');
-            navigator.clipboard.writeText(data);
-        });
+
+        // $(document).on('click', '#asin', function() {
+        //     data = $(this).attr('value');
+        //     navigator.clipboard.writeText(data);
+        // });
+        // $(document).on('click', '#order_id', function() {
+        //     data = $(this).attr('value');
+        //     navigator.clipboard.writeText(data);
+        // });
 
         $.extend($.fn.dataTable.defaults, {
             pageLength: 50,
@@ -143,6 +149,14 @@
                     name: 'DT_RowIndex',
                     orderable: false,
                     searchable: false
+                },
+                {
+                    data: 'country_code',
+                    name: 'country_code'
+                },
+                {
+                    data: 'title',
+                    name: 'title'
                 },
                 {
                     data: 'asin',
@@ -169,9 +183,7 @@
                 },
             ]
         });
-
-
-
+        
         $(document).on('click', '#price_update', function() {
 
             let order_data = $(this).attr('value');
@@ -181,10 +193,13 @@
             let asin = data['0'];
             let order_id = data['1'];
             let item_id = data['2'];
+            let country_code = data['3'];
+
             $('#price_missing').modal('show');
             $(".modal-body #asin").text(asin);
             $(".modal-body #order_id").text(order_id);
             $(".modal-body #order_item_id").text(item_id);
+            $(".modal-body #country_code").text(country_code);
 
         });
 
@@ -195,18 +210,22 @@
     });
 
     $('#price_upload').click(function() {
+        
         $(this).prop('disabled', true);
+
         let asin = $('#asin').text();
         let order_id = $('#order_id').text();
         let item_id = $('#order_item_id').text();
         let price = $('#US_price').val();
+        let country_code = $('#country_code').val();
 
         if (price == '') {
             alert('Please Enter Price');
             $('#price_upload').prop('disabled', false);
             return false;
         }
-        let data = [asin, order_id, item_id, price];
+
+        let data = [asin, order_id, item_id, price, country_code];
 
         $.ajax({
             method: 'post',

@@ -163,7 +163,7 @@ class OrderMissingDetailsController extends Controller
         $store_id = $request->country_code;
         $orderids = implode(',', $order_ids);
 
-        commandExecFunc("mosh:zoho_force_dump ${orderids} ${store_id}");
+        commandExecFunc("mosh:zoho_force_dump {$orderids} {$store_id}");
         return redirect('/orders/missing/force/dump/view')->with('success', 'Order Is Updating...');
     }
 
@@ -176,7 +176,7 @@ class OrderMissingDetailsController extends Controller
         }
         $store_id = $request->store_data;
         $orderids = implode(',', $order_ids);
-        commandExecFunc("mosh:get_edd ${orderids} ${store_id}");
+        commandExecFunc("mosh:get_edd {$orderids} {$store_id}");
         // Artisan::call("mosh:get_edd ${orderids} ${store_id}");
 
         return redirect('/orders/missing/force/dump/view')->with('success', 'Order Is Updating...');
@@ -190,7 +190,10 @@ class OrderMissingDetailsController extends Controller
             $data  = US_Price_Missing::orderby('id', 'desc')->where('status', '0')->get();
             return DataTables::of($data)
                 ->addIndexColumn()
-
+                ->editColumn('title', function ($row) {
+            
+                    return $row->title . '  ' . "<a href='javascript:void(0)' value ='$row->title' class='badge badge-info' id='title'><i class='fa fa-copy'></i></a>";
+                })
                 ->editColumn('asin', function ($row) {
                     $asin = $row['asin'];
                     return $asin . '  ' . "<a href='javascript:void(0)' value ='$asin'   class='badge badge-info' id='asin'><i class='fa fa-copy'></i></a>";
@@ -220,13 +223,14 @@ class OrderMissingDetailsController extends Controller
                     }
                 })
                 ->addColumn('action', function ($row) {
-                    $id = $row['asin'] . '_' . $row['amazon_order_id'] . '_' . $row['order_item_id'];
+                    $id = $row['asin'] . '_' . $row['amazon_order_id'] . '_' . $row['order_item_id']. '_' .$row['country_code'];
                     return "<div class='d-flex'><a href='javascript:void(0)' id='price_update' value ='$id'  class='edit btn btn-info btn-sm'><i class='fa fa-toggle-up'></i> Update US Price</a>";
                 })
                 ->rawColumns(['action'])
                 ->escapeColumns([])
                 ->make(true);
         }
+
         return view('orders.uspricemissing');
     }
     public function uspriceupdate(Request $request)
@@ -236,24 +240,25 @@ class OrderMissingDetailsController extends Controller
         $order_id = $data['1'];
         $item_id = $data['2'];
         $price = $data['3'];
+        $country_code = $data['4'];
 
-        if ($order_id == null || $asin == null || $price == null) {
+        if ($order_id == null || $asin == null || $price == null || $country_code == null) {
             return response()->json(['data' =>  'error']);
         };
 
+        $country_column = $country_code == "us" ? 'us_price' : 'in_price';
 
-
-        $table_name = table_model_create(country_code: 'us', model: 'Pricing', table_name: 'pricing_');
-
+        $table_name = table_model_create(country_code: strtolower($country_code), model: 'Pricing', table_name: 'pricing_');
         $table_name->where('asin', $asin)
-            ->update(['us_price' => $price]);
+            ->update([$country_column => $price]);
 
         OrderUpdateDetail::where([
             ['amazon_order_id', $order_id],
             ['order_item_id', $item_id],
         ])->update(
             [
-                'booking_status' => '0'
+                'booking_status' => 0,
+                'zoho_status' => 0
             ]
         );
 
