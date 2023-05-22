@@ -40,7 +40,7 @@ if (!function_exists('ddp')) {
 }
 
 if (!function_exists('copy_to_clipboard')) {
-    function ddp($value, $id = null)
+    function copy_to_clipboard($value, $id = null)
     {
         $id = isset($id) ? "id=$id" : "";
 
