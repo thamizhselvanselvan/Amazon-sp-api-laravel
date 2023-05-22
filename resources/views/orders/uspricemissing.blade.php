@@ -19,7 +19,7 @@
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark">US Price Missing Details</h1>
+<h1 class="m-0 text-dark">B2CShip Price Missing Details</h1>
 
 @stop
 
@@ -98,7 +98,6 @@
     <thead>
         <tr class="table-info">
             <th>ID</th>
-            <th>Country Code</th>
             <th>Title</th>
             <th>ASIN</th>
             <th>Amazon Order ID</th>
@@ -122,9 +121,7 @@
         });
 
         $(document).on('click', '.copy_clipboard', function() {
-
-            data = $(this).attr('value');
-            navigator.clipboard.writeText(data);
+            navigator.clipboard.writeText($(this).attr('value'));
         });
 
         // $(document).on('click', '#asin', function() {
@@ -149,10 +146,6 @@
                     name: 'DT_RowIndex',
                     orderable: false,
                     searchable: false
-                },
-                {
-                    data: 'country_code',
-                    name: 'country_code'
                 },
                 {
                     data: 'title',
@@ -186,25 +179,35 @@
         
         $(document).on('click', '#price_update', function() {
 
-            let order_data = $(this).attr('value');
+            //  let order_data = $(this).attr('value');
             // $idea = explode('-', $request -> id);
 
-            let data = order_data.split("_");
-            let asin = data['0'];
-            let order_id = data['1'];
-            let item_id = data['2'];
-            let country_code = data['3'];
+            let asin = $(this).attr('data-asin');
+            let order_id = $(this).attr('data-order-id');
+            let order_item_id = $(this).attr('data-order-item-id');
 
             $('#price_missing').modal('show');
+
             $(".modal-body #asin").text(asin);
             $(".modal-body #order_id").text(order_id);
-            $(".modal-body #order_item_id").text(item_id);
-            $(".modal-body #country_code").text(country_code);
+            $(".modal-body #order_item_id").text(order_item_id);
+
+            // let data = order_data.split("_");
+            // let asin = data['0'];
+            // let order_id = data['1'];
+            // let item_id = data['2'];
+            // let country_code = data['3'];
+
+            // $('#price_missing').modal('show');
+            // $(".modal-body #asin").text(asin);
+            // $(".modal-body #order_id").text(order_id);
+            // $(".modal-body #order_item_id").text(item_id);
+            // $(".modal-body #country_code").text(country_code);
 
         });
 
-
     });
+
     $('#close').click(function() {
         $('#price_missing').modal('hide');
     });
@@ -217,7 +220,6 @@
         let order_id = $('#order_id').text();
         let item_id = $('#order_item_id').text();
         let price = $('#US_price').val();
-        let country_code = $('#country_code').val();
 
         if (price == '') {
             alert('Please Enter Price');
@@ -225,13 +227,16 @@
             return false;
         }
 
-        let data = [asin, order_id, item_id, price, country_code];
+       // let data = [asin, order_id, item_id, price, country_code];
 
         $.ajax({
             method: 'post',
             url: "{{ route('orders.price.us.update') }}",
             data: {
-                'order_details': data,
+                'asin': asin,
+                'order_id': order_id,
+                'item_id': item_id,
+                'price': price,
                 "_token": "{{ csrf_token() }}",
             },
             success: function(response) {

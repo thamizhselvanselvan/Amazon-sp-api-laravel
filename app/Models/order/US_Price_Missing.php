@@ -12,6 +12,8 @@ class US_Price_Missing extends Model
     protected $table = 'us_price_missing';
 
     protected $fillable = [
+        'country_code',
+        'title',
         'asin',
         'amazon_order_id',
         'order_item_id',
