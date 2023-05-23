@@ -181,7 +181,7 @@ class asin_remove_from_cliqnshop extends Command
     {
         foreach ($mshop_product_list_for_index as $singleItem) {
             $index_domain = $singleItem->domain;
-            if ($index_domain !== 'media') {
+            if ($index_domain !== 'media' && $index_domain !== 'product') {
                 DB::connection('cliqnshop')->table('mshop_index_' . $index_domain)->where(['prodid' => $pid, 'siteid' => $site])->delete();
             }
         }
