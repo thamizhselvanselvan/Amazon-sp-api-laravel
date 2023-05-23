@@ -4,6 +4,7 @@ namespace App\Console\Commands\Cliqnshop;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class asin_remove_from_cliqnshop extends Command
 {
@@ -77,6 +78,11 @@ class asin_remove_from_cliqnshop extends Command
             ],
             'keyword' => [
                 'table_name' => 'mshop_keyword',
+                'direct_delete' => false,
+                'isHandled' => false,
+            ],
+            'product' => [
+                'table_name' => 'mshop_product',
                 'direct_delete' => false,
                 'isHandled' => false,
             ],
