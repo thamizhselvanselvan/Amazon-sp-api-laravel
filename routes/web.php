@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Services\Catalog\PriceConversion;
 use App\Models\Buybox_stores\Product_Push;
+use App\Support\BusinessAPI\ProductSearch;
 use JeroenNoten\LaravelAdminLte\View\Components\Tool\Modal;
 use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use App\Services\AmazonFeedApiServices\AmazonFeedProcessAvailability;
@@ -31,6 +32,10 @@ Route::get('home', 'Admin\HomeController@dashboard')->name('home');
 
 include_route_files(__DIR__ . '/v2/');
 Route::get('testing', function () {
+
+    $product = (new ProductSearch)->search();
+
+    exit;
 
     // $feedLists[] = [
     //     'product_sku' => 'NS_B07XYX72M5',

@@ -18,7 +18,7 @@ class business_product_dump extends Command
      *
      * @var string
      */
-    protected $signature = 'mosh:business_products_dump';
+    protected $signature = 'mosh:business_api_catalog_dump';
 
     /**
      * The console command description.
@@ -44,22 +44,20 @@ class business_product_dump extends Command
      */
     public function handle()
     {
-        $delay = 10;
+        $delay = 5;
         $start_time = startTime();
         $end_time = endTime($start_time);
 
         $records = table_model_create(country_code: 'US', model: 'Asin_source', table_name: 'asin_source_')
             ->select('asin')
-            ->chunk(10, function ($records) use ($delay, $start_time) {
-                // Log::emergency("chunk occured");
-
+            ->chunk(20, function ($records) use ($delay, $start_time) {
+               
                 if (App::environment(['Production', 'Staging', 'production', 'staging'])) {
                     BusinessasinDetails::dispatch([
                         'data' => $records
                     ])->onconnection('redis')->delay($delay);
                 } else {
                     BusinessasinDetails::dispatch(
-
                         [
                             'data' => $records,
                         ]
@@ -67,7 +65,7 @@ class business_product_dump extends Command
                     )->delay($delay);
                 }
 
-                // $delay += $delay;    
+                $delay += $delay;
             });
     }
 }

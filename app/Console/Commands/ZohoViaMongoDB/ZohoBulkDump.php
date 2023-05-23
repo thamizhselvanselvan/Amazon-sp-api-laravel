@@ -72,7 +72,7 @@ class ZohoBulkDump extends Command
 
                 if ($more_records == 1) {
 
-                    $this->MakeRequestIntoZoho($page + 1, $callback_url);
+                    $this->MakeRequestIntoZoho($page + 1, $callback_url, $token_file);
                 }
             }
         }
@@ -92,15 +92,26 @@ class ZohoBulkDump extends Command
     //     return $zoho_id;
     // }
 
-    public function MakeRequestIntoZoho($page = 1, $callback_url)
+    public function MakeRequestIntoZoho($page = 1, $callback_url, $token_file)
     {
-        $process_manage = [
-            'module'             => 'Zoho Dump',
-            'description'        => 'Dump data into App360 database from zoho database ' . $page,
-            'command_name'       => 'mosh:submit-request-to-zoho',
-            'command_start_time' => now(),
-        ];
-        ProcessManagement::create($process_manage)->toArray();
+        if ($token_file == 'zoho') {
+
+            $process_manage = [
+                'module'             => 'Zoho Dump',
+                'description'        => 'Dump data into MongoDB database from old zoho database ' . $page,
+                'command_name'       => 'mosh:submit-request-to-zoho',
+                'command_start_time' => now(),
+            ];
+            ProcessManagement::create($process_manage)->toArray();
+        } else {
+            $process_manage = [
+                'module'             => 'Zoho Dump',
+                'description'        => 'Dump data into MongoDB database from new zoho database ' . $page,
+                'command_name'       => 'mosh:send-request-to-new-zoho',
+                'command_start_time' => now(),
+            ];
+            ProcessManagement::create($process_manage)->toArray();
+        }
 
         $payload = [
             "callback" => [
@@ -154,28 +165,37 @@ class ZohoBulkDump extends Command
 
         Log::debug($token_file);
 
+        $pm_id = '';
         if ($token_file == "zoho") {
 
             foreach ($csv_data as $data) {
 
                 zoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('ASIN', $data['ASIN'])->update($data, ['upsert' => true]);
             }
+
+            $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
+                ->where('command_name', 'mosh:submit-request-to-zoho')
+                ->where('command_end_time', '0000-00-00 00:00:00')
+                ->get('id')
+                ->first();
+            $pm_id = $processManagementID['id'];
         } else {
+
             foreach ($csv_data as $data) {
 
-                // NewZoho::insert($data);
                 NewZoho::where('Alternate_Order_No', $data['Alternate_Order_No'])->where('Product_ASIN', $data['Product_ASIN'])->update($data, ['upsert' => true]);
             }
+
+            $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
+                ->where('command_name', 'mosh:send-request-to-new-zoho')
+                ->where('command_end_time', '0000-00-00 00:00:00')
+                ->get('id')
+                ->first();
+            $pm_id = $processManagementID['id'];
         }
+
         Log::debug(count($csv_data));
 
-        $processManagementID = ProcessManagement::where('module', 'Zoho Dump')
-            ->where('command_name', 'mosh:submit-request-to-zoho')
-            ->where('command_end_time', '0000-00-00 00:00:00')
-            ->get('id')
-            ->first();
-
-        $pm_id = $processManagementID['id'];
         $command_end_time = now();
         ProcessManagementUpdate($pm_id, $command_end_time);
 

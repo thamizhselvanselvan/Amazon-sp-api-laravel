@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
-use App\Services\AWS_Business_API\Details_dump\product_details;
+use App\Services\AWS_Business_API\Details_dump\b_api_productdetailsdump;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -38,7 +38,7 @@ class BusinessasinDetails implements ShouldQueue
     public function handle()
     {
         $asin =   $this->payload['data'];
-        $booking = new product_details();
+        $booking = new b_api_productdetailsdump();
         $responce = $booking->savedetails($asin);
    
     }

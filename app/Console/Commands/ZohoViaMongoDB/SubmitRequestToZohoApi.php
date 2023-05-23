@@ -49,7 +49,7 @@ class SubmitRequestToZohoApi extends Command
 
         $process_manage = [
             'module'             => 'Zoho Dump',
-            'description'        => 'Dump data into App360 database from zoho database',
+            'description'        => 'Dump data into MongoDB database from old zoho database',
             'command_name'       => 'mosh:submit-request-to-zoho',
             'command_start_time' => now(),
         ];
@@ -78,8 +78,7 @@ class SubmitRequestToZohoApi extends Command
             "Content-Type" => "application/json"
         ])->post($this->url, $payload);
 
-        $response = $headers->json();
-        Log::debug($response);
+        // $response = $headers->json();
         // Storage::put($this->file_path, json_encode($response));
         // return $response;
     }
