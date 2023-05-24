@@ -16,6 +16,16 @@ class CliqnshopCataloginsert
         try {
             // $display_code = '1';
 
+            $check_product_type = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->pluck('type')->ToArray();
+            if (isset($check_product_type[0]))
+            {
+                $product_type = $check_product_type[0];
+            }
+            else
+            {
+                $product_type = 'default';
+            }
+
         $check = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->whereIn('editor',['cns_search_from_in','cns_search_from_uae'])->pluck('id')->ToArray();
         if (isset($check[0]))
         {
@@ -108,7 +118,7 @@ class CliqnshopCataloginsert
             $product_data = [
                 'siteid' => $site_id,
                 // 'dataset' => '',
-                'type' => 'default',
+                'type' => $product_type,
                 'code' => $sku_genrator->generateSKU('CNS', $asin),
                 'asin' => $asin, //ASIN
                 'label' => $item_name_trimmed,
