@@ -39,6 +39,15 @@ if (!function_exists('ddp')) {
     }
 }
 
+if (!function_exists('copy_to_clipboard')) {
+    function copy_to_clipboard($value, $id = null)
+    {
+        $id = isset($id) ? "id=$id" : "";
+
+        return "<a href='javascript:void(0)' value='$value' class='badge badge-info copy_clipboard' ". $id  ." ><i class='fa fa-copy'></i></a>";
+    }
+}
+
 if (!function_exists('addPercentage')) {
 
     function addPercentage($originalAmount, $percentageChange)

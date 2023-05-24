@@ -4,30 +4,31 @@
 
 @section('css')
 
-<link rel="stylesheet" href="/css/styles.css">
-<style>
-    .table td {
-        padding: 0;
-        padding-left: 5px;
-    }
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .table td {
+            padding: 0;
+            padding-left: 5px;
+        }
 
-    .table th {
-        padding: 2;
-        padding-left: 5px;
-    }
+        .table th {
+            padding: 2;
+            padding-left: 5px;
+        }
 
-    .wrong {
-        color: red;
-    }
+        .wrong {
+            color: red;
+        }
 
-    .click {
-        color: green;
-    }
-</style>
+        .click {
+            color: green;
+        }
+    </style>
+
 @stop
 
 @section('content_header')
-<h1 class="m-0 text-dark">Zoho Missing Price Details</h1>
+<h1 class="m-0 text-dark">Price Missing Price Details</h1>
 
 @stop
 
@@ -68,10 +69,6 @@
     </div>
 </div>
 
-
-
-
-
 <div class="modal fade" id="price_missing" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -89,6 +86,7 @@
                         <h5> <b> ASIN : </b><a name="asin" id="asin"></a> </h5>
                         <h5> <b>Amazon Order ID : </b><a name="order_id" id="order_id"></a> </h5>
                         <h5> <b>Order Item ID : </b><a name="order_item_id" id="order_item_id"></a> </h5>
+                        <h5 hidden="hidden"> <b>Country Code : </b><a name="country_code" id="country_code"></a> </h5>
 
                     </div>
                 </div>
@@ -110,6 +108,8 @@
     <thead>
         <tr class="table-info">
             <th>ID</th>
+            <th>Country Code</th>
+            <th>Title</th>
             <th>ASIN</th>
             <th>Amazon Order ID</th>
             <th>Order Item ID</th>
@@ -126,131 +126,143 @@
 
 
 @section('js')
-<script type="text/javascript">
-    $(function() {
-        $(document).ready(function() {
-            $('[data-toggle="tooltip"]').tooltip();
+    <script type="text/javascript">
+        $(function() {
+            $(document).ready(function() {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+            // $(document).on('click', '#asin', function() {
+            //     data = $(this).attr('value');
+            //     navigator.clipboard.writeText(data);
+            // });
+            // $(document).on('click', '#order_id', function() {
+            //     data = $(this).attr('value');
+            //     navigator.clipboard.writeText(data);
+            // });
+            // $(document).on('click', '#order_item', function() {
+            //     data = $(this).attr('value');
+            //     navigator.clipboard.writeText(data);
+            // });
+
+            $(document).on('click', '.copy_clipboard', function() {
+                navigator.clipboard.writeText($(this).eq(0).attr('value'));
+            });
+
+            $.extend($.fn.dataTable.defaults, {
+                pageLength: 50,
+            });
+
+            let yajra_table = $('.yajra-datatable').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: "{{ route('orders.missing') }}",
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'country_code',
+                        name: 'country_code'
+                    },
+                    {
+                        data: 'title',
+                        name: 'title'
+                    },
+                    {
+                        data: 'asin',
+                        name: 'asin'
+                    },
+                    {
+                        data: 'amazon_order_id',
+                        name: 'amazon_order_id'
+                    },
+                    {
+                        data: 'order_item_id',
+                        name: 'order_item_id'
+                    },
+                    {
+                        data: 'price',
+                        name: 'price'
+                    },
+                    {
+                        data: 'status',
+                        name: 'status'
+                    },
+
+                    {
+                        data: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+                ]
+            });
+            
+            $(document).on('click', '#price_update', function() {
+
+                let asin = $(this).attr('data-asin');
+                let order_id = $(this).attr('data-order-id');
+                let order_item_id = $(this).attr('data-order-item-id');
+                let country_code = $(this).attr('data-country-code');
+
+                $('#price_missing').modal('show');
+
+                $(".modal-body #asin").text(asin);
+                $(".modal-body #order_id").text(order_id);
+                $(".modal-body #order_item_id").text(order_item_id);
+                $(".modal-body #country_code").text(country_code);
+            });
         });
-        $(document).on('click', '#asin', function() {
-            data = $(this).attr('value');
-            navigator.clipboard.writeText(data);
-        });
-        $(document).on('click', '#order_id', function() {
-            data = $(this).attr('value');
-            navigator.clipboard.writeText(data);
-        });
-        $(document).on('click', '#order_item', function() {
-            data = $(this).attr('value');
-            navigator.clipboard.writeText(data);
+
+        $('#close').click(function() {
+            $('#price_missing').modal('hide');
         });
 
+        $('#price_upload').click(function() {
+            $(this).prop('disabled', true);
 
-        $.extend($.fn.dataTable.defaults, {
-            pageLength: 50,
-        });
+            let asin = $('#asin').text();
+            let order_id = $('#order_id').text();
+            let item_id = $('#order_item_id').text();
+            let country_code = $('#country_code').text();
+            let price = $('#price').val();
 
-        let yajra_table = $('.yajra-datatable').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('orders.missing') }}",
-            columns: [{
-                    data: 'DT_RowIndex',
-                    name: 'DT_RowIndex',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'asin',
-                    name: 'asin'
-                },
-                {
-                    data: 'amazon_order_id',
-                    name: 'amazon_order_id'
-                },
-                {
-                    data: 'order_item_id',
-                    name: 'order_item_id'
-                },
-                {
-                    data: 'price',
-                    name: 'price'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
-                },
-
-                {
-                    data: 'action',
-                    orderable: false,
-                    searchable: false
-                },
-            ]
-        });
-
-
-
-        $(document).on('click', '#price_update', function() {
-
-            let order_data = $(this).attr('value');
-            // $idea = explode('-', $request -> id);
-
-            let data = order_data.split("_");
-            let asin = data['0'];
-            let order_id = data['1'];
-            let item_id = data['2'];
-
-            $('#price_missing').modal('show');
-
-            $(".modal-body #asin").text(asin);
-            $(".modal-body #order_id").text(order_id);
-            $(".modal-body #order_item_id").text(item_id);
-        });
-
-
-    });
-    $('#close').click(function() {
-        $('#price_missing').modal('hide');
-    });
-
-    $('#price_upload').click(function() {
-        $(this).prop('disabled', true);
-        let asin = $('#asin').text();
-        let order_id = $('#order_id').text();
-        let item_id = $('#order_item_id').text();
-        let price = $('#price').val();
-
-        if (price == '') {
-            alert('Please Enter Price');
-            $('#price_upload').prop('disabled', false);
-            return false;
-        }
-        let data = [asin, order_id, item_id, price];
-
-        $.ajax({
-            method: 'post',
-            url: "{{ route('orders.missing.price.update') }}",
-            data: {
-                'order_details': data,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function(response) {
+            if (price == '') {
+                alert('Please Enter Price');
                 $('#price_upload').prop('disabled', false);
-                console.log(response['error']);
-                if (response['data'] == 'success') {
-                    window.location.href = '/orders/missing/price?success=Price updated successfully'
-                } else if (response['data'] == 'error') {
-                    window.location.href = '/orders/missing/price?error=Price Not Updated(cheack Order ID, Order Item ID and Lead ID)'
-                } else {
-                    alert('success');
-                    window.location.reload();
-                }
-            },
-            error: function(response) {
-                $('#price_upload').prop('disabled', false);
-                alert('something went wrong Please Contact Admin');
+                return false;
             }
+
+            $.ajax({
+                method: 'post',
+                url: "{{ route('orders.missing.price.update') }}",
+                data: {
+                    'asin': asin,
+                    'order_id': order_id,
+                    'item_id': item_id,
+                    'country_code': country_code,
+                    'price': price,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+                    $('#price_upload').prop('disabled', false);
+
+                    console.log(response['error']);
+                    if (response['data'] == 'success') {
+                        window.location.href = '/orders/missing/price?success=Price updated successfully'
+                    } else if (response['data'] == 'error') {
+                        window.location.href = '/orders/missing/price?error=Price Not Updated(cheack Order ID, Order Item ID and Lead ID)'
+                    } else {
+                        alert('success');
+                        window.location.reload();
+                    }
+                },
+                error: function(response) {
+                    $('#price_upload').prop('disabled', false);
+                    alert('something went wrong Please Contact Admin');
+                }
+            });
         });
-    });
-</script>
+    </script>
 @stop

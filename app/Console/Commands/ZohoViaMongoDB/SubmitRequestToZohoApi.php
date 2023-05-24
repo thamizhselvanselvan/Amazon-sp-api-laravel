@@ -58,7 +58,7 @@ class SubmitRequestToZohoApi extends Command
         // Process Management end
 
         $records = zoho::count();
-        $page = $records == 0 ? 1 : 4;
+        $page = ceil($records / 200000);
 
         $this->token = json_decode(Storage::get("zoho/access_token.txt"), true)["access_token"];
 

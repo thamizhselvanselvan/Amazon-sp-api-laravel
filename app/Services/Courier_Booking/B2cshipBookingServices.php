@@ -21,6 +21,7 @@ class B2cshipBookingServices
     private $order_item_id;
     private $store_id;
     private $custom_percentage;
+    private $title;
 
     public function b2cdata($amazon_order_id, $order_item_id, $store_id)
     {
@@ -86,6 +87,7 @@ class B2cshipBookingServices
 
             $asin = $details->asin;
             $item_name = $details->title;
+            $this->title = $item_name;
 
             $consignee_details = json_decode($details->shipping_address);
             $consignee_tax = Json_decode($details->item_tax);
@@ -411,10 +413,20 @@ class B2cshipBookingServices
             $order_item_id = $this->order_item_id;
 
             if ($error_desc = 'Please Enter InvoiceValue greater Than Zero.') {
+                
                 $asins =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->select('asin')->get();
+
                 if (isset($asins[0]->asin)) {
                     $asin = $asins[0]->asin;
-                    US_Price_Missing::insert(['asin' => $asin, 'amazon_order_id' => $order_id, 'order_item_id' => $order_item_id, 'status' => 0]);
+
+                    US_Price_Missing::insert([
+                        'country_code' => 'us', 
+                        'title' => $this->title, 
+                        'asin' => $asin, 
+                        'amazon_order_id' => $order_id, 
+                        'order_item_id' => $order_item_id, 
+                        'status' => 0
+                    ]);
                 }
             } 
 
