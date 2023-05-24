@@ -338,6 +338,10 @@ class Search_Product
                                     );
                                 }
                             } elseif ($child !== '') {
+                    
+                                    $width_value = '';
+                                    $length_value = '';
+                                
                                 $cliqnshop->insertdata_cliqnshop($siteId, $category, $asin, $item_name, $brand, $brand_label, $color_key, $label, $length_unit, $length_value, $width_unit, $width_value, $Price_US_IN, $image_array, $searchKey, $short_description, $long_description, $generic_keywords, $editor, $display_code);
 
                                 DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $siteId)->where('asin', $asin)->update(['type' => 'select']);
