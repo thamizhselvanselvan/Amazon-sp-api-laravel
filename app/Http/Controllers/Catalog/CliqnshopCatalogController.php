@@ -376,7 +376,7 @@ class CliqnshopCatalogController extends Controller
                 if (($country['0']->code) == 'in') {
                     $Price_US_IN = $data['usa_to_in_b2c'];
                 } else if ($country['0']->code == 'uae') {
-                    $Price_US_IN = $data['ind_to_uae'];
+                    $Price_US_IN = $data['ind_to_uae'] - ($data['ind_to_uae'] * 10/100);
                 }
             }
 
@@ -638,7 +638,7 @@ class CliqnshopCatalogController extends Controller
 
     public function textarea_exported_asin_link_downloader($fileName)
     {
-        return Storage::download('Cliqnshop/upload/asin/exported_by_textarea/' . $fileName);
+        return Storage::download('Cliqnshop/upload/asin/exported_from_textarea/' . $fileName);
     }
 
     public function exported_asin_updater(Request $request)

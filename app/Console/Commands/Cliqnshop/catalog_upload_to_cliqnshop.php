@@ -188,7 +188,7 @@ class catalog_upload_to_cliqnshop extends Command
                     if (($country['0']->code) == 'in') {
                         $Price_US_IN = $data['usa_to_in_b2c'];
                     } else if ($country['0']->code == 'uae') {
-                        $Price_US_IN = $data['ind_to_uae'];
+                        $Price_US_IN = $data['ind_to_uae'] - ($data['ind_to_uae'] * 10/100);
                     }
                 }
 
