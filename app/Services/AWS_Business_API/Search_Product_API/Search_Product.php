@@ -211,7 +211,13 @@ class Search_Product
                             // $catalog_for_cliqnshop[$key1]['price_US']      = isset($productPrice1[$key1]) ? $productPrice1[$key1] : '';
                             if (isset($catalog_data['weight'])) {
                                 $price_convert = new PriceConversion();
-                                $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $price[$key1]);
+                                if ($price_conversion_method == 'USATOUAE')
+                                {
+                                $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $price[$key1] - ($price[$key1] * (10/100)));
+                                }
+                                else {
+                                    $catalog_for_cliqnshop[$key1]['price'] = $price_convert->$price_conversion_method($catalog_data['weight'], $price[$key1]);
+                                }
                             }
                         }
                     }
@@ -518,7 +524,13 @@ class Search_Product
                         if ($Product_type == 'child') {
                             if (isset($catalogData['weight'])) {
                                 $priceConvert = new PriceConversion();
+                               if ($priceConversionMethod == 'USATOUAE')
+                               {
+                                $catalogForCliqnshop[$key1]['price'] = $priceConvert->$priceConversionMethod($catalogData['weight'], $price[$key1] - ($price[$key1] * 10/100));
+                               }
+                               else {
                                 $catalogForCliqnshop[$key1]['price'] = $priceConvert->$priceConversionMethod($catalogData['weight'], $price[$key1]);
+                               }
                             }
                         }
                     }
@@ -791,7 +803,13 @@ class Search_Product
                         if ($Product_type == 'child') {
                             if (isset($catalogData['weight'])) {
                                 $priceConvert = new PriceConversion();
+                               if ($priceConversionMethod == 'USATOUAE')
+                               {
+                                $catalogForCliqnshop[$key1]['price'] = $priceConvert->$priceConversionMethod($catalogData['weight'], $price[$key1] - ($price[$key1] * 10/100));
+                               }
+                               else {
                                 $catalogForCliqnshop[$key1]['price'] = $priceConvert->$priceConversionMethod($catalogData['weight'], $price[$key1]);
+                               }
                             }
                         }
                     }
