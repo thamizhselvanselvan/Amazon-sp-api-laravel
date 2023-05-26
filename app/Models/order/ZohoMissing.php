@@ -12,6 +12,8 @@ class ZohoMissing extends Model
     protected $table = 'zoho_missing';
 
     protected $fillable = [
+        'country_code',
+        'title',
         'asin',
         'amazon_order_id',
         'order_item_id',
