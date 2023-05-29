@@ -84,9 +84,9 @@
                 margin: 0px;
                 padding: 0px;
                 /*
-                                                    width: 384px;
-                                                    height: 576px;
-                                                    */
+                                                        width: 384px;
+                                                        height: 576px;
+                                                        */
             }
         }
 
@@ -175,6 +175,10 @@
                                                     {{ $value->order_no }}
                                                 </div>
                                                 <div class=" text-inverse m-b-5 text-left">
+                                                    <strong> Store Name : </strong>
+                                                    {{ $value->store_name }}
+                                                </div>
+                                                <div class=" text-inverse m-b-5 text-left">
                                                     <strong> Order Date: </strong>
                                                     {{ date('Y-m-d', strtotime($value->purchase_date)) }}
                                                 </div>
@@ -225,10 +229,10 @@
                                                     @endif
                                                     <br>
                                                     @if (isset($getTranslatedText[$key]['name']) ||
-                                                        isset($getTranslatedText[$key]['addressline1']) ||
-                                                        isset($getTranslatedText[$key]['addressline1']) ||
-                                                        isset($getTranslatedText[$key]['city']) ||
-                                                        isset($getTranslatedText[$key]['county']))
+                                                            isset($getTranslatedText[$key]['addressline1']) ||
+                                                            isset($getTranslatedText[$key]['addressline1']) ||
+                                                            isset($getTranslatedText[$key]['city']) ||
+                                                            isset($getTranslatedText[$key]['county']))
                                                         <p class="ArToEn"><strong>Delivery Address:</strong>
                                                             {{ $getTranslatedText[$key]['name'] == null ? $value->shipping_address['Name'] : $getTranslatedText[$key]['name'] }},
                                                             {{ $getTranslatedText[$key]['addressline1'] == null ? $value->shipping_address['AddressLine1'] ?? '' : $getTranslatedText[$key]['addressline1'] }},
