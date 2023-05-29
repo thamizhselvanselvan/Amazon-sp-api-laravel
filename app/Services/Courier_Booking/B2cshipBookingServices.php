@@ -307,7 +307,7 @@ class B2cshipBookingServices
                     <ConsigneeState>' . (!empty($data['consignee_state']) ? $this->cleanSpecialCharacters($data['consignee_state']) : '') . '</ConsigneeState>
                     <ConsigneeCity> ' . strtolower($data['consignee_city']) . ' </ConsigneeCity>
                     <ConsigneePinCode> ' . $data['consignee_pincode'] . '</ConsigneePinCode>
-                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
+                    <ConsigneeMobile>' . (($data['consignee_Phone'] == "") ? '000000000' : $this->mobileNumberCleanUp($data['consignee_Phone'])) . ' </ConsigneeMobile>
                     <ConsigneeEmailID> ' . $data['email'] . ' </ConsigneeEmailID>
                     <ConsigneeTaxID></ConsigneeTaxID>
                     <PacketType>SPX</PacketType>

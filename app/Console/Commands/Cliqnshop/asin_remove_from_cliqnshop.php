@@ -4,6 +4,7 @@ namespace App\Console\Commands\Cliqnshop;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class asin_remove_from_cliqnshop extends Command
 {
@@ -77,6 +78,11 @@ class asin_remove_from_cliqnshop extends Command
             ],
             'keyword' => [
                 'table_name' => 'mshop_keyword',
+                'direct_delete' => false,
+                'isHandled' => false,
+            ],
+            'product' => [
+                'table_name' => 'mshop_product',
                 'direct_delete' => false,
                 'isHandled' => false,
             ],
@@ -181,7 +187,7 @@ class asin_remove_from_cliqnshop extends Command
     {
         foreach ($mshop_product_list_for_index as $singleItem) {
             $index_domain = $singleItem->domain;
-            if ($index_domain !== 'media') {
+            if ($index_domain !== 'media' && $index_domain !== 'product') {
                 DB::connection('cliqnshop')->table('mshop_index_' . $index_domain)->where(['prodid' => $pid, 'siteid' => $site])->delete();
             }
         }
