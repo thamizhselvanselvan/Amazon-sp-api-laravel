@@ -199,7 +199,7 @@ class ZohoOrderFormat
 
         $prod_array["Mobile"]      = isset($buyerDtls->Phone) ? substr((int) filter_var($buyerDtls->Phone, FILTER_SANITIZE_NUMBER_INT), -10) : '1234567890';
 
-        $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code);
+        $prod_array["Address"]     = $this->get_address($value->shipping_address, $country_code, $store_name);
         $prod_array["City"]        = $buyerDtls->City;
         $prod_array['State']       = $this->get_state_pincode($country_code, $buyerDtls);
         $prod_array['Zip_Code']    = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
@@ -214,7 +214,7 @@ class ZohoOrderFormat
         ### Inventory Management ###
         ############################
 
-        $catalog_details = $this->get_catalog($amazon_order_identifier, $amazon_order_item_identifier, $value->asin, $country_code, $store_name, $value->fulfillment_channel, $this->amount_paid_by_customer($item_tax, $item_price));
+        $catalog_details = $this->get_catalog($value, $amazon_order_identifier, $amazon_order_item_identifier, $value->asin, $country_code, $store_name, $this->amount_paid_by_customer($item_tax, $item_price));
 
         $prod_array["Designation"]        = preg_replace("/[^a-zA-Z0-9_ -\/]+/", "", substr($value->title, 0, 100));
         $prod_array["Product_Code"]       = $value->seller_sku;
@@ -370,19 +370,21 @@ class ZohoOrderFormat
         return 'http://www.amazon.com/gp/product/' . $asin;
     }
 
-    public function get_address($shipping_address, $country_code)
+    public function get_address($shipping_address, $country_code, $store_name)
     {
         $buyerDtls = (object)$shipping_address;
         $address = '';
 
         if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
-            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2 ?? "";
-        } else {
-            $address = $buyerDtls->AddressLine1 ?? "" . ' ' . $buyerDtls->AddressLine2 ?? "";
+            $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2;
+        } else if(isset($buyerDtls->AddressLine1) && !isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine1;
+        } else if(!isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
+            $address = $buyerDtls->AddressLine2;
         }
 
-        $name =  $buyerDtls->Name ?? "";
-        $city = $buyerDtls->City ?? "";
+        $name =  isset($buyerDtls->Name) ? $buyerDtls->Name : "";
+        $city = isset($buyerDtls->City) ? $buyerDtls->City : "";
         $state = $this->get_state_pincode($country_code, $buyerDtls);
         $pincode = $this->get_state_pincode($country_code, $buyerDtls, 'pincode');
 
@@ -405,21 +407,25 @@ class ZohoOrderFormat
         if ($country_code == 'AE') {
 
             if ($return == "state") {
-                return $buyerDtls->City;
+                return isset($buyerDtls->City) ? $buyerDtls->City : '';
             }
 
             return '00000';
         }
 
         if ($return == "state") {
-            //Log::info(json_encode($buyerDtls));
-            return $buyerDtls->StateOrRegion ?? $buyerDtls->County;
+
+            if(isset($buyerDtls->StateOrRegion)) {
+                return $buyerDtls->StateOrRegion;
+            }
+
+            return isset($buyerDtls->County) ? $buyerDtls->County : '';
         }
 
-        return $buyerDtls->PostalCode ?? '00000';
+        return isset($buyerDtls->PostalCode) ? $buyerDtls->PostalCode : '00000';
     }
 
-    public function get_catalog($amazon_order_identifier, $amazon_order_item_identifier, $asin, $country_code, $store_name, $fulfillment_channel = null, $amount_paid_by_customer = null)
+    public function get_catalog($value, $order_identifier, $order_item_identifier, $asin, $country_code, $store_name, $amount_paid_by_customer = null)
     {
         $result = null;
         $price = 0;
@@ -435,7 +441,7 @@ class ZohoOrderFormat
                     $result = Catalog_us::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingUs::where('asin', $asin)->limit(1)->first();
 
-                    $price = $this->get_price_usa($asin, $amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer);
+                    $price = $this->get_price_usa($value, $asin, $order_identifier, $order_item_identifier, $result_price, $store_name, $amount_paid_by_customer);
 
                     echo "\n";
                     print($price);
@@ -444,7 +450,7 @@ class ZohoOrderFormat
                     $result = Catalog_in::where('asin', $asin)->limit(1)->first();
                     $result_price = PricingIn::where('asin', $asin)->limit(1)->first();
 
-                    $price = $store_name == "Infinitikart UAE" ? 0 : $result_price->in_price;
+                    $price = $this->get_in_price($value, $asin, $result_price, $store_name, $order_identifier, $order_item_identifier);
                 }
 
                 if (isset($result) && isset($result->dimensions[0]['package']['weight']) && $result->dimensions[0]['package']['weight']['unit'] == 'pounds') {
@@ -467,9 +473,8 @@ class ZohoOrderFormat
         return ['price' => $price, 'weight' => $weight, 'category' => $category];
     }
 
-    public function get_price_usa($asin, $amazon_order_identifier, $amazon_order_item_identifier, $result_price, $store_name, $fulfillment_channel, $amount_paid_by_customer)
+    public function get_price_usa($value, $asin, $order_identifier, $order_item_identifier, $result_price, $store_name, $amount_paid_by_customer)
     {
-
 
         if (!isset($result_price->us_price) && $store_name == "Infinitikart India") {
 
@@ -485,21 +490,56 @@ class ZohoOrderFormat
 
             //slack Notification 
             $slackMessage = 'US Price not found ' .
-                'Amazon Order ID = ' . $amazon_order_identifier . ' ' .
-                'Order Item Identifier = ' .  $amazon_order_item_identifier;
+                'Amazon Order ID = ' . $order_identifier . ' ' .
+                'Order Item Identifier = ' .  $order_item_identifier;
             slack_notification('app360', 'Zoho Booking', $slackMessage);
 
             // insert to db (zoho_missin)
             ZohoMissing::create([
+                "country_code" => "US",
+                "title" => isset($value->title) ? $value->title : '',
                 'asin' => $asin,
-                'amazon_order_id' => $amazon_order_identifier,
-                'order_item_id' => $amazon_order_item_identifier,
+                'amazon_order_id' => $order_identifier,
+                'order_item_id' => $order_item_identifier,
                 'price' => '0',
                 'status' => '0'
             ]);
+            
             return 0;
         }
+
         return $result_price->us_price;
+    }
+
+    public function get_in_price($value, $asin, $result_price, $store_name, $order_identifier, $order_item_identifier) {
+
+        if($store_name == "Infinitikart UAE") {
+            return 0;
+        }
+
+        if (!isset($result_price->in_price)) {
+
+            //slack Notification 
+            $slackMessage = 'IN Price not found ' .
+                'Amazon Order ID = ' . $order_identifier . ' ' .
+                'Order Item Identifier = ' .  $order_item_identifier;
+            slack_notification('app360', 'Zoho Booking', $slackMessage);
+
+            // insert to db (zoho_missin)
+            ZohoMissing::create([
+                "country_code" => "US",
+                "title" => isset($value->title) ? $value->title : '',
+                'asin' => $asin,
+                'amazon_order_id' => $order_identifier,
+                'order_item_id' => $order_item_identifier,
+                'price' => '0',
+                'status' => '0'
+            ]);
+            
+            return 0;
+        }
+
+        return $result_price->in_price;
     }
 
     public function get_country($country_code)

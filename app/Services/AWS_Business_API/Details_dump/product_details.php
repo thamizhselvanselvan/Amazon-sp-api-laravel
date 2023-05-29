@@ -25,6 +25,28 @@ class product_details
             $asin = $data;
             $data = $ApiCall->getASINpr($asin);
 
+            $asin = '';
+            $asin_type = '';
+            $signedProductId = '';
+            $offers = '';
+            $availability = '';
+            $buyingGuidance = '';
+            $fulfillmentType = '';
+            $merchant = '';
+            $offerId = '';
+            $price = '';
+            $listPrice = '';
+            $productCondition = '';
+            $condition = '';
+            $quantityLimits = '';
+            $deliveryInformation = '';
+            $features = '';
+            $taxonomies = '';
+            $title = '';
+            $url = '';
+            $productOverview = '';
+            $productVariations = '';
+
             if (property_exists($data, "errors") && $data->errors[0]->code == "PRODUCT_NOT_FOUND") {
                 $asin = 'Not Found';
                 $asin_type = 'Not Found';
@@ -48,28 +70,30 @@ class product_details
                 $productOverview = 'Not Found';
                 $productVariations = 'Not Found';
             } else if (property_exists($data, "errors") && $data->errors[0]->message == "You exceeded your quota for the requested resource.") {
-                // Log::warning('429');
+                Log::warning('429  B-api');
                 sleep(10);
                 break;
             } else {
-
-                $asin = ($data->asin);
-
-                $asin_type = ($data->asinType);
-                $signedProductId  = ($data->signedProductId);
-                if ($data->includedDataTypes->OFFERS == []) {
-                    $offers = 'null';
-                    $availability = 'null';
-                    $buyingGuidance = 'null';
-                    $fulfillmentType = 'null';
-                    $merchant = 'null';
-                    $offerId = 'null';
-                    $price = 'null';
-                    $listPrice = 'null';
-                    $productCondition = 'null';
-                    $condition = 'null';
-                    $quantityLimits = 'null';
-                    $deliveryInformation = 'null';
+                if (isset($data->asin)) {
+                    $asin = ($data->asin);
+                    $asin_type = ($data->asinType);
+                    $signedProductId  = ($data->signedProductId);
+                    if ($data->includedDataTypes->OFFERS == []) {
+                        $offers = null;
+                        $availability = null;
+                        $buyingGuidance = null;
+                        $fulfillmentType = null;
+                        $merchant = null;
+                        $offerId = null;
+                        $price = null;
+                        $listPrice = null;
+                        $productCondition = null;
+                        $condition = null;
+                        $quantityLimits = null;
+                        $deliveryInformation = null;
+                    } else {
+                        // Log::notice('unmatched');
+                    }
                 } else   if (property_exists($data, "errors") && $data->errors[0]->code == "You exceeded your quota for the requested resource.") {
                     $end_time = endTime($start_time);
                     Log::info("After this $counter much request 429 error came. timing $end_time");
@@ -96,7 +120,7 @@ class product_details
                 $productVariations = json_encode($data->productVariations->variations);
             }
 
-            DB::connection('mongodb')->table('product_details')->where('asin', $asin)->update(
+            DB::connection('mongodb')->table('catalog_details_bapi')->where('asin', $asin)->update(
                 [
                     'asin' =>      $asin,
                     'asin_type' => $asin_type,

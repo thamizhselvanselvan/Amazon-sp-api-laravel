@@ -6,6 +6,7 @@
 
 <link rel="stylesheet" href="/css/styles.css">
 <style>
+    
     .table td {
         padding: 0;
         padding-left: 5px;
@@ -173,6 +174,47 @@
     $(document).on('click', '#zoho_clipboard', function() {
         data = $(this).attr('value');
         navigator.clipboard.writeText(data);
+    });
+
+    $(document).on('click', "#order_retry", function() {
+        let self = $(this);
+        let order_row_id = self.data("id");
+        let couriername = self.data("couriername");
+        let awb = self.data("awb");
+
+        self.prop("disabled", true);
+
+        $.ajax({
+            method: 'post',
+            url: "{{ route('orders.retry') }}",
+            data: {
+                'id': order_row_id,
+                'couriername': couriername,
+                'courier': awb,
+                "_token": "{{ csrf_token() }}",
+            },
+            success: function(response) {
+                console.log(response);
+                self.prop("disabled", false);
+
+                if(response.hasOwnProperty("success")) {
+                    alert(response.success);
+                    self.attr("display", "none");
+                }
+
+                if(response.hasOwnProperty("error")) {
+                    alert("please retry sometime later!");
+                }
+            },
+            error: function(response) {
+                self.prop("disabled", false);
+                alert('something went wrong Please Contact Admin');
+            }
+        });
+
+
+        console.log(order_row_id, couriername, awb);
+
     });
 
     let yajra_table = $('.yajra-datatable').DataTable({

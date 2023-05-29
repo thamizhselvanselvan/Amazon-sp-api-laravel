@@ -54,7 +54,9 @@ class ZohoCustomSearch extends Command
             $order_item_id = trim($record['order_item_id']);
             $zoho_status = $record['zoho_status'] ?? 1;
 
-            $exists = $zoho->search($amazon_order_id, $order_item_id);
+
+            $type_search = 'custom search';
+            $exists = $zoho->search($amazon_order_id, $order_item_id, $type_search);
 
             $order_details = [
                 "date" => $date,
@@ -128,7 +130,8 @@ class ZohoCustomSearch extends Command
                     if ($item_tax == "0.00" || $item_tax == 0) {
                         print ($amazon_order_id . " & " . $order_item_id  . " Already Price Updated " . $amount_paid_by_customer) . PHP_EOL;
                     } else {
-                        $zoho->updateLead($lead_id, $prod_array);
+                        $type = 'zoho custom search';
+                        $zoho->updateLead($lead_id, $prod_array, $type);
                         print ($amazon_order_id . " & " . $order_item_id . " " . $gn . " Updated with Prices " . $amount_paid_by_customer . " Previous Pices " . $amount . " Zoho Status " . $zoho_status) . PHP_EOL;
                     }
                 }

@@ -46,7 +46,7 @@ class ZohoOrder
 
             return $notes;
         }
-
+      
         $amazon_order_id = ($amazon_order_id) ? $amazon_order_id : $order_items->amazon_order_id;
         $order_item_identifier = isset($order_items->order_item_id) ? $order_items->order_item_id : null;
 
@@ -71,7 +71,7 @@ class ZohoOrder
             "orders.latest_delivery_date",
             "orders.is_business_order",
         ];
-
+        Log::notice($amazon_order_id);
         $order_item_details = OrderItemDetails::select($order_details)
             ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
             ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
@@ -83,25 +83,25 @@ class ZohoOrder
             ->first();
 
         if ($order_item_details) {
-
+            $type = 'old method';
             $order_item_id = $order_item_details->order_item_identifier;
-            $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $order_item_id);
+            $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $order_item_id, $type);
 
             $store_name = $this->zoho_order_format->get_store_name($order_item_details->store_details);
             $country_code = $this->zoho_order_format->get_country_code($order_item_details->store_details);
 
             $prod_array = $this->zoho_order_format->zohoOrderFormating($order_item_details, $store_name, $country_code, $order_items);
-          
+
             //update zoho status to 3 if not item name
             if (!$prod_array) {
 
                 //slack Notification 
                 $slackMessage = 'US Price not found ' .
-                'Amazon Order ID = ' . $amazon_order_id . ' ' .
-                'Order Item Identifier = ' .  $amazon_order_id;
+                    'Amazon Order ID = ' . $amazon_order_id . ' ' .
+                    'Order Item Identifier = ' .  $amazon_order_id;
 
                 slack_notification('app360', 'Zoho Booking', $slackMessage);
-                
+
                 return OrderUpdateDetail::query()
                     ->where([
                         'order_item_id' => $order_item_id,
@@ -172,15 +172,15 @@ class ZohoOrder
 
     public function zoho_save($prod_array, $order_item_details, $amazon_order_id, $order_item_id)
     {
-
-        $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $order_item_id);
+        $type = 'old method';
+        $zoho_search_order_exists = $this->zohoApi->search($amazon_order_id, $order_item_id, $type);
 
         if ($zoho_search_order_exists) {
 
             return $this->zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id);
         }
-
-        $zoho_api_save = $this->zohoApi->storeLead($prod_array);
+        $type = 'old method';
+        $zoho_api_save = $this->zohoApi->storeLead($prod_array, $type);
 
         $zoho_response = ($zoho_api_save) ? $zoho_api_save : null;
 
@@ -267,8 +267,8 @@ class ZohoOrder
         $zoho_lead_id = $zoho_search_order_exists['data'][0]['id'];
         $amazon_order_id = $zoho_search_order_exists['data'][0]['Alternate_Order_No'];
         $order_item_id = $zoho_search_order_exists['data'][0]['Payment_Reference_Number1'];
-
-        $zoho_response =  $this->zohoApi->updateLead($zoho_lead_id, $prod_array);
+        $type = 'old method';
+        $zoho_response =  $this->zohoApi->updateLead($zoho_lead_id, $prod_array, $type);
 
         if (isset($zoho_response) && array_key_exists('data', $zoho_response) && array_key_exists(0, $zoho_response['data']) && array_key_exists('code', $zoho_response['data'][0]) && $zoho_response['data'][0]['code'] == "SUCCESS") {
             $notes['notes'][] = "Amazon Order id: $amazon_order_id with Order Item ID: $order_item_id updated in Zoho successful";
