@@ -149,6 +149,7 @@ class labelManagementController extends Controller
             $bag_no = $id_array[0];
             $table_id = $id_array[1];
             $result = $this->labelDataFormating("'$table_id'");
+
             $getTranslatedText = $this->GetArabicToEnglisText($result);
 
             $result = $result[0];
@@ -974,6 +975,7 @@ class labelManagementController extends Controller
         GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
         GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
         GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
+        GROUP_CONCAT(DISTINCT store.store_name) as store_name,
         GROUP_CONCAT(DISTINCT ordetail.shipping_address, '-address-separator-') as shipping_address,
         GROUP_CONCAT(ordetail.title SEPARATOR '-label-title-') as title,
         GROUP_CONCAT(ordetail.seller_sku SEPARATOR '-label-sku-') as sku,
@@ -982,6 +984,7 @@ class labelManagementController extends Controller
         from ${web}.${prefix}labels as web
         JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
         JOIN ${order}.orderitemdetails as ordetail ON ordetail.amazon_order_identifier = ord.amazon_order_identifier
+        JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
         WHERE $where_condition
         GROUP BY ordetail.amazon_order_identifier
         ORDER BY shipping_address
