@@ -199,7 +199,6 @@ class OrderDetailsController extends Controller
             $url = "/orders/statistics/" . $request_store_id;
         }
 
-
         if ($request->ajax()) {
 
             $data = OrderUpdateDetail::query()
@@ -224,18 +223,23 @@ class OrderDetailsController extends Controller
                     return $row->updated_at->toDateTimeString();
                 })
                 ->editColumn('booking_status', function ($row) {
-                    if ($row['booking_status'] == '0') {
+                    if ($row->booking_status == 0) {
                         // return 'Not processed';
                         return '<i class="fa fa-minus "  aria-hidden="true"></i>';
-                    } else if ($row['booking_status'] == '1') {
+                    } else if ($row->booking_status == 1) {
                         // return 'Booked';
                         return '<i class="fa fa-check click" color-"blue" aria-hidden="true"></i>';
-                    } else if ($row['booking_status'] == '5') {
+                    } else if ($row->booking_status == 5) {
                         // return 'Under processing';
-                        return  '<i class="fa fa-spinner under" aria-hidden="true"></i>';
-                    } else {
-                        return $row['booking_status'];
+                        $response = '<i class="fa fa-spinner under" aria-hidden="true"></i>';
+
+                        $courier = ($row->courier_awb) ? 1 : 0;
+                        $courier_name = ($row->courier_name == "B2CShip") ? 1 : 0;
+
+                        return  $response . " <span id='order_retry' class='badge badge-danger cursor-pointer' data-id='". $row->id ."' data-couriername='".$courier_name."' data-awb='".$courier."'>Retry</span>";
                     }
+                    
+                    return $row->booking_status;
                 })
                 ->editColumn('zoho_status', function ($row) {
 
@@ -254,7 +258,7 @@ class OrderDetailsController extends Controller
                         $courier = ($row->courier_awb) ? 1 : 0;
                         $courier_name = ($row->courier_name == "B2CShip") ? 1 : 0;
 
-                        $response .= "<span id='order_retry' class='badge badge-success cursor-pointer' data-id='". $row->id ."' data-couriername='".$courier_name."' data-awb='".$courier."'>Retry</span>";
+                        $response .= " <span id='order_retry' class='badge badge-danger cursor-pointer' data-id='". $row->id ."' data-couriername='".$courier_name."' data-awb='".$courier."'>Retry</span>";
                         
                     } else {
                         $response = $zoho_status;
