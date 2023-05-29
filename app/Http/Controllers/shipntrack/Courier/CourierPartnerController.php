@@ -52,12 +52,12 @@ class CourierPartnerController extends Controller
     // }
     public function index(Request $request)
     {
-        $user_name = Auth::user()->name;
-        $user_email = Auth::user()->email;
+        // $user_name = Auth::user()->name;
+        // $user_email = Auth::user()->email;
+        // ->where('login_user', $user_name)
+        // ->where('login_email', $user_email)
 
         $data =  CourierPartner::with(['courier_names'])
-            ->where('login_user', $user_name)
-            ->where('login_email', $user_email)
             ->get();
 
         if ($request->ajax()) {
