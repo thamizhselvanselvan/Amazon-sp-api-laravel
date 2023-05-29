@@ -47,7 +47,7 @@ class CliqnshopCataloginsert
             $image[$asin]['Images10'] == '')
             
             {
-                $display_code = '0';
+                $display_code = 0;
             }
             }
             $string_original = str_replace('&', 'and', $item_name);
@@ -97,7 +97,7 @@ class CliqnshopCataloginsert
             //delete price id old end
 
             //site_id get
-            $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', '1')->get();
+            $currency = DB::connection('cliqnshop')->table('mshop_locale')->select('currencyid')->where('siteid', $site_id)->where('status', 1)->get();
             $currency_code = $currency['0']->currencyid;
 
             $date_time = Carbon::now('Asia/Kolkata');
@@ -211,7 +211,7 @@ class CliqnshopCataloginsert
                             ['siteid', 'parentid', 'key', 'refid', 'type', 'domain', 'refid', 'config', 'status', 'mtime', 'editor']
                         );
 
-
+                   if ($display_code !== 0) {
                         $index_generic_key = [
                             'prodid' => $get_product_id,
                             'siteid' => $site_id,
@@ -223,6 +223,7 @@ class CliqnshopCataloginsert
                             ['unq_msindkey_pid_kid_sid'],
                             ['keyid', 'mtime']
                         );
+                    }
                        }
                     }
                 }
@@ -373,7 +374,7 @@ class CliqnshopCataloginsert
                             'editor' => $editor,
                         ];
 
-                        DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert($media);
+                        DB::connection('cliqnshop')->table('mshop_media')->updateOrInsert(['siteid' => $media['siteid'],'link' => $media['link']],$media);
                         $image_get_id = DB::connection('cliqnshop')->table('mshop_media')->where('siteid', $media['siteid'])->where('mimetype', $media['mimetype'])->where('link', $media['link'])->select('id')->get();
 
                         $media_product_list = [
@@ -684,7 +685,7 @@ class CliqnshopCataloginsert
             //index (asin) to mshop_index_attribute
 
             if (!empty($attribute['label'])) {
-
+                if ($display_code !== 0) {
                 $index_attribute = [
                     'prodid' => $get_product_id,
                     'siteid' => $site_id,
@@ -701,9 +702,11 @@ class CliqnshopCataloginsert
                     ['prodid', 'siteid', 'artid', 'attrid', 'listtype', 'type', 'code', 'mtime']
                 );
             }
+            }
 
             //index (length) to mshop_index_attribute
             if (!empty($length_attribute)) {
+                if ($display_code !== 0) {
                 $index_attribute_length = [
                     'prodid' => $get_product_id,
                     'siteid' => $site_id,
@@ -720,6 +723,8 @@ class CliqnshopCataloginsert
                     ['prodid', 'siteid', 'artid', 'attrid', 'listtype', 'type', 'code', 'mtime']
                 );
             }
+            }
+           
 
             // //mshop index for generic keyword  here replaced to top
 
@@ -727,7 +732,7 @@ class CliqnshopCataloginsert
 
             //index (width) to mshop_index_attribute
             if (!empty($width_attribute)) {
-
+                if ($display_code !== 0) {
                 $index_attribute_width = [
                     'prodid' => $get_product_id,
                     'siteid' => $site_id,
@@ -745,8 +750,10 @@ class CliqnshopCataloginsert
                     ['prodid', 'siteid', 'artid', 'attrid', 'listtype', 'type', 'code', 'mtime']
                 );
             }
+            }
 
             //product_id to mshop_index_catalog
+            if ($display_code !== 0) {
             $index_catalog = [
                 'prodid' => $get_product_id,
                 'siteid' => $site_id,
@@ -760,11 +767,11 @@ class CliqnshopCataloginsert
                 ['unq_msindca_p_s_cid_lt_po'],
                 ['prodid', 'siteid', 'catid', 'listtype', 'pos', 'mtime']
             );
-
+        }
 
             //index_price to mshop_index_price
             if (count($price) > 0) {
-
+                if ($display_code !== 0) {
                 $index_price = [
                     'prodid' => $get_product_id,
                     'siteid' => $site_id,
@@ -778,8 +785,10 @@ class CliqnshopCataloginsert
                     ['prodid', 'siteid', 'currencyid', 'value', 'mtime']
                 );
             }
+            }
             //domain_supplier to mshop Index Suplier
             if (count($domain_supplier) > 0) {
+                if ($display_code !== 0) {
                 $index_supplier = [
                     'prodid' => $get_product_id,
                     'siteid' => $site_id,
@@ -797,15 +806,17 @@ class CliqnshopCataloginsert
                     ['prodid', 'siteid', 'supid', 'listtype', 'pos', 'mtime']
                 );
             }
+            }
 
             //product_data to mshop_index_text
+            if ($display_code !== 0) {
             $index_text = [
                 'prodid' => $get_product_id,
                 'siteid' => $site_id,
                 'langid' => 'en',
                 'url' => $product_data['url'],
                 'name' => $product_data['label'],
-                'content' => mb_strtolower($product_data['code']) . '<pre>' . mb_strtolower($product_data['label']) . '<pre>' . $keyword,
+                'content' => mb_strtolower($product_data['code']) . ' ' . mb_strtolower($product_data['label']) . ' ' . $keyword,
                 'mtime' => $date_time,
             ];
             DB::connection('cliqnshop')->table('mshop_index_text')->upsert(
@@ -813,6 +824,7 @@ class CliqnshopCataloginsert
                 ['unq_msindte_pid_sid_lid_url'],
                 ['prodid', 'siteid', 'url', 'name', 'content', 'mtime']
             );
+        }
         } catch (Exception $e) {
             Log::notice('Unmatched Data For' . $asin);
             Log::notice('CNS Insert' . $e);

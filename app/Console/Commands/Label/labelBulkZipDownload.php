@@ -48,6 +48,7 @@ class labelBulkZipDownload extends Command
         $final_data = [];
         $explode_array = explode(',', $column_data);
 
+        Log::warning($explode_array);
         foreach ($explode_array as $key => $value) {
             list($key, $value) = explode('=', $value);
             $final_data[$key] = $value;

@@ -29,14 +29,22 @@
             <h2 class="ml-2">
                 <x-adminlte-button label="Upload New ASIN" theme="info" class="btn-sm" icon="fas fa-upload" id="new_asin" data-toggle="modal" data-target="#cliqnshop_new_asin_modal" />
             </h2>
-            <h2 class="ml-2">
+            {{-- <h2 class="ml-2">
                 <x-adminlte-button label="Download Upload ASIN Catalog" theme="info" class="btn-sm" icon="fas fa-download" id="new_asin_cat" data-toggle="modal" data-target="#uploaded_asin_catalog" />
+            </h2> --}}
+
+            <h2 class="ml-2">
+                <x-adminlte-button label="uploaded asin exporter" theme="info" class="btn-sm btn-danger" icon="fas fa-download" id="btn_export_lister" data-toggle="modal" data-target="#uploaded_asin_exporter" />
+            </h2>
+
+            <h2 class="ml-2">
+                <x-adminlte-button label="Asin Updater By CSV" theme="info" class="btn-sm btn-warning" icon="fas fa-download" id="btn_export_updater" data-toggle="modal" data-target="#exported_asin_updater_modal" />
             </h2>
         </div>
 
         <!--  download files from asin from all Download -->
         <div class="modal" id="downloacliqdModal">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Download Cliqnshop Catalog </h4>
@@ -54,7 +62,7 @@
 
         <!--  download files from asin Import -->
         <div class="modal" id="uploaded_asin_catalog">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h4 class="modal-title">Download Uploaded asin Catalog </h4>
@@ -70,9 +78,97 @@
             </div>
         </div>
 
+        <!--  asin exporter  --start -->
+            <div class="modal" id="uploaded_asin_exporter">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Asin Exporter </h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body file_lister">
+                            
+                            <div class="card card-info card-tabs">
+                                <div class="card-header p-0 pt-1">
+                                    <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="custom-tabs-file-lister-csv-tab" data-toggle="pill"
+                                                href="#custom-tabs-file-lister-csv" role="tab" aria-controls="custom-tabs-file-lister-csv"
+                                                aria-selected="true">via CSV</a>
+                                        </li>                                        
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="custom-tabs-file-lister-textarea-tab" data-toggle="pill" href="#custom-tabs-file-lister-textarea"
+                                                role="tab" aria-controls="custom-tabs-file-lister-textarea" aria-selected="false">via Text-Area</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="card-body">
+                                    <div class="tab-content" id="custom-tabs-five-tabContent">
+                                        <div class="tab-pane fade active show" id="custom-tabs-file-lister-csv" role="tabpanel"
+                                            aria-labelledby="custom-tabs-file-lister-csv-tab">
+                                            
+                                        </div>
+                                        
+                                        <div class="tab-pane fade" id="custom-tabs-file-lister-textarea" role="tabpanel"
+                                            aria-labelledby="custom-tabs-file-lister-textarea-tab">
+                                             
+                                        </div>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-danger" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!--  asin exporter  --end  -->
+
+        
+        <!--  exported asin updater modal  --start -->
+            <div class="modal fade" id="exported_asin_updater_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel"><b>Cliqnshp ASIN Updater By CSV</b></h5>
+                            <button type="button" class="close btn-sm" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="fasle">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body " style="font-size:15px">
+                            <div id="warning" class="alert alert-warning alert-dismissible fade show" role="alert">
+                                 Upload the data in csv format only.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <form class="row" id="multi-file-upload" method="POST" action="{{ route('cliqnshop.catalog.asin.export.list.update') }}" accept-charset="utf-8" enctype="multipart/form-data">
+                                @csrf
+                               
+                                <div class="col-12">
+                                    <x-adminlte-input label="Choose CSV File" name="cliqnshop_csv" id="files" type="file" />
+                                </div>
+                                <div class="col">                                
+                                        <x-adminlte-button label="Upload" theme="primary" class="add_ btn-sm" icon="fas fa-upload" type="submit" id="order_upload" />
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-window-close" aria-hidden="true"></i> Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+         <!--  exported asin updater modal  --end -->
+
 
         <div class="modal fade" id="cliqnshop_new_asin_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel"><b>Cliqnshp Catalog Operations</b></h5>
@@ -325,6 +421,126 @@
             },
         });
     });
+
+
+    // catalog exporter window popup --start
+        
+
+        
+        $('#btn_export_lister').click(function() {
+            csvExportedFileLister();
+        });
+        $('#custom-tabs-file-lister-csv-tab').click(function() {
+            csvExportedFileLister();
+        });
+        $('#custom-tabs-file-lister-textarea-tab').click(function() {
+            textareaExportedFileLister();
+        });
+
+         function csvExportedFileLister() 
+         {
+            $('#custom-tabs-file-lister-csv').empty();
+            let loader = `<div class="overlay-wrapper" style="min-height: 25vh!important;">
+                            <div class="overlay "><i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pt-2">Loading...</div>
+                            </div>                                
+                          </div>`;
+            $('#custom-tabs-file-lister-csv').prepend(loader)
+            $.ajax({
+                url: "{{route('cliqnshop.catalog.asin.export.list')}}",
+                method: "GET",
+                data: {
+                    "catalog": "Cliqnshop/upload/asin/export",
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+
+                    if (response == '') {
+                        $('#custom-tabs-file-lister-csv').empty();
+                        $('#custom-tabs-file-lister-csv').append('Please Upload The File And Wait For Fe Minuts Catalog Is Exporting..');
+                        return false;
+                    } else {
+                        $('#custom-tabs-file-lister-csv').empty();
+                        let files = '';
+                        $.each(response, function(index, result) {
+                            console.log(result);
+                            files += "<li class='p-0 m-0'>";
+                            files += "<a href='/cliqnshop/catalog/asin/export/list/download/" + index + "'>" +
+                                index + '&nbsp; ' + "</a>";
+                            files += ' created at <span class="text-warning">'+ result + '</span>';
+
+                            files += "</li>";
+
+                        });
+                        $('#custom-tabs-file-lister-csv').append(files);
+
+                    }
+
+                },
+                error: function(response) {
+                    console.log(response);
+                    response.status == 500
+                    {
+                        $('#custom-tabs-file-lister-textarea').empty();
+                        $('#custom-tabs-file-lister-textarea').append('Please Upload The File And Wait For Few Minutes ,  Catalog Is Exporting..');
+                    }
+                },
+            });
+         }
+         
+         function textareaExportedFileLister() 
+         {
+            $('#custom-tabs-file-lister-textarea').empty();
+            let loader = `<div class="overlay-wrapper" style="min-height: 25vh!important;">
+                            <div class="overlay "><i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pt-2">Loading...</div>
+                            </div>                                
+                          </div>`;
+            $('#custom-tabs-file-lister-textarea').prepend(loader)
+            $.ajax({
+                url: "{{route('cliqnshop.catalog.asin.export.list')}}",
+                method: "GET",
+                data: {
+                    "catalog": "Cliqnshop/upload/asin/exported_from_textarea",
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(response) {
+
+                    if (response == '') {
+                        $('#custom-tabs-file-lister-textarea').empty();
+                        $('#custom-tabs-file-lister-textarea').append('Please Upload The File And Wait For Fe Minuts Catalog Is Exporting..');
+                        return false;
+                    } else {
+                        $('#custom-tabs-file-lister-textarea').empty();
+                        let files = '';
+                        $.each(response, function(index, result) {
+                            console.log(result);
+                            files += "<li class='p-0 m-0'>";
+                            files += "<a href='/cliqnshop/catalog/asin/text-area-export/list/download/" + index + "'>" +
+                                index + '&nbsp; ' + "</a>";
+                            files += ' created at <span class="text-warning">'+ result + '</span>';
+
+                            files += "</li>";
+
+                        });
+                        $('#custom-tabs-file-lister-textarea').append(files);
+
+                    }
+
+                },
+                error: function(response) {
+                    console.log(response);
+                    response.status == 500
+                    {
+                        $('#custom-tabs-file-lister-textarea').empty();
+                        $('#custom-tabs-file-lister-textarea').append('Please Upload The File And Wait For Fe Minutes, Catalog Is Exporting..');
+                    }
+                },
+            });
+         }  
+
+    // catalog exporter window popup  --end
+
 
     $('#new_asin_cat').click(function() {
 

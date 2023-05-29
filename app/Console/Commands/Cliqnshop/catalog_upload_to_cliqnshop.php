@@ -3,11 +3,13 @@
 namespace App\Console\Commands\Cliqnshop;
 
 use Carbon\Carbon;
+use League\Csv\Writer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\Cliqnshop\CliqnshopCataloginsert;
+use App\Services\Cliqnshop\CSV_Exporter;
 
 class catalog_upload_to_cliqnshop extends Command
 {
@@ -23,7 +25,7 @@ class catalog_upload_to_cliqnshop extends Command
      *
      * @var string
      */
-    protected $description = 'Fetch ASIN Details From CatalogUSS table And Insert TO Cliqnsqhop Table';
+    protected $description = 'Fetch ASIN Details From catalognewuss/catalognewins table And Insert TO Cliqnsqhop Table';
 
     /**
      * Create a new command instance.
@@ -46,6 +48,7 @@ class catalog_upload_to_cliqnshop extends Command
 
         $site_id = $this->argument('site_id');
         $file_path = $this->argument('path');
+        $csvExporter = new CSV_Exporter();
 
 
         $csv_data =  CSV_Reader($file_path);
@@ -457,14 +460,15 @@ class catalog_upload_to_cliqnshop extends Command
             if ($long_description == '')
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Description not found, So Imported with Disable Status'. "\n");
+                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Description'. "\n");
             }
             if ($generic_keywords == '' || $generic_keywords == [])
             {
                 fwrite($file, 'Asin'.' '. $asin . ' - '. 'Generic Keywords not found'. "\n");
                 fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Generic Keywords'. "\n");
             }
-            $insert_service->insertdata_cliqnshop(
+           
+            $insertable_value = [
                 $site_id,
                 $category_code,
                 $asin,
@@ -485,7 +489,13 @@ class catalog_upload_to_cliqnshop extends Command
                 $generic_keywords,
                 $editor,
                 $display_code
+            ];
+
+            $insert_service->insertdata_cliqnshop(
+               ...$insertable_value
             );
+
+            $csvExporter->set_csv_body($insertable_value);   
 
             if ($item_name !== '')
             {
@@ -547,12 +557,22 @@ class catalog_upload_to_cliqnshop extends Command
                 $slackMessage_s = config('app.url').$url_s;
 
                 slack_notification('aimeos', 'Product Import From CSV Error Report testing', $slackMessage);
-
                 slack_notification('aimeos', 'Product Import From CSV Sucsess Report testing', $slackMessage_s);
-          
-        // po($generic_keywords);
-        $end_time = microtime(true);
+
+                $csv_head =  ['site','category_code','asin','item_name','brand_code','brand_label','color_code','color_label','length_unit','length_value','width_unit','width_value','price','image','long_description','generic_keywords'];
+
+                $csvExporter->set_csv_head($csv_head);
+                $csvExporter->set_file_path('Cliqnshop/upload/asin/export/');
+                $csvExporter->set_file_name_prefix('csv_export_');
+                $csvExporter->generate();
+                
+              // po($generic_keywords);
+                $end_time = microtime(true);
         $execution_time = ($end_time - $start_time);
         Log::info(" Execution time of cns product import from csv = ".$execution_time." sec");
-    }
+        
+        }
+
+
+   
 }

@@ -125,60 +125,104 @@ class OrdersController extends Controller
     }
     public function orderpending(Request $request)
     {
-        
+
 
         if ($request->ajax()) {
 
             if ($request->has("site_id")) {
                 //  \Illuminate\Support\Facades\Log::alert('validation failed');
-               
+
                 $data = DB::connection('cliqnshop')->table('mshop_order')
-                ->whereIn('mshop_order.statuspayment', [5, 6])
-    
-                ->join('mshop_order_base_product as oid', function ($query) {
-                    $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                        ->where('oid.status', '0');
-                })
-                ->join('mshop_product as pid', function ($query) {
-                    $query->on('pid.id', '=', 'oid.prodid');
-                })
-                ->where('mshop_order.siteid', $request->site_id)
-                ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
-                // ->orderBy('oid.mtime','desc')
-                ->get();
-            }
-            else
-            {
+                    ->whereIn('mshop_order.statuspayment', [5, 6])
+
+                    ->join('mshop_order_base_product as oid', function ($query) {
+                        $query->on('oid.baseid', '=', 'mshop_order.baseid')
+                            ->where('oid.status', '0')
+                            ->where('oid.price','not like', '%-%');
+                    })
+                    ->join('mshop_product as pid', function ($query) {
+                        $query->on('pid.id', '=', 'oid.prodid');
+                    })
+                    ->where('mshop_order.siteid', $request->site_id)
+                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid','oid.baseid')
+                    // ->orderBy('oid.mtime','desc')
+                    ->get();
+            } else {
                 $data = DB::connection('cliqnshop')->table('mshop_order')
-                ->whereIn('mshop_order.statuspayment', [5, 6])
-    
-                ->join('mshop_order_base_product as oid', function ($query) {
-                    $query->on('oid.baseid', '=', 'mshop_order.baseid')
-                        ->where('oid.status', '0');
-                })
-                ->join('mshop_product as pid', function ($query) {
-                    $query->on('pid.id', '=', 'oid.prodid');
-                })
-                ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid')
-                // ->orderBy('oid.mtime','desc')
-                ->get();
+                    ->whereIn('mshop_order.statuspayment', [5, 6])
+
+                    ->join('mshop_order_base_product as oid', function ($query) {
+                        $query->on('oid.baseid', '=', 'mshop_order.baseid')
+                            ->where('oid.status', '0')
+                            ->where('oid.price','not like', '%-%');
+                    })
+                    ->join('mshop_product as pid', function ($query) {
+                        $query->on('pid.id', '=', 'oid.prodid');
+                    })
+                    ->select('oid.prodcode', 'oid.name', 'oid.quantity', 'oid.price', 'pid.asin', 'mshop_order.siteid','oid.baseid')
+                    // ->orderBy('oid.mtime','desc')
+                    ->get();
             }
 
-            
 
             return DataTables::of($data)
                 ->addIndexColumn()
+
+                ->addColumn('rebate', function ($data) {
+                    $s_id = $data->siteid;
+                    $check_rebate = $data->baseid;
+                    $base_count =  DB::connection('cliqnshop')->table('mshop_order_base_product')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_rebate])->where('price','not like', '%-%')->count();
+                    $rebate_check = DB::connection('cliqnshop')->table('mshop_order_base')
+                    ->where(['siteid' => $s_id, 'id' => $check_rebate])->value('rebate');
+                    if($base_count == 1)
+                    {
+                    return $rebate_check;
+                    }
+                    else
+                    {
+                        return "<p class='bg-info'>$rebate_check</p>";
+                    }
+                })
 
                 ->addColumn('action', function ($data) {
                     $id = $data->asin;
                     return  "<div class='d-flex'><a href='javascript:void(0)' id='offers1' value ='$id' class='edit btn btn-success btn-sm offers1'><i class='fas fa-check'></i> Book</a>";
                 })
-                ->rawColumns(['action'])
+                ->addColumn('total_price', function ($data) {
+                    $s_id = $data->siteid;
+                    $check_total = $data->baseid;
+                    $base_count =  DB::connection('cliqnshop')->table('mshop_order_base_product')
+                    ->where(['siteid' => $s_id, 'baseid' => $check_total])->where('price','not like', '%-%')->count();
+                    $total_price = DB::connection('cliqnshop')->table('mshop_order_base')
+                    ->where(['siteid' => $s_id, 'id' => $check_total])->value('price');
+                    if($base_count == 1)
+                    {
+                    return $total_price;
+                    }
+                    else
+                    {
+                        return "<p class='bg-info'>$total_price</p>";
+                    }
+                })
+                ->editColumn('site', function ($data) {
+                    $id = $data->siteid;
+                    $data = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $id)->select('code')->get();
+                    $s_code =  (strtoupper($data[0]->code));
+                    if ($s_code == 'UAE') {
+                        return '<center><p class="text-danger">UAE</p></center>';
+                    } else  if ($s_code == 'IN') {
+                        return '<center><p class="text-success">India</p></center>';
+                    } else {
+                        return $s_code;
+                    }
+                })
+                ->rawColumns(['action', 'site', 'total_price','rebate'])
                 ->make(true);
         }
 
         $data['sites'] = DB::connection('cliqnshop')->table('mshop_locale_site')->select('siteid', 'code')->get();
-        return view('buisnessapi.orders.details',$data);
+        return view('buisnessapi.orders.details', $data);
     }
 
     public function getorders(Request $request)
@@ -366,8 +410,8 @@ class OrdersController extends Controller
                 ->where('mp.asin', $asin)
                 ->join('mshop_product as mp', 'mshop_order_base_product.prodcode', '=', 'mp.code')
                 ->update([
-                'mshop_order_base_product.sent_xml' => $xml,
-                'mshop_order_base_product.status' => '1',
+                    'mshop_order_base_product.sent_xml' => $xml,
+                    'mshop_order_base_product.status' => '1',
                 ]);
             return $data;
         }
