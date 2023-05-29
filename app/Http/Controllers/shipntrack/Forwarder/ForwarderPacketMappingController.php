@@ -54,6 +54,7 @@ class ForwarderPacketMappingController extends Controller
         $partners_lists = CourierPartner::query()
             ->with(['courier_names'])
             ->where(['destination' => $destination])
+            ->where('active', '1')
             ->get()
             ->toArray();
 
