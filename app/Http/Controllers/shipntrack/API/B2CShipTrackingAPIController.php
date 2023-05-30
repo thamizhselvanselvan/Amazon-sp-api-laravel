@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ShipNTrack\Courier\StatusManagement;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
 class B2CShipTrackingAPIController extends Controller
@@ -63,7 +64,18 @@ class B2CShipTrackingAPIController extends Controller
                 ->where('awb_number', $awbNo)
                 ->get()
                 ->toArray();
-        } elseif ($destination == 'KSA') {
+        } elseif ($destination == 'IN') {
+
+            $data = Trackingin::with([
+                'CourierPartner1.courier_names',
+                'CourierPartner2.courier_names',
+                'CourierPartner3.courier_names',
+                'CourierPartner4.courier_names'
+            ])
+                ->where('awb_number', $awbNo)
+                ->get()
+                ->toArray();
+        } elseif ($destination == 'SA') {
 
             $data = Trackingksa::with([
                 'CourierPartner1.courier_names',
