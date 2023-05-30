@@ -34,7 +34,7 @@ class CourierTrackingController extends Controller
                     ->orderBy('awb_number', 'DESC')
                     ->get()
                     ->toArray();
-            } elseif ($request->sourceDestination == 'KSA') {
+            } elseif ($request->sourceDestination == 'SA') {
 
                 $data = Trackingksa::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
                     ->orderBy('awb_number', 'DESC')
@@ -135,7 +135,7 @@ class CourierTrackingController extends Controller
                 ->where('awb_number', $awbNo)
                 ->get()
                 ->toArray();
-        } elseif ($sourceDestination == 'KSA') {
+        } elseif ($sourceDestination == 'SA') {
 
             $result = Trackingksa::with([
                 'CourierPartner1.courier_names',
