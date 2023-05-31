@@ -163,6 +163,9 @@
                                                 Invoice No: </strong> {{ $result->order_no }}
                                         </div>
                                         <div class="text-inverse m-b-5 text-left"><strong>
+                                                Store Name: </strong> {{ $result->store_name }}
+                                        </div>
+                                        <div class="text-inverse m-b-5 text-left"><strong>
                                                 Order Date: </strong>{{ date('Y-m-d', strtotime($result->purchase_date)) }}
                                         </div>
                                     </div>
@@ -174,6 +177,7 @@
                             <td class="pt-1 pb-1">
                                 <div class="row">
                                     <div class="col p-0">
+
                                         <strong>Ship To: </strong>
                                         <strong>
                                             @if (isset($result->shipping_address['Name']))
@@ -213,10 +217,10 @@
                                         @endif
                                         <br>
                                         @if (isset($getTranslatedText[0]['name']) ||
-                                            isset($getTranslatedText[0]['addressline1']) ||
-                                            isset($getTranslatedText[0]['addressline2']) ||
-                                            isset($getTranslatedText[0]['city']) ||
-                                            isset($getTranslatedText[0]['county']))
+                                                isset($getTranslatedText[0]['addressline1']) ||
+                                                isset($getTranslatedText[0]['addressline2']) ||
+                                                isset($getTranslatedText[0]['city']) ||
+                                                isset($getTranslatedText[0]['county']))
                                             <p class="ArToEn"><strong>Delivery Address:</strong>
                                                 {{ $getTranslatedText[0]['name'] == null ? $result->shipping_address['Name'] : $getTranslatedText[0]['name'] }},
                                                 {{ $getTranslatedText[0]['addressline1'] == null ? $result->shipping_address['AddressLine1'] ?? '' : $getTranslatedText[0]['addressline1'] }},
