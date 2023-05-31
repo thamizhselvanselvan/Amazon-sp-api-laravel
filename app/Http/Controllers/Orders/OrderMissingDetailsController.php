@@ -62,9 +62,9 @@ class OrderMissingDetailsController extends Controller
                 ->addColumn('action', function ($row) {
 
                     $attributes = "data-asin=" . $row['asin'];
-                    $attributes .= "data-order-id=" . $row['amazon_order_id'];
-                    $attributes .= "data-order-item-id=" . $row['order_item_id'];
-                    $attributes .= "data-country-code" . $row['country_code'];
+                    $attributes .= " data-order-id=" . $row['amazon_order_id'];
+                    $attributes .= " data-order-item-id=" . $row['order_item_id'];
+                    $attributes .= " data-country-code" . $row['country_code'];
 
                     return "<div class='d-flex'>
                                 <a href='javascript:void(0)' id='price_update' {$attributes}  class='edit btn btn-info btn-sm'>
@@ -241,8 +241,8 @@ class OrderMissingDetailsController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $attributes = "data-asin=" . $row['asin'];
-                    $attributes .= "data-order-id=" . $row['amazon_order_id'];
-                    $attributes .= "data-order-item-id=" . $row['order_item_id'];
+                    $attributes .= " data-order-id=" . $row['amazon_order_id'];
+                    $attributes .= " data-order-item-id=" . $row['order_item_id'];
 
                     return "<div class='d-flex'>
                             <a href='javascript:void(0)' id='price_update' {$attributes} class='edit btn btn-info btn-sm'>

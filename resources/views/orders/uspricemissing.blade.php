@@ -77,7 +77,6 @@
                         <h5> <b> ASIN : </b><a name="asin" id="asin"></a> </h5>
                         <h5> <b>Amazon Order ID : </b><a name="order_id" id="order_id"></a> </h5>
                         <h5 hidden="hidden"> <b>Order Item ID : </b><a name="order_item_id" id="order_item_id"></a> </h5>
-                        <h5 hidden="hidden"> <b>Country Code : </b><a name="country_code" id="country_code"></a> </h5>
                     </div>
                 </div>
                 <div class="col-12">
