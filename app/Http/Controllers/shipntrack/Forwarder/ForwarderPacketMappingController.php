@@ -29,10 +29,6 @@ class ForwarderPacketMappingController extends Controller
 
     public function index(Request $request)
     {
-        // $user_name = Auth::user()->name;
-        // $user_email = Auth::user()->email;
-        // ->where('login_user', $user_name)
-        // ->where('login_email', $user_email)
 
         $destinations = CourierPartner::select('source', 'destination')
             ->groupBy('source', 'destination')
@@ -44,11 +40,6 @@ class ForwarderPacketMappingController extends Controller
 
     public function courierget(Request $request)
     {
-        // $user_name = Auth::user()->name;
-        // $user_email = Auth::user()->email;
-        // ->where('login_user', $user_name)
-        // ->where('login_email', $user_email)
-
         $destination =    $request->destination;
 
         $partners_lists = CourierPartner::query()
@@ -72,37 +63,97 @@ class ForwarderPacketMappingController extends Controller
     public function store_farwarder(Request $request)
     {
 
-        $request->validate([
-            'destination' => 'required',
-            'reference' => 'required',
-            'forwarder1' => 'required|not in:0',
-            'forwarder_1_awb' => 'required',
-            'consignor' => 'required',
-            'consignee' => 'required',
-        ]);
 
-        $tracking_data = [
-            'reference_id' => $request->reference,
-            'consignor' => $request->consignor,
-            'consignee' => $request->consignee,
-            'forwarder_1' => $request->forwarder1,
-            'forwarder_1_awb' => $request->forwarder_1_awb,
-            'forwarder_1_flag' => 0,
-            'forwarder_2' => $request->forwarder2,
-            'forwarder_2_awb' => $request->forwarder_2_awb,
-            'forwarder_2_flag' => 0,
-            'forwarder_3' => $request->forwarder3,
-            'forwarder_3_awb' => $request->forwarder_3_awb,
-            'forwarder_3_flag' => 0,
-            'forwarder_4' => $request->forwarder4,
-            'forwarder_4_awb' => $request->forwarder_4_awb,
-            'forwarder_4_flag' => 0,
-            'status' => 0
+        $consignor_data= [
+            'consignor' => $request->cnr_consignor,
+            'contact_person' => $request->cnr_cperson,
+            'address1' => $request->cnr_address1,
+            'address2' => $request->cnr_address2,
+            'pincode' => $request->cnr_pincode,
+            'country' => $request->cnr_country,
+            'state' => $request->cnr_state,
+            'city' => $request->cnr_city,
+            'mobile_no' => $request->cnr_mobile_no,
+        ];
+
+        $consignee_data = [
+            'consignee' => $request->cne_consignee,
+            'contact_person' => $request->cne_cperson,
+            'address1' => $request->cne_address1,
+            'address2' => $request->cne_address2,
+            'pincode' => $request->cne_pincode,
+            'country' => $request->cne_country,
+            'state' => $request->cne_state,
+            'city' => $request->cne_city,
+            'mobile_no' => $request->cne_mobile_no,
+        ];
+
+        $packet_data = [
+
+            'packet_type' => $request->packet_type,
+            'price' => $request->price,
+            'currency' => $request->currency,
+            'invoice_no' => $request->invoice_no,
+            'tax_value' => $request->tax_value,
+            'total_inc_tax' => $request->total_inc_tax,
+            'total_amount' => $request->total,
+            'pkt_name' => $request->pkt_name,
+            'quantity' => $request->qty,
+            'pieces' => $request->pieces,
+            'dimension' => $request->dimension,
+            'actual_weight' => $request->actual_weight,
+            'charged_weight' => $request->charged_weight,
+
+        ];
+
+
+        $shipping_data = [
+            'sku' => $request->sku,
+            'hsn' => $request->hsn,
+            'shipping_channel' => $request->channel,
+            'arn_no' => $request->arn_no,
+            'store' => $request->store,
+            'store_address' => $request->store_address,
+            'bill_to_name' => $request->bill_name,
+            'billing_address' => $request->bill_address,
+            'ship_to_name' => $request->ship_name,
+            'shipping_address' => $request->ship_address,
+        ];
+
+        $booking_data = [
+            'order_id' => $request->order_id,
+            'item_id' => $request->item_no,
+            'booking_date' => $request->date,
+
+        ];
+
+        $insert_data = [
+            'consignor_details' => json_encode($consignor_data),
+            'consignee_details' =>  json_encode($consignee_data),
+            'packet_details' =>  json_encode($packet_data),
+            'shipping_details' =>  json_encode($shipping_data),
+            'booking_details' =>  json_encode($booking_data),
+            'reference_id' => $request->reference_id,
+            // 'forwarder_1' => $request->forwarder1,
+            // 'forwarder_1_awb' => $request->forwarder_1_awb,
+            // 'forwarder_1_flag' => 0,
+            // 'forwarder_2' => $request->forwarder2,
+            // 'forwarder_2_awb' => $request->forwarder_2_awb,
+            // 'forwarder_2_flag' => 0,
+            // 'forwarder_3' => $request->forwarder3,
+            // 'forwarder_3_awb' => $request->forwarder_3_awb,
+            // 'forwarder_3_flag' => 0,
+            // 'forwarder_4' => $request->forwarder4,
+            // 'forwarder_4_awb' => $request->forwarder_4_awb,
+            // 'forwarder_4_flag' => 0,
+            // 'status' => 0,
+            'purchase_tracking_id' => $request->purchase_tracking_id,
+            'awb_no' => (rand(10, 100)),
         ];
 
         if ($request->destination == 'AE') {
             Trackingae::create(
-                $tracking_data,
+                $insert_data,
                 // 'reference_id_unique',
                 // [
                 //     'forwarder_1',
@@ -118,7 +169,7 @@ class ForwarderPacketMappingController extends Controller
             );
         } elseif ($request->destination == 'IN') {
             Trackingin::create(
-                $tracking_data,
+                $insert_data,
                 // 'reference_id_unique',
                 // [
                 //     'forwarder_1',
@@ -134,7 +185,7 @@ class ForwarderPacketMappingController extends Controller
             );
         } elseif ($request->destination == 'KSA') {
             Trackingksa::create(
-                $tracking_data,
+                $insert_data,
                 // 'reference_id_unique',
                 // [
                 //     'forwarder_1',
@@ -149,8 +200,8 @@ class ForwarderPacketMappingController extends Controller
                 // ]
             );
         }
-
-        return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
+     
+       return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
     }
 
     public function Upload()
