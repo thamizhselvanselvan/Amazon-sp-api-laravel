@@ -147,7 +147,7 @@ class OrderItem
                         $detailsKey = str_replace(["id", 'Id', 'ids'], "identifier", $detailsKey);
                     }
 
-                    if (is_array($value) || is_object($value)) {
+                    if (is_array($value) || is_object($value) && ($detailsKey == 'shipping_address')) {
 
                         $order_address = json_encode($value);
                     } else {
@@ -209,7 +209,7 @@ class OrderItem
                 }
 
                 $order_detials_arr['shipping_address'] = $order_address;
-
+                
                 OrderItemDetails::upsert($order_detials_arr, 'order_item_identifier_UNIQUE', []);
 
                 if ($this->zoho == 1) {
