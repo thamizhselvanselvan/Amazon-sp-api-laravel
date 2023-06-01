@@ -670,7 +670,7 @@ return [
 
                 ],
                 [
-                    'text' => 'Orders Price Missing',
+                    'text' => 'Orders Missing Details',
                     'can' => ['Admin', 'Catalog'],
                     'icon' => 'fa fa-minus-circle',
                     'submenu' =>
@@ -694,8 +694,8 @@ return [
                             'icon' => 'fa fa-plus-circle',
                         ],
                         [
-                            'text' => 'US Price Missing',
-                            'url' => "orders/usprice/missing",
+                            'text' => 'B2CShip Missing Details',
+                            'url' => "orders/b2cship/missing",
                             'can' => ['Admin', 'Catalog'],
                             'icon' => 'fa fa-minus-circle',
                         ],

@@ -58,6 +58,7 @@ class CourierPartnerController extends Controller
         // ->where('login_email', $user_email)
 
         $data =  CourierPartner::with(['courier_names'])
+            ->where('active', '1')
             ->get();
 
         if ($request->ajax()) {

@@ -247,7 +247,7 @@ class OrderItem
             New Columns: $column_name";
 
             // Log::alert($slackMessage);
-            slack_notification('app360', 'Order Item Details Import', $slackMessage);
+            // slack_notification('app360', 'Order Item Details Import', $slackMessage);
         }
         return true;
     }

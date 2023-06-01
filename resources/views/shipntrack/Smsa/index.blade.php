@@ -76,7 +76,7 @@
                 <option>Select Option</option>
                 <option value="AE">AE</option>
                 <option value="IN">IN</option>
-                <option value="KSA">KSA</option>
+                <option value="SA">SA</option>
             </x-adminlte-select>
             {{-- <a href="{{ Route('shipntrack.smsa.upload') }}">
                 <x-adminlte-button label="Add New SMSA AWB No." theme="primary" icon="fas fa-file-upload" class="btn-sm" />

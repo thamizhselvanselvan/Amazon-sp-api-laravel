@@ -412,19 +412,41 @@ class B2cshipBookingServices
             $order_id = $this->amazon_order_id;
             $order_item_id = $this->order_item_id;
 
-            if ($error_desc = 'Please Enter InvoiceValue greater Than Zero.') {
-                
-                $asins =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->select('asin')->get();
+            $asins =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->select('asin')->get();
 
-                if (isset($asins[0]->asin)) {
-                    $asin = $asins[0]->asin;
+            if (isset($asins[0]->asin)) {
+                $asin = $asins[0]->asin;
+
+            if ($error_desc == 'Please Enter InvoiceValue greater Than Zero.') {
+                
+                // $table_name = table_model_create(country_code: 'us', model: 'Pricing', table_name: 'pricing_');
+                // $price = $table_name->where('asin', $asin)->value('us_price');
 
                     US_Price_Missing::insert([
                         'country_code' => 'us', 
                         'title' => $this->title, 
                         'asin' => $asin, 
                         'amazon_order_id' => $order_id, 
-                        'order_item_id' => $order_item_id, 
+                        'order_item_id' => $order_item_id,
+                        'price' => ' ',
+                        'status' => 0
+                    ]);
+                }
+                if ($error_desc == 'Consignee AddressLine2 can not be blank.' || $error_desc == 'Please Enter Valid CONSIGNEE STATE.' || $error_desc == 'Please Enter a Valid Consignee Mobile No.') {
+
+                    $shipping_address =  OrderItemDetails::where(['amazon_order_identifier' => $order_id, 'order_item_identifier' => $order_item_id])->value('shipping_address');
+
+                    if (!array_key_exists('Name', $shipping_address)) {
+                      Log::warning($order_id. ' Incorrect Address Found');
+                    }
+                    
+                    US_Price_Missing::insert([
+                        'country_code' => 'us', 
+                        'title' => $this->title, 
+                        'asin' => $asin, 
+                        'amazon_order_id' => $order_id, 
+                        'order_item_id' => $order_item_id,
+                        'missing_details' => json_encode($shipping_address),
                         'status' => 0
                     ]);
                 }

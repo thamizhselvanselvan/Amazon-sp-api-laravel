@@ -18,6 +18,7 @@ class US_Price_Missing extends Model
         'amazon_order_id',
         'order_item_id',
         'price',
+        'missing_details',
         'status',
 
     ];
