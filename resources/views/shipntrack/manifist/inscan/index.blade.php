@@ -68,14 +68,15 @@
         <div id="showTable" class="">
             <table class='table table-bordered yajra-datatable table-striped text-center'>
                 <thead>
-                    <tr class="table-info">
-                        <th>ID</th>
-                        <th>Manifest ID</th>
-                        <th>Mode</th>
-                        <th>Outward Type</th>
-                        <th>AWB number </th>
-                        <th>Status</th>
-                        <!-- <th>Action</th> -->
+                    <tr class="table-info table  ">
+                        <th>AWB</th>
+                        <th>Manifist ID</th>
+                        <th>Booking Date</th>
+                        <th>Consignor</th>
+                        <th>Consignee</th>
+                        <th>Order ID</th>
+                        <th>Tracking ID</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id='checkTable'>
@@ -114,6 +115,14 @@
                 {
                     data: 'mode',
                     name: 'mode'
+                },
+                {
+                    data: 'type',
+                    name: 'type'
+                },
+                {
+                    data: 'type',  
+                    name: 'type'
                 },
                 {
                     data: 'type',

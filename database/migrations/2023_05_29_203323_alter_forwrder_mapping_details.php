@@ -22,11 +22,11 @@ class AlterForwrderMappingDetails extends Migration
                 $table->renameColumn('consignor', 'consignor_details');
                 $table->renameColumn('consignee', 'consignee_details');
                 $table->string('packet_details', 1000)->after('consignee')->nullable();
-                $table->string('shipping_deails', 2000)->after('packet_details')->nullable();
-                $table->string('booking_deails', 2000)->after('shipping_deails')->nullable();
+                $table->string('shipping_details', 2000)->after('packet_details')->nullable();
+                $table->string('booking_details', 2000)->after('shipping_details')->nullable();
                 $table->string('purchase_tracking_id')->after('status')->nullable();
 
-              
+               
                 
             });
         }
@@ -46,11 +46,10 @@ class AlterForwrderMappingDetails extends Migration
                 $table->renameColumn('consignor_details', 'consignor');
                 $table->renameColumn('consignee_details', 'consignee');
                 $table->dropColumn('packet_details');
-                $table->dropColumn('shipping_deails');
-                $table->dropColumn('booking_deails');
+                $table->dropColumn('shipping_details');
+                $table->dropColumn('booking_details');
                 $table->dropColumn('purchase_tracking_id');
 
-          
             });
         }
     }

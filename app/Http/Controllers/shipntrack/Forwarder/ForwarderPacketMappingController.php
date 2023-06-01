@@ -64,7 +64,7 @@ class ForwarderPacketMappingController extends Controller
     {
 
 
-        $consignee_data = [
+        $consignor_data= [
             'consignor' => $request->cnr_consignor,
             'contact_person' => $request->cnr_cperson,
             'address1' => $request->cnr_address1,
@@ -76,7 +76,7 @@ class ForwarderPacketMappingController extends Controller
             'mobile_no' => $request->cnr_mobile_no,
         ];
 
-        $consignor_data = [
+        $consignee_data = [
             'consignee' => $request->cne_consignee,
             'contact_person' => $request->cne_cperson,
             'address1' => $request->cne_address1,
@@ -131,8 +131,8 @@ class ForwarderPacketMappingController extends Controller
             'consignor_details' => json_encode($consignor_data),
             'consignee_details' =>  json_encode($consignee_data),
             'packet_details' =>  json_encode($packet_data),
-            'shipping_deails' =>  json_encode($shipping_data),
-            'booking_deails' =>  json_encode($booking_data),
+            'shipping_details' =>  json_encode($shipping_data),
+            'booking_details' =>  json_encode($booking_data),
             'reference_id' => $request->reference_id,
             // 'forwarder_1' => $request->forwarder1,
             // 'forwarder_1_awb' => $request->forwarder_1_awb,

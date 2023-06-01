@@ -142,3 +142,4 @@ Route::post('shiptrack/outward/store', 'shipntrack\Operations\SNTOutwardControll
 Route::get('shipntrack/in-scan', 'shipntrack\OutwardManisist\ShiptrackInScanController@index')->name('shipntrack.inscan');
 Route::get('shipntrack/in-scan/create', 'shipntrack\OutwardManisist\ShiptrackInScanController@view')->name('shipntrack.inscan.view');
 Route::get('shipntrack/in-scan/get/details', 'shipntrack\OutwardManisist\ShiptrackInScanController@get_details')->name('shipntrack.inscan.get');
+Route::post('shipntrack/in-scan/store', 'shipntrack\OutwardManisist\ShiptrackInScanController@store')->name('shipntrack.inscan.store');
