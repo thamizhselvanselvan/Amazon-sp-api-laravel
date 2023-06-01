@@ -129,6 +129,13 @@ class ZohoOrderFormat
             "destination" => "UAE"
         ],
 
+        "Amazon.sa-New Media" => [
+            "AE" => "New Media Saudi",
+            "sku" => "NM_",
+            "source" => "India",
+            "destination" => "KSA"
+        ],
+
         /*
         "Amazon.ae-Nitrous" => [
             "IN" => "WIP",
