@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers\Catalog;
 
-use Carbon\Carbon;
-use League\Csv\Writer;
-use App\Events\EventManager;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\FileManagement;
-use App\Models\Inventory\Dispose;
-use App\Models\ProcessManagement;
+use App\Services\Cliqnshop\CliqnshopCataloginsert;
+use App\Services\Cliqnshop\CSV_Exporter;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 use RealRashid\SweetAlert\Facades\Alert;
-use App\Services\Cliqnshop\CliqnshopCataloginsert;
-use App\Services\AWS_Business_API\Search_Product_API\Search_Product;
-use App\Services\Cliqnshop\CSV_Exporter;
 
 class CliqnshopCatalogController extends Controller
 {
@@ -36,7 +30,6 @@ class CliqnshopCatalogController extends Controller
     {
 
         commandExecFunc("Mosh:cliqnshop_catalog_export");
-
 
         return redirect('/catalog/index')->with("success", "Cliqnshop Catalog Price is Exporting please Wait for Few Minuts.");
     }
@@ -79,7 +72,7 @@ class CliqnshopCatalogController extends Controller
         $site_id = $request->country;
         $file = file_get_contents($request->cliqnshop_csv);
         $current_time = Carbon::now()->toDateTimeString();
-        $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
+        $time = str_replace(array(':', ' '), array('-', '_'), $current_time);
         $path = "Cliqnshop/asin_import/cliqnshop_asin_$time.csv";
         Storage::put($path, $file);
 
@@ -97,15 +90,13 @@ class CliqnshopCatalogController extends Controller
                 'command_name' => "mosh:catalog_insert_cliqnshop",
                 'command_start_time' => now(),
                 'command_end_time' => now(),
-                'status' => '1'
+                'status' => '1',
             ];
 
             FileManagement::create($file_info);
 
-
             commandExecFunc("mosh:catalog_insert_cliqnshop ${path} ${site_id}");
             // commandExecFunc("mosh:export_catalog_imported_asin ${path}");
-
 
             return back()->with('success', 'Cliqnshop Catalog file has been uploaded successfully !');
         }
@@ -165,7 +156,6 @@ class CliqnshopCatalogController extends Controller
         return response()->json('successfully');
     }
 
-
     public function cliqnshoptextarea(Request $request)
     {
 
@@ -182,7 +172,7 @@ class CliqnshopCatalogController extends Controller
         $country = DB::connection('cliqnshop')->table('mshop_locale_site')->where('siteid', $site_id)->select('code')->get();
 
         $current_time = Carbon::now()->toDateTimeString();
-        $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
+        $time = str_replace(array(':', ' '), array('-', '_'), $current_time);
 
         if (isset($country['0']->code)) {
             if (($country['0']->code) == 'in') {
@@ -220,23 +210,22 @@ class CliqnshopCatalogController extends Controller
 
                 ];
 
-                $table_name = table_model_create(country_code: 'us', model: 'Catalog', table_name: 'catalognew');
+                $table_name = table_model_create(country_code:'us', model:'Catalog', table_name:'catalognew');
                 $result = $table_name->select($headers)
                     ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
                     ->whereIn('catalognewuss.asin', $asin)
                     ->get()->toArray();
 
-                    $check_result = $table_name->select($headers)
+                $check_result = $table_name->select($headers)
                     ->leftJoin('pricing_uss', 'catalognewuss.asin', '=', 'pricing_uss.asin')
                     ->whereIn('catalognewuss.asin', $asin)
                     ->pluck('asin')->toArray();
 
-                    $not_founds = array_diff($asin, $check_result);
-                        
-                    foreach ($not_founds as $not_found)
-                    {
-                        fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
-                    }
+                $not_founds = array_diff($asin, $check_result);
+
+                foreach ($not_founds as $not_found) {
+                    fwrite($file, 'Asin ' . $not_found . ' Not Found' . "\n");
+                }
             }
         }
         if (($country['0']->code) == 'uae') {
@@ -250,7 +239,7 @@ class CliqnshopCatalogController extends Controller
                 $exportFilePath = $filename;
                 $path = Storage::disk('local')->path($filename);
                 $file = fopen($path, 'w');
-            
+
                 //Success file
                 $filename_s = "public/Cliqnshop/UAE/Text_Area/Asin_Success_Report_UAE_$time.txt";
                 if (!Storage::exists($filename_s)) {
@@ -261,39 +250,37 @@ class CliqnshopCatalogController extends Controller
                 $file_s = fopen($path_s, 'w');
 
                 $headers = [
-                'catalognewins.asin',
-                'catalognewins.brand',
-                'catalognewins.images',
-                'catalognewins.item_name',
-                'catalognewuss.browse_classification',
-                'catalognewins.dimensions',
-                'catalognewins.attributes',
-                'catalognewins.color',
-                // 'pricing_ins.usa_to_in_b2c',
-                // 'pricing_ins.us_price',
-                'pricing_ins.ind_to_uae',
-                
+                    'catalognewins.asin',
+                    'catalognewins.brand',
+                    'catalognewins.images',
+                    'catalognewins.item_name',
+                    'catalognewuss.browse_classification',
+                    'catalognewins.dimensions',
+                    'catalognewins.attributes',
+                    'catalognewins.color',
+                    // 'pricing_ins.usa_to_in_b2c',
+                    // 'pricing_ins.us_price',
+                    'pricing_ins.ind_to_uae',
+
                 ];
-                
-                $table_name = table_model_create(country_code: 'in', model: 'Catalog', table_name: 'catalognew');
+
+                $table_name = table_model_create(country_code:'in', model:'Catalog', table_name:'catalognew');
                 $result = $table_name->select($headers)
-                ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-                ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
-                ->whereIn('catalognewins.asin', $asin)
-                ->get()->toArray();
+                    ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+                    ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+                    ->whereIn('catalognewins.asin', $asin)
+                    ->get()->toArray();
 
                 $check_result = $table_name->select($headers)
-                ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
-                ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
-                ->whereIn('catalognewins.asin', $asin)
-                ->pluck('asin')->toArray();
-
+                    ->leftJoin('catalognewuss', 'catalognewins.asin', '=', 'catalognewuss.asin')
+                    ->leftJoin('pricing_ins', 'catalognewins.asin', '=', 'pricing_ins.asin')
+                    ->whereIn('catalognewins.asin', $asin)
+                    ->pluck('asin')->toArray();
 
                 $not_founds = array_diff($asin, $check_result);
-                    
-                foreach ($not_founds as $not_found)
-                {
-                    fwrite($file, 'Asin '. $not_found . ' Not Found' .  "\n");
+
+                foreach ($not_founds as $not_found) {
+                    fwrite($file, 'Asin ' . $not_found . ' Not Found' . "\n");
                 }
 
             }
@@ -325,34 +312,32 @@ class CliqnshopCatalogController extends Controller
                         $img1["Images${counter}"] = '';
                         if ($counter == 1) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
-                            ($img1["Images${counter}"] = $image_data_new['link']);
+                                ($img1["Images${counter}"] = $image_data_new['link']);
                             }
                         } else if ($counter == 4) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                                 ($img1["Images${counter}"] = $image_data_new['link']);
-                                }
+                            }
                         } else if ($counter == 7) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                                 ($img1["Images${counter}"] = $image_data_new['link']);
-                                }
+                            }
                         } else if ($counter == 10) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                                 ($img1["Images${counter}"] = $image_data_new['link']);
-                                }
+                            }
                         } else if ($counter == 13) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                                 ($img1["Images${counter}"] = $image_data_new['link']);
-                                }
-                        }
-                        else if ($counter == 16) {
+                            }
+                        } else if ($counter == 16) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                                 ($img1["Images${counter}"] = $image_data_new['link']);
-                                }
-                        }
-                        else if ($counter == 19) {
+                            }
+                        } else if ($counter == 19) {
                             if ($image_data_new['height'] > 500 || $image_data_new['width'] > 500) {
                                 ($img1["Images${counter}"] = $image_data_new['link']);
-                                }
+                            }
                         }
                     }
                 }
@@ -375,16 +360,15 @@ class CliqnshopCatalogController extends Controller
                     foreach ($bullet as $key => $val) {
 
                         $short_description = $val['value'];
-                        $long_description .=  '<p>' . $val['value'];
+                        $long_description .= '<p>' . $val['value'];
                     }
                 }
             }
 
-            $asin =  $data['asin'];
+            $asin = $data['asin'];
             $item_name = $data['item_name'];
             $item_url = str_replace(' ', '-', $data['item_name']);
             $url = (strtolower($item_url));
-
 
             //$Price_US_IN = $data['usa_to_in_b2c'];
             $Price_US_IN = [];
@@ -392,10 +376,9 @@ class CliqnshopCatalogController extends Controller
                 if (($country['0']->code) == 'in') {
                     $Price_US_IN = $data['usa_to_in_b2c'];
                 } else if ($country['0']->code == 'uae') {
-                    $Price_US_IN  = $data['ind_to_uae'];
+                    $Price_US_IN = $data['ind_to_uae'] - ($data['ind_to_uae'] * 10/100);
                 }
             }
-
 
             $catalog_code = json_decode($data['browse_classification'], true);
             $category_code = 'demo-new';
@@ -412,7 +395,7 @@ class CliqnshopCatalogController extends Controller
                 $brand_label = $data['brand'];
             }
             $brand_place = str_replace(' ', '', $data['brand']);
-            $brand =  substr(strtolower($brand_place), 0, 10);
+            $brand = substr(strtolower($brand_place), 0, 10);
 
             $color_code = '';
             $color_label = '';
@@ -421,7 +404,7 @@ class CliqnshopCatalogController extends Controller
             if (isset($data['color'])) {
                 $color_code = str_replace(' ', '', $data['color']);
                 $color_label = $data['color'];
-                $label =  ucfirst($color_label);
+                $label = ucfirst($color_label);
                 $color_key = str_replace(' ', '', substr(strtolower($color_label), 0, 10));
             }
 
@@ -429,22 +412,22 @@ class CliqnshopCatalogController extends Controller
             $length_unit = '';
             $length_value = '';
             $width_unit = '';
-            $width_value  = '';
+            $width_value = '';
             if (isset($data['dimensions'])) {
 
-                $length_unit  = '';
+                $length_unit = '';
                 $length_value = '';
                 $dim = json_decode($data['dimensions'], true);
                 if (isset($dim[0]['item']['length'])) {
-                    $length_unit  = $dim[0]['item']['length']['unit'];
-                    $length_value  = round($dim[0]['item']['length']['value'], 3);
+                    $length_unit = $dim[0]['item']['length']['unit'];
+                    $length_value = round($dim[0]['item']['length']['value'], 3);
                 }
 
-                $width_unit  = '';
+                $width_unit = '';
                 $width_value = '';
                 if (isset($dim[0]['item']['width'])) {
-                    $width_unit  = $dim[0]['item']['width']['unit'];
-                    $width_value  = round($dim[0]['item']['width']['value'], 3);
+                    $width_unit = $dim[0]['item']['width']['unit'];
+                    $width_value = round($dim[0]['item']['width']['value'], 3);
                 }
             }
 
@@ -474,75 +457,63 @@ class CliqnshopCatalogController extends Controller
             $editor = 'app360';
             $display_code = 1;
             $insert_service = new CliqnshopCataloginsert();
-            if ($category_code == 'demo-new')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Category Not Found. So Imported in New Arrival Category'. "\n");
-            }
-            else {
+            if ($category_code == 'demo-new') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Category not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Category Not Found. So Imported in New Arrival Category' . "\n");
+            } else {
                 $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
-                if (!isset($catogory_data[0]))
-                {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database. So Imported in New Arrival Category'. "\n");
+                if (!isset($catogory_data[0])) {
+                    fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database' . "\n");
+                    fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Category Not Found in Cliqnshop Database or Incorrect Category Found From Catalog Database. So Imported in New Arrival Category' . "\n");
                 }
             }
-            if ($item_name == '')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Product Name not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Product Name not found, So Imported with Disable Status'. "\n"); 
+            if ($item_name == '') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Product Name not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Product Name not found, So Imported with Disable Status' . "\n");
             }
-            if ($brand_label == ' ')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Brand not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Brand'. "\n");
+            if ($brand_label == ' ') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Brand not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Imported without Brand' . "\n");
             }
-            if ($label == '')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Colour not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Colour'. "\n");
+            if ($label == '') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Colour not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Imported without Colour' . "\n");
             }
-            if ($length_unit  == '' && $length_value == '')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Length not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Length'. "\n");
+            if ($length_unit == '' && $length_value == '') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Length not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Imported without Length' . "\n");
             }
-            if ($width_unit  == '' && $width_value == '')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Width not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Width'. "\n");
+            if ($width_unit == '' && $width_value == '') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Width not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Imported without Width' . "\n");
             }
-            if ($Price_US_IN == [] || $Price_US_IN == '0' || $Price_US_IN == '')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Price not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Price not found, So Imported with Disable Status'. "\n");
+            if ($Price_US_IN == [] || $Price_US_IN == '0' || $Price_US_IN == '') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Price not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Price not found, So Imported with Disable Status' . "\n");
             }
-            $required = ['Images1','Images2','Images3','Images4','Images5','Images6','Images7','Images8','Images9','Images10'];
+            $required = ['Images1', 'Images2', 'Images3', 'Images4', 'Images5', 'Images6', 'Images7', 'Images8', 'Images9', 'Images10'];
             if (count(array_intersect_key(array_flip($required), $image[$asin])) === count($required)) {
-                if ($image[$asin]['Images1'] == '' && 
-             $image[$asin]['Images2'] == '' && 
-             $image[$asin]['Images3'] == '' && 
-             $image[$asin]['Images4'] == '' && 
-             $image[$asin]['Images5'] == '' && 
-             $image[$asin]['Images6'] == '' && 
-             $image[$asin]['Images7'] == '' && 
-             $image[$asin]['Images8'] == '' && 
-             $image[$asin]['Images9'] == '' && 
-             $image[$asin]['Images10'] == '')
-             {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Image not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Image not found, So Imported with Disable Status'. "\n");
-             }
+                if ($image[$asin]['Images1'] == '' &&
+                    $image[$asin]['Images2'] == '' &&
+                    $image[$asin]['Images3'] == '' &&
+                    $image[$asin]['Images4'] == '' &&
+                    $image[$asin]['Images5'] == '' &&
+                    $image[$asin]['Images6'] == '' &&
+                    $image[$asin]['Images7'] == '' &&
+                    $image[$asin]['Images8'] == '' &&
+                    $image[$asin]['Images9'] == '' &&
+                    $image[$asin]['Images10'] == '') {
+                    fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Image not found' . "\n");
+                    fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Image not found, So Imported with Disable Status' . "\n");
+                }
             }
-            if ($long_description == '')
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Description not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Description'. "\n");
+            if ($long_description == '') {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Description not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Imported without Description' . "\n");
             }
-            if ($generic_keywords == '' || $generic_keywords == [])
-            {
-                fwrite($file, 'Asin'.' '. $asin . ' - '. 'Generic Keywords not found'. "\n");
-                fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Imported without Generic Keywords'. "\n");
+            if ($generic_keywords == '' || $generic_keywords == []) {
+                fwrite($file, 'Asin' . ' ' . $asin . ' - ' . 'Generic Keywords not found' . "\n");
+                fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Imported without Generic Keywords' . "\n");
             }
 
             $insertable_value = [
@@ -565,81 +536,71 @@ class CliqnshopCatalogController extends Controller
                 $long_description,
                 $generic_keywords,
                 $editor,
-                $display_code
+                $display_code,
             ];
 
             $insert_service->insertdata_cliqnshop(
                 ...$insertable_value
             );
 
-            
-            $csvExporter->set_csv_body($insertable_value);           
+            $csvExporter->set_csv_body($insertable_value);
 
+            if ($item_name !== '') {
+                if ($brand_label !== ' ') {
+                    if ($generic_keywords !== '' || $generic_keywords !== []) {
+                        if ($label !== '') {
+                            if ($length_unit !== '' && $length_value !== '') {
+                                if ($width_unit !== '' && $width_value !== '') {
+                                    if ($Price_US_IN !== [] || $Price_US_IN !== '0' || $Price_US_IN !== '') {
+                                        if ($long_description !== '') {
+                                            if ($category_code !== 'demo-new') {
+                                                $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
+                                                if (isset($catogory_data[0])) {
 
-            if ($item_name !== '')
-            {
-             if ($brand_label !== ' ')
-             {
-                 if ($generic_keywords !== '' || $generic_keywords !== [])
-                 {
-                     if ($label !== '')
-                     {
-                         if ($length_unit  !== '' && $length_value !== '')
-                         {
-                             if ($width_unit  !== '' && $width_value !== '')
-                             {
-                                if ($Price_US_IN !== [] || $Price_US_IN !== '0' || $Price_US_IN !== '')
-                                {
-                                 if ($long_description !== '')
-                                 {
-                                     if ($category_code !== 'demo-new')
-                                     {
-                                         $catogory_data = DB::connection('cliqnshop')->table('mshop_catalog')->where('code', $category_code)->where('siteid', $site_id)->pluck('id')->ToArray();
-                                         if (isset($catogory_data[0]))
-                                         {
-                                 
-                                             if ($image[$asin]['Images1'] !== '' ||
-                                          $image[$asin]['Images2'] !== '' || 
-                                          $image[$asin]['Images3'] !== '' || 
-                                          $image[$asin]['Images4'] !== '' || 
-                                          $image[$asin]['Images5'] !== '' || 
-                                          $image[$asin]['Images6'] !== '' || 
-                                          $image[$asin]['Images7'] !== '' || 
-                                          $image[$asin]['Images8'] !== '' || 
-                                          $image[$asin]['Images9'] !== '' || 
-                                          $image[$asin]['Images10'] !== '')
-                                          {
-                                         fwrite($file_s, 'Asin'.' '. $asin . ' - '. 'Successfully Imported'. "\n");
-                                          }
-                                         }
-                                     }
-                                 }
+                                                    if ($image[$asin]['Images1'] !== '' ||
+                                                        $image[$asin]['Images2'] !== '' ||
+                                                        $image[$asin]['Images3'] !== '' ||
+                                                        $image[$asin]['Images4'] !== '' ||
+                                                        $image[$asin]['Images5'] !== '' ||
+                                                        $image[$asin]['Images6'] !== '' ||
+                                                        $image[$asin]['Images7'] !== '' ||
+                                                        $image[$asin]['Images8'] !== '' ||
+                                                        $image[$asin]['Images9'] !== '' ||
+                                                        $image[$asin]['Images10'] !== '') {
+                                                        fwrite($file_s, 'Asin' . ' ' . $asin . ' - ' . 'Successfully Imported' . "\n");
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
-                             }
-                         }
-                     }
-                 }
-             }
+                            }
+                        }
+                    }
+                }
             }
 
         }
 
-        $csv_head =  ['site','category_code','asin','item_name','brand_code','brand_label','color_code','color_label','length_unit','length_value','width_unit','width_value','price','image','long_description','generic_keywords'];
-        
+        $csv_head = ['site', 'category_code', 'asin', 'item_name', 'brand_code', 'brand_label', 'color_code', 'color_label', 'length_unit', 'length_value', 'width_unit', 'width_value', 'price', 'image', 'long_description', 'generic_keywords'];
+
         $csvExporter->set_csv_head($csv_head);
         $csvExporter->set_file_path('Cliqnshop/upload/asin/exported_from_textarea/');
         $csvExporter->set_file_name_prefix('textarea_export_');
         $csvExporter->generate();
-        
+
         fclose($file);
         fclose($file_s);
 
         $url = Storage::url($exportFilePath);
-        $slackMessage = config('app.url').$url;
+        $slackMessage = config('app.url') . $url;
         $url_s = Storage::url($exportFilePath_s);
-        $slackMessage_s = config('app.url').$url_s;
-        slack_notification('aimeos', 'Product Import From Text Area Error Report testing', $slackMessage);
-        slack_notification('aimeos', 'Product Import From Text Area Sucsess Report testing', $slackMessage_s);
+        $slackMessage_s = config('app.url') . $url_s;
+
+        if (app()->environment() === 'production') {
+            slack_notification('aimeos', 'Product Import From Text Area Error Report testing', $slackMessage);
+            slack_notification('aimeos', 'Product Import From Text Area Sucsess Report testing', $slackMessage_s);
+        }
         return back()->with('success', 'uploading please wait... !');
     }
 
@@ -653,7 +614,7 @@ class CliqnshopCatalogController extends Controller
 
     public function exported_asin_lister(Request $request)
     {
-         if ($request->ajax()) {
+        if ($request->ajax()) {
 
             $exportFiles = [];
             $folder = $request->catalog;
@@ -665,24 +626,24 @@ class CliqnshopCatalogController extends Controller
                     $exportFiles[$file] = date("F d Y H:i:s.", filemtime($path . '/' . $file));
                 }
             }
-            array_multisort($exportFiles, SORT_DESC , SORT_REGULAR );
+            array_multisort($exportFiles, SORT_DESC, SORT_REGULAR);
             return response()->json($exportFiles);
         }
     }
-     
-     public function exported_asin_link_downloader($fileName)
+
+    public function exported_asin_link_downloader($fileName)
     {
         return Storage::download('Cliqnshop/upload/asin/export/' . $fileName);
     }
 
     public function textarea_exported_asin_link_downloader($fileName)
     {
-        return Storage::download('Cliqnshop/upload/asin/exported_by_textarea/' . $fileName);
+        return Storage::download('Cliqnshop/upload/asin/exported_from_textarea/' . $fileName);
     }
 
-    public function  exported_asin_updater(Request $request)
+    public function exported_asin_updater(Request $request)
     {
-        if ($request->cliqnshop_csv == '' ) {
+        if ($request->cliqnshop_csv == '') {
             return back()->with('error', "Please upload file to import it to the database ");
         }
         $request->validate([
@@ -691,16 +652,15 @@ class CliqnshopCatalogController extends Controller
 
         $file = file_get_contents($request->cliqnshop_csv);
         $current_time = Carbon::now()->toDateTimeString();
-        $time =  str_replace(array(':', ' '), array('-', '_'), $current_time);
+        $time = str_replace(array(':', ' '), array('-', '_'), $current_time);
         $path = "Cliqnshop/upload/asin/update/cliqnshop_updated_asins_$time.csv";
-        
+
         Storage::put($path, $file);
 
-        
         if (!Storage::exists($path)) {
             return false;
         } else {
-           
+
             $file_info = [
                 'user_id' => Auth::user()->id,
                 'type' => 'Import',
@@ -709,7 +669,7 @@ class CliqnshopCatalogController extends Controller
                 'command_name' => "mosh:cliqnshop_exported_asin_update",
                 'command_start_time' => now(),
                 'command_end_time' => now(),
-                'status' => '1'
+                'status' => '1',
             ];
             FileManagement::create($file_info);
 

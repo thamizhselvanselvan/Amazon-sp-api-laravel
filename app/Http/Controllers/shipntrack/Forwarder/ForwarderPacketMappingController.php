@@ -29,12 +29,12 @@ class ForwarderPacketMappingController extends Controller
 
     public function index(Request $request)
     {
-        $user_name = Auth::user()->name;
-        $user_email = Auth::user()->email;
+        // $user_name = Auth::user()->name;
+        // $user_email = Auth::user()->email;
+        // ->where('login_user', $user_name)
+        // ->where('login_email', $user_email)
 
         $destinations = CourierPartner::select('source', 'destination')
-            ->where('login_user', $user_name)
-            ->where('login_email', $user_email)
             ->groupBy('source', 'destination')
             ->get()
             ->toArray();
@@ -44,16 +44,17 @@ class ForwarderPacketMappingController extends Controller
 
     public function courierget(Request $request)
     {
-        $user_name = Auth::user()->name;
-        $user_email = Auth::user()->email;
+        // $user_name = Auth::user()->name;
+        // $user_email = Auth::user()->email;
+        // ->where('login_user', $user_name)
+        // ->where('login_email', $user_email)
 
         $destination =    $request->destination;
 
         $partners_lists = CourierPartner::query()
             ->with(['courier_names'])
-            ->where('login_user', $user_name)
-            ->where('login_email', $user_email)
             ->where(['destination' => $destination])
+            ->where('active', '1')
             ->get()
             ->toArray();
 
@@ -394,11 +395,10 @@ class ForwarderPacketMappingController extends Controller
         } elseif ($request->destination == 'KSA') {
             $data =    Trackingksa::where('reference_id', $id)->get();
         }
-        if (count($data) == 0)
-        {
+        if (count($data) == 0) {
             return response()->json(['eror_data' => 'Invalid Refrence ID Please check']);
         }
-       
+
         $user_name = Auth::user()->name;
         $user_email = Auth::user()->email;
 

@@ -6,6 +6,7 @@ use App\Models\TestMongo;
 use App\Models\MongoDB\zoho;
 use GuzzleHttp\Psr7\Request;
 use App\Models\Catalog\PricingIn;
+use App\Models\Company\CompanyMaster;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +28,7 @@ Route::get('BusinessAPI/{asin}', function ($asin) {
 
     $results = ProductSearch::search_offers($asin);
 
-   // po($results);
+    // po($results);
 
     exit;
 
@@ -38,15 +39,8 @@ Route::get('BusinessAPI/{asin}', function ($asin) {
 
 Route::get('test/code', function () {
 
-    $page = ceil(200001 / 200000);
-    po($page);
-    exit;
-    $string = 'OUT FOR DELIVERY';
-    $string = preg_replace('/\s+/', '', $string);
-    if (strlen($string) > 10) {
-        $str = substr($string, 0, 9) . '...';
-        po($str);
-    }
+    $company = CompanyMaster::where('user_id', Auth::id())->get();
+    po($company);
 });
 
 

@@ -246,7 +246,7 @@ class Order
             New Columns: $column_name";
 
             // Log::alert($slackMessage);
-            slack_notification('app360', 'Order Import', $slackMessage);
+            // slack_notification('app360', 'Order Import', $slackMessage);
         }
         return true;
     }

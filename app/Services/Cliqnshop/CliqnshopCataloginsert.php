@@ -16,6 +16,16 @@ class CliqnshopCataloginsert
         try {
             // $display_code = '1';
 
+            $check_product_type = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->pluck('type')->ToArray();
+            if (isset($check_product_type[0]))
+            {
+                $product_type = $check_product_type[0];
+            }
+            else
+            {
+                $product_type = 'default';
+            }
+
         $check = DB::connection('cliqnshop')->table('mshop_product')->where('siteid', $site_id)->where('asin', $asin)->whereIn('editor',['cns_search_from_in','cns_search_from_uae'])->pluck('id')->ToArray();
         if (isset($check[0]))
         {
@@ -108,7 +118,7 @@ class CliqnshopCataloginsert
             $product_data = [
                 'siteid' => $site_id,
                 // 'dataset' => '',
-                'type' => 'default',
+                'type' => $product_type,
                 'code' => $sku_genrator->generateSKU('CNS', $asin),
                 'asin' => $asin, //ASIN
                 'label' => $item_name_trimmed,
@@ -335,10 +345,10 @@ class CliqnshopCataloginsert
                     'siteid' => $site_id,
                     'type' => 'default',
                     'domain' => 'product',
-                    'label' => $currency_code . $Price_US_IN,
+                    'label' => $currency_code . round($Price_US_IN),
                     'currencyid' => $currency_code,
                     // 'quantity' => 1,
-                    'value' => $Price_US_IN,
+                    'value' => round($Price_US_IN),
                     // 'costs' => 0.00,
                     // 'rebate' => 0.00,
                     'taxrate' => '{"tax":"19.00"}',

@@ -59,11 +59,12 @@ class CliqnshopVerificationController extends Controller
                     $site = $data->siteid;
                     $label = $data->label;
                     $status = $data->status;
+                    $type = $data->type;
                     $actionbtn = '';
                     if ($status == 0) {
-                        $actionbtn = "<div class='d-flex'><a href=" . route('cliqnshop.verify.asin.approve', ['pid' => $pid, 'asin' => $asin, 'site' => $site]) . " id='offers2' value ='$pid' data-label='$label' class='approveAsin btn  bg-gradient-success btn-xs mr-2'>Approve</a>";
+                        $actionbtn = "<div class='d-flex'><a href=" . route('cliqnshop.verify.asin.approve', ['pid' => $pid, 'asin' => $asin, 'site' => $site]) . " id='offers2' value ='$pid' data-label='$label' data-type='$type' class='approveAsin btn  bg-gradient-success btn-xs mr-2'>Approve</a>";
                     }
-                    $actionbtn .= "<div class='d-flex'><a href=" . route('cliqnshop.verify.asin.destroy', ['pid' => $pid, 'code' => $code, 'asin' => $asin, 'site' => $site]) . " id='offers1' value ='$pid' data-label='$label' class='deleteAsin btn  bg-gradient-danger btn-xs'>Remove</a>";
+                    $actionbtn .= "<div class='d-flex'><a href=" . route('cliqnshop.verify.asin.destroy', ['pid' => $pid, 'code' => $code, 'asin' => $asin, 'site' => $site]) . " id='offers1' value ='$pid' data-label='$label' data-type='$type' class='deleteAsin btn  bg-gradient-danger btn-xs'>Remove</a>";
                     return $actionbtn;
                 })
                 ->addColumn('site', function ($data) {
@@ -206,6 +207,24 @@ class CliqnshopVerificationController extends Controller
         $site = $request->site;
         $asin = $request->asin;
 
+        $variant_lists = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site])->pluck('refid')->ToArray();
+
+        if ($variant_lists !== [])
+        {
+          $Asins = DB::connection('cliqnshop')->table('mshop_product')->whereIn('id', $variant_lists,)->where('siteid', $site)->pluck('asin')->ToArray();
+
+          foreach($Asins as $Asin)
+          {
+            DB::connection('cliqnshop')->table('cns_ban_asin')->insert(
+                [
+                    'site_id' => $site,
+                    'asin' => $Asin,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);    
+          }
+        }
+
         DB::connection('cliqnshop')->table('cns_ban_asin')->insert(
             [
                 'site_id' => $site,
@@ -216,6 +235,10 @@ class CliqnshopVerificationController extends Controller
 
         commandExecFunc("mosh:remove_exported_asin ${site} ${pid}");
 
+        if ($Asins !== [])
+        {
+            return back()->with('warning', $asin . ' ' . implode(' ',$Asins).' '. 'added to removable  list command ! and added to permanent ban');
+        }
         return back()->with('warning', $asin . ' ' . 'added to removable  list command ! and added to permanent ban');
 
     }
@@ -256,135 +279,26 @@ class CliqnshopVerificationController extends Controller
             DB::connection('cliqnshop')->table('mshop_product')->where(['id' => $pid, 'siteid' => $site])->update(['status' => 1, 'ctime' => now(), 'mtime' => now()]);
             DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site])->update(['status' => 1, 'mtime' => now()]);
 
-            $domains = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site])->pluck('domain')->ToArray();
+            indexrebuild($pid, $site);
 
-            foreach ($domains as $domain) {
-                if ($domain == 'attribute') {
+            $variant_lists = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site, 'domain' => 'product' ])->pluck('refid')->ToArray();
 
-                    $attribute_lists = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site, 'domain' => $domain])->pluck('type', 'refid')->ToArray();
+            if ($variant_lists !== [])
+            {
+            foreach ($variant_lists as $variant_list)
+            {
+                DB::connection('cliqnshop')->table('mshop_product')->where(['id' => $variant_list, 'siteid' => $site])->update(['status' => 1, 'ctime' => now(), 'mtime' => now()]);
+                DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $variant_list, 'siteid' => $site])->update(['status' => 1, 'mtime' => now()]);
 
-                    foreach ($attribute_lists as $key => $attribute_list) {
-
-                        $attributes = DB::connection('cliqnshop')->table('mshop_attribute')->where(['id' => $key, 'siteid' => $site])->pluck('type', 'code')->ToArray();
-
-                        foreach ($attributes as $key1 => $attribute) {
-
-                            $index_attribute = [
-                                'prodid' => $pid,
-                                'siteid' => $site,
-                                'artid' => $pid,
-                                'attrid' => $key,
-                                'listtype' => $attribute_list, // type from mshop_product_list
-                                'type' => $attribute,
-                                'code' => $key1,
-                                'mtime' => now(),
-                            ];
-                            DB::connection('cliqnshop')->table('mshop_index_attribute')->upsert(
-                                $index_attribute,
-                                ['unq_msindat_p_s_aid_lt'],
-                                ['prodid', 'siteid', 'artid', 'attrid', 'listtype', 'type', 'code', 'mtime']
-                            );
-                        }
-                    }
-                }
-
-                if ($domain == 'catalog') {
-                    $catalog_lists = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site, 'domain' => $domain])->select('type', 'refid', 'pos')->get()->ToArray();
-
-                    $index_catalog = [
-                        'prodid' => $pid,
-                        'siteid' => $site,
-                        'catid' => $catalog_lists[0]->refid,
-                        'listtype' => $catalog_lists[0]->type, // type from mshop_product_list
-                        'pos' => $catalog_lists[0]->pos, //from mshop_product_list
-                        'mtime' => now(),
-                    ];
-                    DB::connection('cliqnshop')->table('mshop_index_catalog')->upsert(
-                        $index_catalog,
-                        ['unq_msindca_p_s_cid_lt_po'],
-                        ['prodid', 'siteid', 'catid', 'listtype', 'pos', 'mtime']
-                    );
-                }
-
-                if ($domain == 'keyword') {
-                    $keyword_lists = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site, 'domain' => $domain])->pluck('refid')->ToArray();
-
-                    foreach ($keyword_lists as $keyword_list) {
-                        $index_generic_key = [
-                            'prodid' => $pid,
-                            'siteid' => $site,
-                            'keyid' => $keyword_list,
-                            'mtime' => now(),
-                        ];
-                        DB::connection('cliqnshop')->table('mshop_index_keyword')->upsert(
-                            $index_generic_key,
-                            ['unq_msindkey_pid_kid_sid'],
-                            ['keyid', 'mtime']
-                        );
-                    }
-                }
-
-                if ($domain == 'price') {
-                    $price_list = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site, 'domain' => $domain])->pluck('refid')->ToArray();
-
-                    $price = DB::connection('cliqnshop')->table('mshop_price')->where(['id' => $price_list[0], 'siteid' => $site])->select('currencyid', 'value')->get()->ToArray();
-
-                    $index_price = [
-                        'prodid' => $pid,
-                        'siteid' => $site,
-                        'currencyid' => $price[0]->currencyid,
-                        'value' => $price[0]->value,
-                        'mtime' => now(),
-                    ];
-                    DB::connection('cliqnshop')->table('mshop_index_price')->upsert(
-                        $index_price,
-                        ['unq_msindpr_pid_sid_cid'],
-                        ['prodid', 'siteid', 'currencyid', 'value', 'mtime']
-                    );
-                }
-
-                if ($domain == 'supplier') {
-                    $supplier_list = DB::connection('cliqnshop')->table('mshop_product_list')->where(['parentid' => $pid, 'siteid' => $site, 'domain' => $domain])->select('type', 'refid', 'pos')->get()->ToArray();
-
-                    $index_supplier = [
-                        'prodid' => $pid,
-                        'siteid' => $site,
-                        'supid' => $supplier_list[0]->refid,
-                        'listtype' => $supplier_list[0]->type,
-                        'latitude' => null,
-                        'longitude' => null,
-                        'pos' => $supplier_list[0]->pos,
-                        'mtime' => now(),
-                    ];
-
-                    DB::connection('cliqnshop')->table('mshop_index_supplier')->upsert(
-                        $index_supplier,
-                        ['unq_msindsu_p_s_lt_si_po_la_lo'],
-                        ['prodid', 'siteid', 'supid', 'listtype', 'pos', 'mtime']
-                    );
-                }
-
-                if ($domain == 'text') {
-                    $text_list = DB::connection('cliqnshop')->table('mshop_product')->where(['id' => $pid, 'siteid' => $site])->select('code', 'label', 'url')->get()->ToArray();
-
-                    $index_text = [
-                        'prodid' => $pid,
-                        'siteid' => $site,
-                        'langid' => 'en',
-                        'url' => $text_list[0]->url,
-                        'name' => $text_list[0]->label,
-                        'content' => mb_strtolower($text_list[0]->code) . ' ' . mb_strtolower($text_list[0]->label),
-                        'mtime' => now(),
-                    ];
-                    DB::connection('cliqnshop')->table('mshop_index_text')->upsert(
-                        $index_text,
-                        ['unq_msindte_pid_sid_lid_url'],
-                        ['prodid', 'siteid', 'url', 'name', 'content', 'mtime']
-                    );
-
-                }
+                indexrebuild($variant_list, $site);
             }
-
+            }
+            if ($variant_lists !== [])
+            {
+                $variants = DB::connection('cliqnshop')->table('mshop_product')->whereIn('id', $variant_lists,)->where('siteid', $site)->pluck('asin')->ToArray();
+                
+                return back()->with('success', 'Approved' . ' ' . $asin . ' '. implode(' ',$variants));
+            }
             return back()->with('success', 'Approved' . ' ' . $asin);
         }
     }

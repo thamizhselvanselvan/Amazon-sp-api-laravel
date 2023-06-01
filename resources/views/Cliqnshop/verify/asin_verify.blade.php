@@ -95,7 +95,8 @@
             <th> S.N </th>
             <th>ASIN</th>
             <th>SKU </th>
-            <th>Product Name </th>
+            <th>Product Name</th>
+            <th>Product Type</th>
             <th>Site</th>
             <th>Category</th>
             <th>Price</th>
@@ -183,6 +184,10 @@
                     name: 'label'
                 },
                 {
+                    data: 'type',
+                    name: 'type'
+                },
+                {
                     data: 'site',
                     name: 'site'
                 },
@@ -253,16 +258,33 @@
         
         label = $(this).data('label');
         shortenlabel = label.substring(0, 20).concat('...');
-        
+
+        type = $(this).data('type');
+
+        if (type === "select")
+        {
+            return confirm(`This is Variant Parent Product ! Are you sure to ban/delete all it's Variant Child Products`);
+        }
+        else
+        {
         return confirm(`Are you sure? You want to ban/delete this  ( ${shortenlabel} ) product! `);
+        }
     });
 
     $(document).on('click', ".approveAsin", function(e) {
         
         label = $(this).data('label');
         shortenlabel = label.substring(0, 20).concat('...');
-        
+
+        type = $(this).data('type');
+
+        if (type === "select")
+        {
+            return confirm(`This is Variant Parent Product ! Are you sure to Approve all it's Variant Child Products`);
+        }
+        else {
         return confirm(`Are you sure? You want to Approve this  ( ${shortenlabel} ) product! `);
+        }
     });
 
     
