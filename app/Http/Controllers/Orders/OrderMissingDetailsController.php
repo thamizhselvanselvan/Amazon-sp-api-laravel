@@ -231,7 +231,7 @@ class OrderMissingDetailsController extends Controller
                             }
                         }
                         else {
-                            $output .= '<a href="#" data-toggle="tooltip" title="Incorrect Address Found"><i class="fa fa-times wrong" style="color: #FFFF00;" aria-hidden="true" ></i> </a>';
+                            $output .= '<a href="#" data-toggle="tooltip" title="Incorrect Address Found"><i class="fa fa-times wrong" style="color: #ff00bf;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('AddressLine1', $missing_details)) {
                             if ($missing_details['AddressLine1'] == '') {

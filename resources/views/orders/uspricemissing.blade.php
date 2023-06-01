@@ -60,15 +60,15 @@
         </div>
     </div>
 
-    <div class="modal fade" id="price_missing" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
-        aria-hidden="true">
-        <div class="modal-dialog">
+    <div class="modal fade bd-example-modal-lg" id="price_missing" tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="new_asin">Update Missing Details :</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
-                    </button>
+                      </button>
                 </div>
                 <div class="modal-body">
                     <!-- <form class="row" id="multi-file-upload" method="POST" action="" accept-charset="utf-8" enctype="multipart/form-data">
@@ -358,5 +358,10 @@
                 }
             });
         });
+
+        $('.close').click(function() {
+        $('#price_missing').modal('hide');
+    });
+
     </script>
 @stop
