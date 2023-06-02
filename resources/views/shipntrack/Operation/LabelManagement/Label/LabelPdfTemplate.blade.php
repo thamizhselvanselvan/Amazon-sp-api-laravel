@@ -182,8 +182,8 @@
                                                 @else
                                                     NA
                                                 @endif
-                                                <br>
                                                 @if (isset($record['county']))
+                                                    <br>
                                                     <strong>County: </strong>
                                                     {{ $record['county'] }}
                                                 @endif
@@ -237,7 +237,7 @@
                         <div class=" small return">
 
                             <p class="address"><strong>Return Address:</strong>
-                                {{ $record['return_address'] }}
+                                {{-- {{ $record['return_address'] }} --}}
                             </p>
 
                         </div>

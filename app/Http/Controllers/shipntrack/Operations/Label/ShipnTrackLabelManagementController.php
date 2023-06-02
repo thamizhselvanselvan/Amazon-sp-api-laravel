@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Spatie\Browsershot\Browsershot;
 use App\Http\Controllers\Controller;
+use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\ShipNTrack\Operation\Label\ShipNTrackLabel;
@@ -22,9 +23,65 @@ class ShipnTrackLabelManagementController extends Controller
         $this->middleware('auth')->except('LabelPdfTemplate');
     }
 
+    // public function index(Request $request)
+    // {
+
+    //     $values = LabelMaster::select('id', 'source', 'destination')
+    //         ->groupBy('source', 'destination')
+    //         ->orderBy('id', 'ASC')
+    //         ->get()
+    //         ->toArray();
+
+    //     if ($request->ajax()) {
+
+    //         $records = DB::connection('shipntracking')->select("SELECT
+    //             GROUP_CONCAT(DISTINCT sntlabels.id)as id, order_no,
+    //             GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
+    //             GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
+    //             GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
+    //             GROUP_CONCAT(DISTINCT sntlabels.bag_no)as bag_no,
+    //             GROUP_CONCAT(DISTINCT sntlabels.awb_no)as awb_no,
+    //             GROUP_CONCAT(DISTINCT sntlabels.forwarder)as forwarder,
+    //             GROUP_CONCAT(DISTINCT sntlabels.order_date)as purchase_date,
+    //             GROUP_CONCAT(DISTINCT sntlabels.sku)as seller_sku,
+    //             GROUP_CONCAT(DISTINCT master.source)as source,
+    //             GROUP_CONCAT(DISTINCT master.destination)as destination
+    //             FROM labels as sntlabels
+    //             JOIN label_masters as master
+    //             ON sntlabels.mode=master.id
+    //             GROUP BY sntlabels.order_no,master.source,master.destination
+    //             ");
+
+    //         return DataTables::of($records)
+    //             ->addColumn('select_all', function ($records) {
+    //                 return "<input class='check_options' type='checkbox' value='$records->id' name='options[]' >";
+    //             })
+    //             ->addColumn('mode', function ($records) {
+    //                 $mode =  $records->source . '2' . $records->destination;
+    //                 return $mode;
+    //             })
+    //             ->addColumn('action', function ($records) {
+    //                 $id = $records->id;
+    //                 $action = "<div class='d-flex justify-content-center'>
+    //                                 <a href='/shipntrack/label/template/$id 'class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+    //                                     <i class='fas fa-eye'></i> View 
+    //                                 </a>
+    //                                 <a href='/shipntrack/label/pdf/download/$id 'class='edit btn btn-info btn-sm mr-2'>
+    //                                 <i class='fas fa-download'></i> Download PDF </a>
+
+    //                                 <a id='edit-address' data-toggle='modal' data-id='$records->id' href='javascript:void(0)' class='edit btn btn-secondary btn-sm'>
+    //                                 <i class='fas fa-address-card'></i> Address </a>
+    //                             </div>";
+    //                 return $action;
+    //             })
+    //             ->rawColumns(['select_all', 'mode', 'action'])
+    //             ->make(true);
+    //     }
+    //     return view('shipntrack.Operation.LabelManagement.Label.index', compact('values'));
+    // }
+
     public function index(Request $request)
     {
-
         $values = LabelMaster::select('id', 'source', 'destination')
             ->groupBy('source', 'destination')
             ->orderBy('id', 'ASC')
@@ -33,130 +90,83 @@ class ShipnTrackLabelManagementController extends Controller
 
         if ($request->ajax()) {
 
+            $table_array = ["UAE" => "tracking_aes", "IND" => "tracking_ins", "KSA" => "tracking_ksa"];
+            $table_name = $table_array[$request->destination];
+
             $records = DB::connection('shipntracking')->select("SELECT
-                GROUP_CONCAT(DISTINCT sntlabels.id)as id, order_no,
-                GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
-                GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
-                GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
-                GROUP_CONCAT(DISTINCT sntlabels.bag_no)as bag_no,
-                GROUP_CONCAT(DISTINCT sntlabels.awb_no)as awb_no,
-                GROUP_CONCAT(DISTINCT sntlabels.forwarder)as forwarder,
-                GROUP_CONCAT(DISTINCT sntlabels.order_date)as purchase_date,
-                GROUP_CONCAT(DISTINCT sntlabels.sku)as seller_sku,
-                GROUP_CONCAT(DISTINCT master.source)as source,
-                GROUP_CONCAT(DISTINCT master.destination)as destination
-                FROM labels as sntlabels
-                JOIN label_masters as master
-                ON sntlabels.mode=master.id
-                GROUP BY sntlabels.order_no,master.source,master.destination
-                ");
+                     GROUP_CONCAT(DISTINCT id)as id,
+                     GROUP_CONCAT(DISTINCT awb_no)as awb_no,
+                     GROUP_CONCAT(DISTINCT consignee_details SEPARATOR '-customer-details-') as customer_details,
+                     GROUP_CONCAT(DISTINCT shipping_details SEPARATOR '-shipping-details-') as shipping_details,
+                     GROUP_CONCAT(DISTINCT booking_details SEPARATOR '-booking-details-') as booking_details,
+                     purchase_tracking_id
+                     FROM $table_name
+                     GROUP BY purchase_tracking_id,awb_no
+                     ");
 
             return DataTables::of($records)
-                ->addColumn('select_all', function ($records) {
-                    return "<input class='check_options' type='checkbox' value='$records->id' name='options[]' >";
+                ->addColumn('select_all', function ($record) {
+                    return "<input class='check_options' type='checkbox' value='$record->id' name='options[]' >";
                 })
-                ->addColumn('mode', function ($records) {
-                    $mode =  $records->source . '2' . $records->destination;
-                    return $mode;
-                })
-                ->addColumn('action', function ($records) {
-                    $id = $records->id;
-                    $action = "<div class='d-flex justify-content-center'>
-                                    <a href='/shipntrack/label/template/$id 'class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
-                                        <i class='fas fa-eye'></i> View 
-                                    </a>
-                                    <a href='/shipntrack/label/pdf/download/$id 'class='edit btn btn-info btn-sm mr-2'>
-                                    <i class='fas fa-download'></i> Download PDF </a>
+                ->editColumn('order_no', function ($record) {
 
-                                    <a id='edit-address' data-toggle='modal' data-id='$records->id' href='javascript:void(0)' class='edit btn btn-secondary btn-sm'>
-                                    <i class='fas fa-address-card'></i> Address </a>
-                                </div>";
+                    $split = preg_split("/-booking-details-?/", $record->booking_details);
+                    $order_no = count($split) > 2 ? $split[1] : $split[0];
+                    $order_no = json_decode($order_no);
+                    return $order_no->order_id;
+                })
+                ->editColumn('awb_no', function ($record) {
+                    return $record->awb_no;
+                })
+                ->editColumn('courier_name', function ($record) {
+
+                    $split = preg_split("/-shipping-details-?/", $record->shipping_details);
+                    $shipping_address = count($split) > 2 ? $split[1] : $split[0];
+                    $courier_name = json_decode($shipping_address);
+                    return $courier_name->shipped_by;
+                })
+                ->editColumn('order_date', function ($record) {
+
+                    $split_date = preg_split("/-booking-details-?/", $record->booking_details);
+                    $booked_date = count($split_date) > 2 ? $split_date[1] : $split_date[0];
+                    $order_date = json_decode($booked_date);
+                    return $order_date->booking_date;
+                })
+                ->editColumn('customer_name', function ($record) {
+
+                    $split_customer = preg_split("/-customer-details-?/", $record->customer_details);
+                    $customer_address = count($split_customer) > 2 ? $split_customer[1] : $split_customer[0];
+                    $customer_name = json_decode($customer_address);
+                    return $customer_name->consignee;
+                })
+                ->addColumn('action', function ($record) {
+                    $id = $record->id;
+                    $action = "<div class='d-flex justify-content-center'>
+                    <a href='/shipntrack/label/template/$id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                        <i class='fas fa-eye'></i> View 
+                    </a>
+                    <a href='/shipntrack/label/pdf/download/$id 'class='label_download btn btn-info btn-sm mr-2'>
+                    <i class='fas fa-download'></i> Download PDF </a>
+
+                </div>";
                     return $action;
                 })
-                ->rawColumns(['select_all', 'mode', 'action'])
+                ->rawColumns(['select_all', 'order_no', 'awb_no', 'courier_name', 'order_date', 'customer_name', 'action'])
                 ->make(true);
         }
+
         return view('shipntrack.Operation.LabelManagement.Label.index', compact('values'));
     }
 
-    public function FormSubmit(Request $request)
-    {
-        $info = $request->validate([
-
-            'mode'          => 'required',
-            'order_no'      => 'required',
-            'order_item_id' => 'required',
-            'bag_no'        => 'required',
-            'forwarder'     => 'required',
-            'awb_no'        => 'required',
-            'order_date'    => 'required',
-            'customer_name' => 'required',
-            'address'       => 'required',
-            'city'          => 'required',
-            'county'        => 'required',
-            'country'       => 'required',
-            'phone'         => 'required',
-            'product_name'  => 'required',
-            'sku'           => 'required',
-            'quantity'      => 'required',
-        ]);
-
-        ShipNTrackLabel::upsert($info, ['order_item_bag_unique'], [
-            'order_no',
-            'order_item_id',
-            'bag_no',
-            'forwarder',
-            'awb_no',
-            'order_date',
-            'customer_name',
-            'address',
-            'city',
-            'county',
-            'country',
-            'phone',
-            'product_name',
-            'sku',
-            'quantity'
-        ]);
-
-        return redirect('shipntrack/label')->with('success', 'Record has been insert successfully!');
-    }
-
-    public function LabelDetails($id)
-    {
-        $details = $this->ShipntrackLabelDataFormatting($id);
-        return response()->json($details);
-    }
-
-    public function LabelEdit(Request $request)
-    {
-        $ids = explode(',', $request->id);
-        foreach ($ids as $key => $id) {
-            $updated_data = [
-                'customer_name' => $request->name,
-                'phone' => $request->phone,
-                'city' => $request->city,
-                'county' => $request->county,
-                'country' => $request->country,
-                'address' => $request->addressLine1,
-                'forwarder' => $request->forwarder,
-                'awb_no' => $request->tracking_id,
-                'quantity' => $request->qty[$key]
-
-            ];
-
-            ShipNTrackLabel::where('id', $id)->update($updated_data);
-        }
-
-        return redirect('shipntrack/label')->with('success', 'Record has been updated successfully!');
-    }
 
     public function LabelPdfTemplate(Request $request)
     {
         $bar_code = [];
 
         $ids = implode(',', explode('-', $request->id));
-        $records = $this->ShipntrackLabelDataFormatting($ids);
+        $data = $this->ShipntrackLabelDataFormatting($ids);
+        $records = $this->LableDataFormattting($data);
+
         foreach ($records as $key => $record) {
 
             $generator = new BarcodeGeneratorPNG();
@@ -166,56 +176,79 @@ class ShipnTrackLabelManagementController extends Controller
         return view('shipntrack.Operation.LabelManagement.Label.LabelPdfTemplate', compact('records', 'bar_code'));
     }
 
-    public function ShipntrackLabelDataFormatting($label_id)
+    public function LableDataFormattting($records)
     {
-        $label_records = DB::connection('shipntracking')->select("SELECT 
-                        GROUP_CONCAT(DISTINCT sntlabels.order_no)as order_no,
-                        GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
-                        GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
-                        GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
-                        GROUP_CONCAT(DISTINCT sntlabels.address)as address,
-                        GROUP_CONCAT(DISTINCT sntlabels.city)as city,
-                        GROUP_CONCAT(DISTINCT sntlabels.county)as county,
-                        GROUP_CONCAT(DISTINCT sntlabels.country)as country,
-                        GROUP_CONCAT(DISTINCT sntlabels.phone)as phone,
-                        GROUP_CONCAT(DISTINCT sntlabels.awb_no) as awb_no,
-                        GROUP_CONCAT(DISTINCT sntlabels.forwarder) as forwarder,
-                        GROUP_CONCAT(sntlabels.product_name SEPARATOR '-label-item-') as product_name,
-                        GROUP_CONCAT(sntlabels.sku SEPARATOR '-label-sku-') as sku,
-                        GROUP_CONCAT(sntlabels.quantity SEPARATOR '-label-qty-') as quantity,
-                        GROUP_CONCAT(DISTINCT master.return_address)as return_address
-                        FROM labels as sntlabels
-                        JOIN label_masters as master
-                        ON sntlabels.mode=master.id
-                        WHERE sntlabels.id IN($label_id)
-                        GROUP BY order_no
-                        ");
+        $Label_data = [];
+        foreach ($records as $key1 => $record) {
 
-        $records = [];
-        foreach ($label_records as $key1 => $record) {
+            foreach ($record as $key2 => $result) {
 
-            foreach ($record as $key2 => $value) {
+                if ($key2 == "shipping_details") {
 
-                if ($key2 == 'product_name') {
+                    $split_details = preg_split("/-shipping-details-?/", $result);
+                    $shipping_details = $this->SplitJsonArray($split_details);
+                    $Label_data[$key1]['forwarder'] = $shipping_details->shipped_by;
 
-                    $item_name = explode('-label-item-', $value);
-                    $records[$key1][$key2] = $item_name;
-                } elseif ($key2 == 'sku') {
+                    $shippings = explode("-shipping-details-", $result);
+                    $sku = [];
+                    foreach ($shippings as $data) {
+                        $sku[] =  json_decode($data)->sku ?? '';
+                    }
 
-                    $sku = array_unique(explode('-label-sku-', $value));
-                    $records[$key1][$key2] = $sku;
-                } elseif ($key2 == 'quantity') {
+                    $Label_data[$key1]['sku'] = array_unique($sku);
+                } elseif ($key2 == "order_details") {
 
-                    $quantity = explode('-label-qty-', $value);
-                    $records[$key1][$key2] = $quantity;
-                }
+                    $split_order = preg_split("/-order-details-?/", $result);
+                    $order_details = $this->SplitJsonArray($split_order);
+                    $Label_data[$key1]['order_no'] = $order_details->order_id;
+                    $Label_data[$key1]['order_date'] = $order_details->booking_date;
+                } elseif ($key2 == "customer_details") {
 
-                if ($key2 != 'product_name' && $key2 != 'sku' && $key2 != 'quantity') {
+                    $split_customer = preg_split("/-customer-details-?/", $result);
+                    $customer_details = $this->SplitJsonArray($split_customer);
 
-                    $records[$key1][$key2] = $value;
+                    $Label_data[$key1]['customer_name'] = $customer_details->consignee;
+                    $Label_data[$key1]['address'] = $customer_details->address1 . " , " . $customer_details->address2;
+                    $Label_data[$key1]['city'] = $customer_details->city;
+                    $Label_data[$key1]['country'] = $customer_details->country;
+                    $Label_data[$key1]['phone'] = $customer_details->mobile_no;
+                } elseif ($key2 == "product_details") {
+
+                    $packet_details = explode("-product-details-", $result);
+                    foreach ($packet_details as $packet_detail) {
+
+                        $Label_data[$key1]['product_name'][] = json_decode($packet_detail)->pkt_name;
+                        $Label_data[$key1]['quantity'][] = json_decode($packet_detail)->quantity;
+                    }
+                } elseif ($key2 == 'awb_no') {
+                    $Label_data[$key1][$key2] = $result;
                 }
             }
         }
+        return $Label_data;
+    }
+
+    public function SplitJsonArray($data)
+    {
+        $split_json = count($data) > 2 ? $data[1] : $data[0];
+        $result = json_decode($split_json);
+        return $result;
+    }
+
+    public function ShipntrackLabelDataFormatting($label_id)
+    {
+        $records = DB::connection('shipntracking')->select("SELECT 
+                        
+                        GROUP_CONCAT(DISTINCT awb_no) as awb_no,
+                        GROUP_CONCAT(consignee_details SEPARATOR '-customer-details-') as customer_details,
+                        GROUP_CONCAT(packet_details SEPARATOR '-product-details-') as product_details,
+                        GROUP_CONCAT(shipping_details SEPARATOR '-shipping-details-') as shipping_details,
+                        GROUP_CONCAT(booking_details SEPARATOR '-order-details-') as order_details,
+                        GROUP_CONCAT(DISTINCT purchase_tracking_id) as purchase_tracking_id
+                        FROM tracking_aes 
+                        WHERE id IN($label_id)
+                        GROUP BY purchase_tracking_id
+                        ");
 
         return $records;
     }
@@ -225,8 +258,8 @@ class ShipnTrackLabelManagementController extends Controller
         $current_url = URL::current();
         $url = str_replace('pdf/download', 'template', $current_url);
 
-        $label_record = ShipNTrackLabel::where('id', $id)->get('awb_no')->toArray();
-        $awbNo = $label_record[0]['awb_no'];
+        $label_record = Trackingae::where('id', $id)->get('purchase_tracking_id')->toArray();
+        $awbNo = $label_record[0]['purchase_tracking_id'];
 
         $filePath = "shipntrack/label/$awbNo.pdf";
         if (!Storage::exists($filePath)) {
@@ -235,7 +268,7 @@ class ShipnTrackLabelManagementController extends Controller
         $pdfPath = Storage::path($filePath);
 
         Browsershot::url($url)
-            // ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
+            ->setNodeBinary('D:\laragon\bin\nodejs\node-v14\node.exe')
             ->paperSize(576, 384, 'px')
             ->pages('1-40')
             ->scale(1)

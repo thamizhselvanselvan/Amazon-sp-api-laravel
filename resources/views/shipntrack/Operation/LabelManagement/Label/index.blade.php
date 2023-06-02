@@ -48,14 +48,18 @@
         .submit-button {
             margin-top: 31px;
         }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        #destination {
+            height: 33px;
+        }
     </style>
 @stop
 
 @section('content_header')
-
-    <div class="d-flex justify-content-end ">
-        <x-adminlte-button theme="primary" label="Add Records" icon="fa fa-plus-circle" class="add" />
-    </div>
 
     <div class="side-nav">
         <div class="light-close-bg"></div>
@@ -63,130 +67,29 @@
             <a class="close"><i class="fa fa-times" aria-hidden="true"></i></a>
             <h5 class="text-center mb-4 font-weight-bold">ShipNTrack Label Management</h5>
 
-            <form action="{{ route('shipntrack.label.submit') }}" method="POST" class="shipNtrack-grid-form">
-                @csrf
-
-                <div>
-
-                    <x-adminlte-select class="mb-0 px-3" label="Choose Mode" type="text" name="mode" id="mode"
-                        onblur="validate(1)">
-                        <option value="">Select Mode</option>
-                        @foreach ($values as $value)
-                            <option value="{{ $value['id'] }}">{{ $value['source'] . '2' . $value['destination'] }}
-                            </option>
-                        @endforeach
-                    </x-adminlte-select>
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Order Number" type="text" name="order_no" id="order_no"
-                        placeholder="Order Number" onblur="validate(2)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Order Item Number" type="text" name="order_item_id"
-                        id="order_item_id" placeholder="Order Item Number" onblur="validate(3)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Bag No." type="text" name="bag_no" id="bag_no"
-                        placeholder="Bag No." onblur="validate(4)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Forwarder Name" type="text" name="forwarder"
-                        id="forwarder" placeholder="Forwarder Name" onblur="validate(5)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="AWB No." type="text" name="awb_no" id="awb_no"
-                        placeholder="AWB No." onblur="validate(6)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Order Date" type="date" name="order_date" id="order_date"
-                        placeholder="Order Date" min="1997-01-01" max="2030-12-31" onblur="validate(7)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Customer Name" type="text" name="customer_name"
-                        id="customer_name" placeholder="Customer Name" onblur="validate(8)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Address" type="text" name="address" id="address"
-                        placeholder="Address" onblur="validate(9)" />
-                </div>
-
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="City" type="text" name="city" id="city"
-                        placeholder="City" onblur="validate(10)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="County" type="text" name="county" id="county"
-                        placeholder="County" onblur="validate(11)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Country" name="country" id="country" placeholder="Country"
-                        onblur="validate(12)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Phone" type="text" name="phone" id="phone"
-                        placeholder="Phone" onblur="validate(13)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Product Name" type="text" name="product_name"
-                        id="product_name" placeholder="Product Name" onblur="validate(14)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="SKU" name="sku" id="sku" placeholder="SKU"
-                        onblur="validate(15)" />
-                </div>
-
-                <div>
-
-                    <x-adminlte-input class="mb-0 px-3" label="Quantity" name="quantity" id="quantity"
-                        placeholder="Quantity" onblur="validate(16)" />
-                </div>
-
-                <div class="submit-button">
-                    <x-adminlte-button label="Submit" type="submit" theme="primary" class="btn btn-md" />
-                </div>
-            </form>
-
         </div>
     </div>
 
 
     <div class="row mt-2">
         <div class="col"></div>
-        <div class="col text-right">
+        <div class="col d-flex justify-content-end align-items-center py-0">
+
+            <x-adminlte-select name="destination" id="destination" class=" ml-2">
+                <option value="0">Select Option</option>
+                @foreach ($values as $value)
+                    <option value="{{ $value['destination'] }}">{{ $value['source'] . '-' . $value['destination'] }}
+                    </option>
+                @endforeach
+            </x-adminlte-select>
+
 
             <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="success"
                 icon="fas fa-print" class="btn-sm ml-2" />
 
             <x-adminlte-button label="Download Selected" target="_blank" id='download_selected' theme="success"
                 icon="fas fa-download" class="btn-sm ml-2" />
+
         </div>
     </div>
 
@@ -222,13 +125,12 @@
 
         <thead class="table-info">
             <th>Select All <input type='checkbox' id='select_all'></th>
-            <th>Mode</th>
+            <th>Purchase ID</th>
             <th>Order No.</th>
             <th>Awb No.</th>
             <th>Courier Name</th>
             <th>Order Date</th>
             <th>Customer Name</th>
-            <th>Bag No.</th>
             <th>Action</th>
         </thead>
 
@@ -246,256 +148,77 @@
             });
         });
 
-        let yajra_table = $('.yajra-datatable').DataTable({
+        $('#destination').on("change", function() {
 
-            processing: true,
-            serverSide: true,
-            ajax: "{{ route('shipntrack.label.index') }}",
-            pageLength: 40,
-            searching: false,
-            bLengthChange: false,
-            columns: [{
-                    data: 'select_all',
-                    name: 'select_all',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'mode',
-                    name: 'mode',
-                    orderable: false,
-                    searchable: false,
-                },
-                {
-                    data: 'order_no',
-                    name: 'order_no',
-                },
-                {
-                    data: 'awb_no',
-                    name: 'awb_no',
-                },
-                {
-                    data: 'forwarder',
-                    name: 'forwarder',
-                    orderable: false,
-                    searchable: false,
-                },
-                {
-                    data: 'order_date',
-                    name: 'order_date',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'customer_name',
-                    name: 'customer_name',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'bag_no',
-                    name: 'bag_no',
-                    orderable: false,
-                    searchable: false
-                },
-                {
-                    data: 'action',
-                    name: 'action',
-                    orderable: false,
-                    searchable: false
-                },
+            let yajra_table = $('.yajra-datatable').DataTable({
 
-            ],
+                processing: true,
+                serverSide: true,
+                destroy: true,
+                ajax: {
+                    url: "{{ route('shipntrack.label.index') }}",
+                    dataType: "json",
+                    type: 'GET',
+                    data: function(d) {
+                        d.destination = $('#destination').val();
+                    }
+                },
+                pageLength: 40,
+                searching: false,
+                bLengthChange: false,
+                columns: [{
+                        data: 'select_all',
+                        name: 'select_all',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'purchase_tracking_id',
+                        name: 'purchase_tracking_id',
+                    },
+                    {
+                        data: 'order_no',
+                        name: 'order_no',
+                    },
+                    {
+                        data: 'awb_no',
+                        name: 'awb_no',
+                    },
+                    {
+                        data: 'courier_name',
+                        name: 'courier_name',
+                        orderable: false,
+                        searchable: false,
+                    },
+                    {
+                        data: 'order_date',
+                        name: 'order_date',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'customer_name',
+                        name: 'customer_name',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    },
+
+                ],
+            });
         });
 
-        function validate(val) {
-            v1 = document.getElementById("mode");
-            v2 = document.getElementById("order_no");
-            v3 = document.getElementById("order_item_id");
-            v4 = document.getElementById("bag_no");
-            v5 = document.getElementById("forwarder");
-            v6 = document.getElementById("awb_no");
-            v7 = document.getElementById("order_date");
-            v8 = document.getElementById("customer_name");
-            v9 = document.getElementById("address");
-            v10 = document.getElementById("city");
-            v11 = document.getElementById("county");
-            v12 = document.getElementById("country");
-            v13 = document.getElementById("phone");
-            v14 = document.getElementById("product_name");
-            v15 = document.getElementById("sku");
-            v16 = document.getElementById("quantity");
+        $(document).on('click', '.label_view', function() {
 
-            flag1 = true;
-            flag2 = true;
-            flag3 = true;
-            flag4 = true;
-            flag5 = true;
-            flag6 = true;
-            flag7 = true;
-            flag8 = true;
-            flag9 = true;
-            flag10 = true;
-            flag11 = true;
-            flag12 = true;
-            flag13 = true;
-            flag14 = true;
-            flag15 = true;
-            flag16 = true;
-
-            if (val >= 1 || val == 0) {
-                if (v1.value == "") {
-                    v1.style.borderColor = "red";
-                    flag1 = false;
-                } else {
-                    v1.style.borderColor = "green";
-                    flag1 = true;
-                }
-            }
-
-            if (val >= 2 || val == 0) {
-                if (v2.value == "") {
-                    v2.style.borderColor = "red";
-                    flag2 = false;
-                } else {
-                    v2.style.borderColor = "green";
-                    flag2 = true;
-                }
-            }
-            if (val >= 3 || val == 0) {
-                if (v3.value == "") {
-                    v3.style.borderColor = "red";
-                    flag3 = false;
-                } else {
-                    v3.style.borderColor = "green";
-                    flag3 = true;
-                }
-            }
-            if (val >= 4 || val == 0) {
-                if (v4.value == "") {
-                    v4.style.borderColor = "red";
-                    flag4 = false;
-                } else {
-                    v4.style.borderColor = "green";
-                    flag4 = true;
-                }
-            }
-            if (val >= 5 || val == 0) {
-                if (v5.value == "") {
-                    v5.style.borderColor = "red";
-                    flag5 = false;
-                } else {
-                    v5.style.borderColor = "green";
-                    flag5 = true;
-                }
-            }
-            if (val >= 6 || val == 0) {
-                if (v6.value == "") {
-                    v6.style.borderColor = "red";
-                    flag6 = false;
-                } else {
-                    v6.style.borderColor = "green";
-                    flag6 = true;
-                }
-            }
-            if (val >= 7 || val == 0) {
-                if (v7.value == "") {
-                    v7.style.borderColor = "red";
-                    flag7 = false;
-                } else {
-                    v7.style.borderColor = "green";
-                    flag7 = true;
-                }
-            }
-
-            if (val >= 8 || val == 0) {
-                if (v8.value == "") {
-                    v8.style.borderColor = "red";
-                    flag8 = false;
-                } else {
-                    v8.style.borderColor = "green";
-                    flag8 = true;
-                }
-            }
-
-            if (val >= 9 || val == 0) {
-                if (v9.value == "") {
-                    v9.style.borderColor = "red";
-                    flag9 = false;
-                } else {
-                    v9.style.borderColor = "green";
-                    flag9 = true;
-                }
-            }
-            if (val >= 10 || val == 0) {
-                if (v10.value == "") {
-                    v10.style.borderColor = "red";
-                    flag10 = false;
-                } else {
-                    v10.style.borderColor = "green";
-                    flag10 = true;
-                }
-            }
-            if (val >= 11 || val == 0) {
-                if (v11.value == "") {
-                    v11.style.borderColor = "red";
-                    flag11 = false;
-                } else {
-                    v11.style.borderColor = "green";
-                    flag11 = true;
-                }
-            }
-            if (val >= 12 || val == 0) {
-                if (v12.value == "") {
-                    v12.style.borderColor = "red";
-                    flag12 = false;
-                } else {
-                    v12.style.borderColor = "green";
-                    flag12 = true;
-                }
-            }
-            if (val >= 13 || val == 0) {
-                if (v13.value == "") {
-                    v13.style.borderColor = "red";
-                    flag13 = false;
-                } else {
-                    v13.style.borderColor = "green";
-                    flag13 = true;
-                }
-            }
-            if (val >= 14 || val == 0) {
-                if (v14.value == "") {
-                    v14.style.borderColor = "red";
-                    flag14 = false;
-                } else {
-                    v14.style.borderColor = "green";
-                    flag14 = true;
-                }
-            }
-            if (val >= 15 || val == 0) {
-                if (v15.value == "") {
-                    v15.style.borderColor = "red";
-                    flag15 = false;
-                } else {
-                    v15.style.borderColor = "green";
-                    flag15 = true;
-                }
-            }
-            if (val >= 16 || val == 0) {
-                if (v16.value == "") {
-                    v16.style.borderColor = "red";
-                    flag16 = false;
-                } else {
-                    v16.style.borderColor = "green";
-                    flag16 = true;
-                }
-            }
-
-            flag = flag1 && flag2 && flag3 && flag4 && flag5 && flag6 && flag7 && flag8 && flag9 && flag10 && flag11 &&
-                flag12 && flag13 && flag14 && flag15 && flag16;
-
-            return flag;
-        }
+            let table = $('#destination').val();
+            alert(table);
+            return false;
+        });
 
         $('#select_all').change(function() {
 

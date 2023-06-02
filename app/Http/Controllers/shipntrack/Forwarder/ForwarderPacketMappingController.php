@@ -64,7 +64,7 @@ class ForwarderPacketMappingController extends Controller
     {
 
 
-        $consignor_data= [
+        $consignor_data = [
             'consignor' => $request->cnr_consignor,
             'contact_person' => $request->cnr_cperson,
             'address1' => $request->cnr_address1,
@@ -111,6 +111,7 @@ class ForwarderPacketMappingController extends Controller
             'sku' => $request->sku,
             'hsn' => $request->hsn,
             'shipping_channel' => $request->channel,
+            'shipped_by' => $request->shipped_by,
             'arn_no' => $request->arn_no,
             'store' => $request->store,
             'store_address' => $request->store_address,
@@ -133,7 +134,7 @@ class ForwarderPacketMappingController extends Controller
             'packet_details' =>  json_encode($packet_data),
             'shipping_details' =>  json_encode($shipping_data),
             'booking_details' =>  json_encode($booking_data),
-            'reference_id' => $request->reference_id,
+            'reference_id' => (rand(10, 100)),
             // 'forwarder_1' => $request->forwarder1,
             // 'forwarder_1_awb' => $request->forwarder_1_awb,
             // 'forwarder_1_flag' => 0,
@@ -148,7 +149,7 @@ class ForwarderPacketMappingController extends Controller
             // 'forwarder_4_flag' => 0,
             // 'status' => 0,
             'purchase_tracking_id' => $request->purchase_tracking_id,
-            'awb_no' => (rand(10, 100)),
+            'awb_no' => $request->awb_no,
         ];
 
         if ($request->destination == 'AE') {
@@ -200,8 +201,8 @@ class ForwarderPacketMappingController extends Controller
                 // ]
             );
         }
-     
-       return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
+
+        return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
     }
 
     public function Upload()
