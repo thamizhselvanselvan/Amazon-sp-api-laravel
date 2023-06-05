@@ -18,9 +18,12 @@ use App\Models\ShipNTrack\Operation\LabelMaster\LabelMaster;
 
 class ShipnTrackLabelManagementController extends Controller
 {
+    protected $table_array = ["UAE" => "tracking_aes", "IND" => "tracking_ins", "KSA" => "tracking_ksa"];
+    protected $model = ["UAE" => "Trackingae", "IND" => "Trackingin", "KSA" => "Trackingksa"];
+
     public function __construct()
     {
-        $this->middleware('auth')->except('LabelPdfTemplate');
+        $this->middleware('auth')->except('LabelPdfTemplateShow');
     }
 
     // public function index(Request $request)
@@ -90,8 +93,8 @@ class ShipnTrackLabelManagementController extends Controller
 
         if ($request->ajax()) {
 
-            $table_array = ["UAE" => "tracking_aes", "IND" => "tracking_ins", "KSA" => "tracking_ksa"];
-            $table_name = $table_array[$request->destination];
+            $destination = $request->destination;
+            $table_name = $this->table_array[$request->destination];
 
             $records = DB::connection('shipntracking')->select("SELECT
                      GROUP_CONCAT(DISTINCT id)as id,
@@ -139,13 +142,13 @@ class ShipnTrackLabelManagementController extends Controller
                     $customer_name = json_decode($customer_address);
                     return $customer_name->consignee;
                 })
-                ->addColumn('action', function ($record) {
+                ->addColumn('action', function ($record) use ($destination) {
                     $id = $record->id;
                     $action = "<div class='d-flex justify-content-center'>
-                    <a href='/shipntrack/label/template/$id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                    <a href='/shipntrack/label/template/$destination/$id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                         <i class='fas fa-eye'></i> View 
                     </a>
-                    <a href='/shipntrack/label/pdf/download/$id 'class='label_download btn btn-info btn-sm mr-2'>
+                    <a href='/shipntrack/label/pdf/download/$destination/$id 'class='label_download btn btn-info btn-sm mr-2'>
                     <i class='fas fa-download'></i> Download PDF </a>
 
                 </div>";
@@ -159,12 +162,13 @@ class ShipnTrackLabelManagementController extends Controller
     }
 
 
-    public function LabelPdfTemplate(Request $request)
+    public function LabelPdfTemplateShow(Request $request)
     {
         $bar_code = [];
-
+        $destination = $request->destination;
         $ids = implode(',', explode('-', $request->id));
-        $data = $this->ShipntrackLabelDataFormatting($ids);
+
+        $data = $this->ShipntrackLabelDataFormatting($destination, $ids);
         $records = $this->LableDataFormattting($data);
 
         foreach ($records as $key => $record) {
@@ -235,8 +239,10 @@ class ShipnTrackLabelManagementController extends Controller
         return $result;
     }
 
-    public function ShipntrackLabelDataFormatting($label_id)
+    public function ShipntrackLabelDataFormatting($destination, $label_id)
     {
+        $table_name = $this->table_array[$destination];
+
         $records = DB::connection('shipntracking')->select("SELECT 
                         
                         GROUP_CONCAT(DISTINCT awb_no) as awb_no,
@@ -245,7 +251,7 @@ class ShipnTrackLabelManagementController extends Controller
                         GROUP_CONCAT(shipping_details SEPARATOR '-shipping-details-') as shipping_details,
                         GROUP_CONCAT(booking_details SEPARATOR '-order-details-') as order_details,
                         GROUP_CONCAT(DISTINCT purchase_tracking_id) as purchase_tracking_id
-                        FROM tracking_aes 
+                        FROM  $table_name
                         WHERE id IN($label_id)
                         GROUP BY purchase_tracking_id
                         ");
@@ -253,13 +259,21 @@ class ShipnTrackLabelManagementController extends Controller
         return $records;
     }
 
-    public function LabelPdfDownload($id)
+    public function LabelPdfDownload($destination, $id)
     {
+        $awbNo = '';
         $current_url = URL::current();
         $url = str_replace('pdf/download', 'template', $current_url);
 
-        $label_record = Trackingae::where('id', $id)->get('purchase_tracking_id')->toArray();
-        $awbNo = $label_record[0]['purchase_tracking_id'];
+        if (str_contains($id, "-")) {
+            $awbNo = $destination;
+        } else {
+
+            $table = $this->table_array[$destination];
+            $table_object = table_model_change(model_path: "ForwarderMaping", model_name: $this->model[$destination], table_name: $table);
+            $label_record = $table_object->where('id', $id)->get('purchase_tracking_id')->toArray();
+            $awbNo = $label_record[0]['purchase_tracking_id'];
+        }
 
         $filePath = "shipntrack/label/$awbNo.pdf";
         if (!Storage::exists($filePath)) {

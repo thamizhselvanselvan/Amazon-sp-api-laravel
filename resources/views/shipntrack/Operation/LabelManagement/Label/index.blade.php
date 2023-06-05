@@ -138,7 +138,7 @@
 @stop
 
 @section('js')
-    <script>
+    <script text="javascript/text">
         $(document).ready(function() {
             $(document).on('click', '.add', function() {
                 $('.side-nav').show();
@@ -213,13 +213,6 @@
             });
         });
 
-        $(document).on('click', '.label_view', function() {
-
-            let table = $('#destination').val();
-            alert(table);
-            return false;
-        });
-
         $('#select_all').change(function() {
 
             if ($('#select_all').is(':checked')) {
@@ -235,6 +228,7 @@
 
             let id = '';
             let count = '';
+            let destination = $('#destination').val();
             $("input[name='options[]']:checked").each(function() {
                 if (count == 0) {
                     id += $(this).val();
@@ -243,12 +237,13 @@
                 }
                 count++;
             });
-            window.open("/shipntrack/label/template/" + id, "_blank");
+            window.open("/shipntrack/label/template/" + destination + "/" + id, "_blank");
         });
 
         $('#download_selected').click(function() {
             let id = '';
             let count = '';
+            let destination = $('#destination').val();
             $("input[name='options[]']:checked").each(function() {
                 if (count == 0) {
                     id += $(this).val();
@@ -257,7 +252,7 @@
                 }
                 count++;
             });
-            window.location.href = "/shipntrack/label/pdf/download/" + id;
+            window.location.href = "/shipntrack/label/pdf/download/" + destination + "/" + id;
         });
     </script>
 
