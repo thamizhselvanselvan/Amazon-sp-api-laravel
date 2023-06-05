@@ -137,9 +137,19 @@ Route::get('shipntrack/outward/create', 'shipntrack\Operations\SNTOutwardControl
 Route::post('shiptrack/outward/store', 'shipntrack\Operations\SNTOutwardController@outward_store')->name('shipntrack.outward.store');
 
 
-/*Outward-Manifist  */
+/*In-Scan  */
 
-Route::get('shipntrack/in-scan', 'shipntrack\OutwardManisist\ShiptrackInScanController@index')->name('shipntrack.inscan');
-Route::get('shipntrack/in-scan/create', 'shipntrack\OutwardManisist\ShiptrackInScanController@view')->name('shipntrack.inscan.view');
-Route::get('shipntrack/in-scan/get/details', 'shipntrack\OutwardManisist\ShiptrackInScanController@get_details')->name('shipntrack.inscan.get');
-Route::post('shipntrack/in-scan/store', 'shipntrack\OutwardManisist\ShiptrackInScanController@store')->name('shipntrack.inscan.store');
+Route::get('shipntrack/in-scan', 'shipntrack\Manifest\ShiptrackInScanController@index')->name('shipntrack.inscan');
+Route::get('shipntrack/in-scan/create', 'shipntrack\Manifest\ShiptrackInScanController@view')->name('shipntrack.inscan.view');
+Route::get('shipntrack/in-scan/get/details', 'shipntrack\Manifest\ShiptrackInScanController@get_details')->name('shipntrack.inscan.get');
+Route::post('shipntrack/in-scan/store', 'shipntrack\Manifest\ShiptrackInScanController@store')->name('shipntrack.inscan.store');
+
+/*Export-Manifest  */
+Route::get('shipntrack/export/manifest', 'shipntrack\Manifest\ExportManifestController@index')->name('shipntrack.export');
+Route::get('shipntrack/export/export/view', 'shipntrack\Manifest\ExportManifestController@export_view')->name('shipntrack.export.view');
+Route::get('shipntrack/export/single/fetch', 'shipntrack\Manifest\ExportManifestController@single_fetch')->name('shipntrack.export.single.fetch');
+Route::post('shipntrack/export/export/store', 'shipntrack\Manifest\ExportManifestController@export_store')->name('shipntrack.export.store');
+
+/* Inward Shipment */
+Route::get('shipntrack/inward', 'shipntrack\Manifest\InwardController@index')->name('shipntrack.inward');
+Route::get('shipntrack/inward/view', 'shipntrack\Manifest\InwardController@inw_view')->name('shipntrack.inward.view');

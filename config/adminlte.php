@@ -1116,7 +1116,7 @@ return [
                 ],
 
                 [
-                    'text' => 'Outward Manifist',
+                    'text' => 'Operations',
                     'can' => ['Admin'],
                     'url' => '#',
                     'icon' => 'fa fa-plus-circle',
@@ -1130,14 +1130,14 @@ return [
                             'icon' => 'fa fa-tag',
                         ],
                         [
-                            'text' => 'Export-Manifist',
-                            'url' => '',
+                            'text' => 'Export-Manifest',
+                            'url' => 'shipntrack/export/manifest',
                             'can' => ['Admin'],
                             'icon' => 'fa fa-tag',
                         ],
                         [
                             'text' => 'Inward',
-                            'url' => '',
+                            'url' => 'shipntrack/inward',
                             'can' => ['Admin'],
                             'icon' => 'fa fa-tag',
                         ],

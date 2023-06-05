@@ -38,7 +38,7 @@
             <x-adminlte-select name="mode" label="Source-Destination" id="mode">
                 <option value="0">Source-Destination</option>
                 @foreach ($destinations as $destination)
-                <option value={{$destination['destination'] }}>
+                <option value={{$destination['id']}}_{{$destination['destination']}}_{{$destination['process_id']}}>
                     {{ $destination['source'] . '-' . $destination['destination'] }}
                 </option>
                 @endforeach
@@ -53,7 +53,7 @@
 
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
-            <x-adminlte-button label="Create Manifist" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
+            <x-adminlte-button label="Create Manifest" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
         </div>
     </div>
 </div>
@@ -102,7 +102,7 @@
         }
         let data = $('#awb').val();
         console.log(data)
-        
+
 
         if (validation) {
             $.ajax({
@@ -111,7 +111,7 @@
                 data: {
                     'awb': data,
                     'mode': mode,
-                    "_token": "{{ csrf_token() }}", 
+                    "_token": "{{ csrf_token() }}",
                 },
                 success: function(result) {
                     let table = $("#table_body");
@@ -119,7 +119,7 @@
                     $('#awb').val('');
                 },
                 error: function() {
-                    alert('Invalid AWB NO..');
+                    alert('Invalid ID or No Data Found..');
                 }
             });
         }
@@ -134,7 +134,7 @@
 
         html += "<tr class='table_row'>";
         html += "<td name='awb_number[]'>" + response.awb + "</td>";
-        html += "<td name='mode[]'>" + response.mode + "</td>";
+        html += "<td name='booking_date[]'>" + response.booking_date + "</td>";
         html += "<td name='consignor[]'>" + response.consignor + "</td>";
         html += "<td name='consignee[]'>" + response.consignee + "</td>";
         html += "<td name='order_id[]'>" + response.order_id + "</td>";
@@ -172,8 +172,10 @@
                 data.append('Order_id[]', td[4].innerText);
                 data.append('tracking[]', td[5].innerText);
 
-            });
 
+            });
+            let mode = $('#mode').val();
+            data.append('mode', mode);
             $.ajax({
                 method: 'POST',
                 url: "{{route('shipntrack.inscan.store')}}",
@@ -182,7 +184,7 @@
                 contentType: false,
                 response: 'json',
                 success: function(response) {
-                    // $('.create_shipmtn_btn').prop('disabled', false);
+                     $('.create_shipmtn_btn').prop('disabled', false);
                     if (response.success) {
                         getBack();
                     }
@@ -200,7 +202,7 @@
 
     // *Redirect to Index:*//
     function getBack() {
-        window.location.href = '/shipntrack/inward?success=Shipment has been created successfully'
+        window.location.href = '/shipntrack/in-scan?success=Shipment has been created successfully'
     }
 
     /*Delete Row :*/
