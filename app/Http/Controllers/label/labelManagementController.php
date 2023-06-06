@@ -1105,7 +1105,21 @@ class labelManagementController extends Controller
     public function customLabelIndex(Request $request)
     {
         if ($request->ajax()) {
-            $records = $this->customLabelListing();
+            $date = $request->date;
+            $data = explode(' - ', $date);
+
+            $split = [];
+            if (count($data) >= 2) {
+                $split = [
+                    'start'    => trim($data[0]),
+                    'end'   =>     trim($data[1])
+                ];
+            } else {
+                return 'Date Selection Went Wrong';
+            }
+            $date = json_encode($split);
+            $result = $this->labelListing($date, "search_date");
+            $records = $this->customLabelListing($result);
 
             return DataTables::of($records)
                 ->editColumn('name', function ($record) {
@@ -1121,7 +1135,7 @@ class labelManagementController extends Controller
                 })
                 ->addColumn('action', function ($record) {
                     $action = "<div class='d-flex'><a id='custom_print_modal' data-toggle='modal' data-order_no='$record->order_no'  href='javascript:void(0)' class='btn btn-success btn-sm'>
-                    <i class='fas fa-edit'></i> Custom Print </a></div>";
+                        <i class='fas fa-edit'></i> Custom Print </a></div>";
 
                     return $action;
                 })
@@ -1131,31 +1145,8 @@ class labelManagementController extends Controller
         return view("label.custom_label.index");
     }
 
-    public function customLabelListing()
+    public function customLabelListing($data)
     {
-        $order = config('database.connections.order.database');
-        $web = config('database.connections.web.database');
-        $prefix = config('database.connections.web.prefix');
-        $data = DB::select("SELECT
-                            DISTINCT
-                            GROUP_CONCAT(DISTINCT web.id)as id, 
-                            GROUP_CONCAT(DISTINCT web.awb_no)as awb_no, 
-                            GROUP_CONCAT(DISTINCT web.forwarder)as forwarder,
-                            orderDetails.amazon_order_identifier as order_no,
-                            GROUP_CONCAT(DISTINCT ord.purchase_date)as purchase_date,
-                            GROUP_CONCAT(DISTINCT store.store_name)as store_name, 
-                            GROUP_CONCAT(DISTINCT orderDetails.seller_sku)as seller_sku, 
-                            orderDetails.shipping_address,
-                            GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
-                            from ${web}.${prefix}labels as web
-                            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
-                            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
-                            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-                            group by orderDetails.amazon_order_identifier,orderDetails.shipping_address
-                            order by orderDetails.shipping_address
-                        ");
-
-        $label_listing = [];
         foreach ($data as $record) {
             if (count(explode(",", $record->seller_sku)) >= 2) {
 
@@ -1177,6 +1168,8 @@ class labelManagementController extends Controller
                             GROUP_CONCAT(DISTINCT web.id)as id, 
                             orderDetails.amazon_order_identifier as order_no, 
                             GROUP_CONCAT(DISTINCT orderDetails.seller_sku)as seller_sku,
+                            GROUP_CONCAT(orderDetails.title SEPARATOR '-label-title-') as title,
+                            GROUP_CONCAT(orderDetails.quantity_ordered SEPARATOR '-label-qty-') as qty,
                             GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
                             FROM ${web}.${prefix}labels as web
                             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
