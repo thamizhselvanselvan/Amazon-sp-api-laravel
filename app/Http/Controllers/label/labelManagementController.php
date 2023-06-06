@@ -1110,7 +1110,10 @@ class labelManagementController extends Controller
             return DataTables::of($records)
                 ->editColumn('name', function ($record) {
                     $name = json_decode($record->shipping_address);
-                    return $name->Name;
+                    if (isset($name->Name)) {
+                        return $name->Name;
+                    }
+                    return 'NA';
                 })
                 ->editColumn('purchase_date', function ($record) {
                     $date = Carbon::parse($record->purchase_date)->toDateString();
