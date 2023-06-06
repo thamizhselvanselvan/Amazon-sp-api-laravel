@@ -48,20 +48,20 @@
             let input = "<div class='mt-4'><input type='hidden' name='order_identifier' value='" + records[0]
                 .order_no + "'>";
 
-            let seller_sku = records[0].seller_sku.split(',');
+            let seller_sku = records[0].seller_sku.split('-label-sku-');
             let quantity = records[0].qty.split('-label-qty-')
             let product_title = records[0].title.split('-label-title-');
 
-            $.each(seller_sku, function(index, sku) {
+            $.each(product_title, function(index, product_name) {
 
                 input +=
                     " <div class='mt-4 mr-4'><input type='checkbox' name='custom_label[]' class='options' value='" +
-                    sku + "' >&nbsp;" + '<strong>SKU:</strong> ' +
-                    sku + ', &nbsp; <strong>Order ID:</strong> ' + records[0].order_no +
+                    seller_sku[index] + "' >&nbsp;" + '<strong>SKU:</strong> ' +
+                    seller_sku[index] + ', &nbsp; <strong>Order ID:</strong> ' + records[0].order_no +
                     ',&nbsp; <strong>Quantity:</strong> ' +
-                    quantity[index] + ', &nbsp; <strong>Product:</strong> ' + ((product_title[
-                            index].length > 100) ? product_title[index].slice(0, 100 - 1) + '...' :
-                        product_title[index]);
+                    quantity[index] + ', &nbsp; <strong>Product:</strong> ' + ((product_name.length >
+                            100) ? product_name.slice(0, 100 - 1) + '...' :
+                        product_name);
                 input += "</div><br>";
             });
 
