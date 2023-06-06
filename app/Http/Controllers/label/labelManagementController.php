@@ -1101,4 +1101,235 @@ class labelManagementController extends Controller
         }
         return $googleTranslatedText;
     }
+
+    public function customLabelIndex(Request $request)
+    {
+        if ($request->ajax()) {
+            $records = $this->customLabelListing();
+
+            return DataTables::of($records)
+                ->editColumn('name', function ($record) {
+                    $name = json_decode($record->shipping_address);
+                    return $name->Name;
+                })
+                ->editColumn('purchase_date', function ($record) {
+                    $date = Carbon::parse($record->purchase_date)->toDateString();
+                    return $date;
+                })
+                ->addColumn('action', function ($record) {
+                    $action = "<div class='d-flex'><a id='custom_print_modal' data-toggle='modal' data-order_no='$record->order_no'  href='javascript:void(0)' class='btn btn-success btn-sm'>
+                    <i class='fas fa-edit'></i> Custom Print </a></div>";
+
+                    return $action;
+                })
+                ->rawColumns(['name', 'purchase_date', 'action'])
+                ->make(true);
+        }
+        return view("label.custom_label.index");
+    }
+
+    public function customLabelListing()
+    {
+        $order = config('database.connections.order.database');
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
+        $data = DB::select("SELECT
+                            DISTINCT
+                            GROUP_CONCAT(DISTINCT web.id)as id, 
+                            GROUP_CONCAT(DISTINCT web.awb_no)as awb_no, 
+                            GROUP_CONCAT(DISTINCT web.forwarder)as forwarder,
+                            orderDetails.amazon_order_identifier as order_no,
+                            GROUP_CONCAT(DISTINCT ord.purchase_date)as purchase_date,
+                            GROUP_CONCAT(DISTINCT store.store_name)as store_name, 
+                            GROUP_CONCAT(DISTINCT orderDetails.seller_sku)as seller_sku, 
+                            orderDetails.shipping_address,
+                            GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
+                            from ${web}.${prefix}labels as web
+                            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+                            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+                            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+                            group by orderDetails.amazon_order_identifier,orderDetails.shipping_address
+                            order by orderDetails.shipping_address
+                        ");
+
+        $label_listing = [];
+        foreach ($data as $record) {
+            if (count(explode(",", $record->seller_sku)) >= 2) {
+
+                $label_listing[] = $record;
+            }
+        }
+        return $label_listing;
+    }
+
+    public function FetchCustomLabelRecord(Request $request)
+    {
+        $order_no = $request->order_no;
+
+        $order = config('database.connections.order.database');
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
+        $data = DB::select("SELECT
+                            DISTINCT
+                            GROUP_CONCAT(DISTINCT web.id)as id, 
+                            orderDetails.amazon_order_identifier as order_no, 
+                            GROUP_CONCAT(DISTINCT orderDetails.seller_sku)as seller_sku,
+                            GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
+                            FROM ${web}.${prefix}labels as web
+                            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+                            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+                            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+                            WHERE web.order_no = '$order_no'
+                            GROUP BY orderDetails.amazon_order_identifier
+                        ");
+
+        return response()->json($data);
+    }
+
+    public function CustomLabelPrint(Request $request)
+    {
+        $order_identifier = $request->order_identifier;
+        $sku = "'" . implode("','", $request->custom_label) . "'";
+
+        $order = config('database.connections.order.database');
+        $web = config('database.connections.web.database');
+        $prefix = config('database.connections.web.prefix');
+        $label = DB::select("SELECT orderDetails.amazon_order_identifier,
+        GROUP_CONCAT(DISTINCT web.order_no)as order_no,
+        GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
+        GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
+        GROUP_CONCAT(DISTINCT store.store_name) as store_name,
+        GROUP_CONCAT(DISTINCT orderDetails.shipping_address, '-address-separator-') as shipping_address,
+        GROUP_CONCAT(orderDetails.title SEPARATOR '-label-title-') as title,
+        GROUP_CONCAT(orderDetails.seller_sku SEPARATOR '-label-sku-') as sku,
+        GROUP_CONCAT(orderDetails.quantity_ordered SEPARATOR '-label-qty-') as qty
+        from ${web}.${prefix}labels as web
+        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+        JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = ord.amazon_order_identifier
+        JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+        WHERE web.order_no IN ('$order_identifier')
+        AND orderDetails.seller_sku IN ($sku)
+        GROUP BY orderDetails.amazon_order_identifier
+        ORDER BY shipping_address
+        ");
+
+        $label_data = [];
+        $order_no = '';
+        $product[] = [
+            'title' => NULL,
+            'sku' => NULL,
+            'qty' => NULL
+        ];
+
+        $ignore = explode(
+            ',',
+            trim(getSystemSettingsValue(
+                'ignore_label_title_keys',
+                'gun, lighter, gold, spark, Fuel, Heat, Oxygen, alcohols, flamable, seed, sliver, stone, leather, jewellery, fungicide, fertilizer, Magnet'
+            ))
+        );
+
+        if (!$label) {
+            return NULL;
+        }
+        $label_details_array = [];
+        $product = [];
+
+        foreach ($label as $key => $label_value) {
+            foreach ($label_value as $key1 => $label_details) {
+                if ($key1 == 'shipping_address') {
+                    $buyer_address = [];
+
+                    $new_label_add = preg_split('/-address-separator-,?/', $label_details);
+                    $new_add = count($new_label_add) > 2 ? $new_label_add[1] : $new_label_add[0];
+                    $shipping_address = json_decode($this->lableDataCleanup($new_add, 'address'));
+
+                    foreach ((array)$shipping_address as $add_key => $add_details) {
+
+                        if ($add_key == 'CountryCode') {
+                            $country_name = Mws_region::where('region_code', $add_details)->get('region')->first();
+                            if (isset($country_name->region)) {
+                                $buyer_address['country'] = $country_name->region;
+                            }
+                        }
+                        $buyer_address[$add_key] =  $add_details;
+                    }
+
+                    $label_data[$key1] = $buyer_address;
+                } elseif ($key1 == 'package_dimensions') {
+                    $dimensions = [];
+                    $shipping_address = json_decode($label_details);
+                    foreach ((array)$shipping_address as $add_key => $add_details) {
+                        $dimensions[$add_key] =  $add_details;
+                    }
+                    $label_data[$key1] = $dimensions;
+                } elseif ($key1 == 'title') {
+
+                    $title_array = explode('-label-title-', $label_details);
+                    $title_array = array_unique($title_array);
+
+                    $max_text = 100;
+                    if (count($title_array) > 6) {
+                        $max_text = 35;
+                    } elseif (count($title_array) > 4) {
+                        $max_text = 50;
+                    }
+
+                    foreach ($title_array as $key2 => $title) {
+                        $ignore_title = str_ireplace($ignore, '', $title);
+                        $product[$key2][$key1] = substr_replace($ignore_title, '..', $max_text);
+
+                        $sku_array = explode('-label-sku-', $label_value->sku);
+                        $sku_array = array_unique($sku_array);
+                        $product[$key2]['sku'] = $sku_array[$key2] ?? '';
+
+                        $qty_array = explode('-label-qty-', $label_value->qty);
+                        $product[$key2]['qty'] = $qty_array[$key2];
+                    }
+                } else {
+
+                    $label_data[$key1] = $label_details;
+                }
+            }
+            $label_data['product'] = $product;
+            $label_details_array[] = $label_data;
+            $product = [];
+            $label_data = [];
+
+            $getTranslatedText = $this->GetArabicToEnglisText($label_details_array);
+            $generator = new BarcodeGeneratorPNG();
+
+            $result = [];
+            $bar_code = [];
+
+            foreach ($label_details_array as $value) {
+
+                $barcode_awb = 'AWB-MISSING';
+                try {
+
+                    $result[] = (object)$value;
+                    if (($value['awb_no'])) {
+                        $barcode_awb = $value['awb_no'];
+                    }
+
+                    $bar_code[] = base64_encode($generator->getBarcode($this->lableDataCleanup($barcode_awb, 'awb'), $generator::TYPE_CODE_39));
+                } catch (Exception $e) {
+
+                    $getMessage = $e->getMessage();
+                    $getCode = $e->getCode();
+                    $getFile = $e->getFile();
+
+                    $slackMessage = "Message: $getMessage
+                Code: $getCode
+                File: $getFile
+                Awb_No: $barcode_awb";
+
+                    slack_notification('app360', 'Label Bar Code Error', $slackMessage);
+                }
+            }
+
+            return view('label.multipleLabel', compact('result', 'bar_code', 'getTranslatedText'));
+        }
+    }
 }
