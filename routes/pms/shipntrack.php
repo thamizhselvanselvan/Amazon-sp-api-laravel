@@ -153,3 +153,4 @@ Route::post('shipntrack/export/export/store', 'shipntrack\Manifest\ExportManifes
 /* Inward Shipment */
 Route::get('shipntrack/inward', 'shipntrack\Manifest\InwardController@index')->name('shipntrack.inward');
 Route::get('shipntrack/inward/view', 'shipntrack\Manifest\InwardController@inw_view')->name('shipntrack.inward.view');
+Route::get('shipntrack/inward/get/data', 'shipntrack\Manifest\InwardController@inw_data_fech')->name('shipntrack.inward.get');

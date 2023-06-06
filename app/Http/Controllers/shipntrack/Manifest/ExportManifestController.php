@@ -51,7 +51,7 @@ class ExportManifestController extends Controller
     {
 
         $destinations = explode('_', $request->mode);
-        
+
         if ($request->type == 'single') {
             $data = In_Scan::with('process')->where('awb_number',  $request->awb)->where('export_status', 0)->where('destination', $destinations[0])->get();
         } else if ($request->type == 'bulk') {
@@ -62,37 +62,43 @@ class ExportManifestController extends Controller
     }
     public function export_store(Request $request)
     {
+
+        /* Manisfist Id Generate */
         $mode_array = explode('_', $request->mode);
         $val = Manifest_Master::query()
             ->select(('manifest_id'))
-            ->first();
+            ->orderby('created_at', 'desc')->first();
 
         if ((!$val)) {
             $ship_id = $mode_array[1] . $mode_array[2] . '100001';
         } else {
-
             $existing_id = substr($val->manifest_id, 4);
 
             $new_id = $existing_id + 1;
             $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
         }
+       
         foreach ($request->awb as $key => $awb) {
 
             $no_of_items[] = ($request->order_id[$key]);
         }
+        /* Insert Manifest masters */
+        $intl_awb = $request->international_awb;
         $data = [
             'manifest_id' => $ship_id,
             'total_items' => count($no_of_items),
             'awb_number' => $awb,
-            'international_awb_number' => $ship_id,
+            'international_awb_number' => $intl_awb,
 
         ];
         Manifest_Master::create($data);
+
+        /* Insert Manifest Items */
         foreach ($request->awb as $key => $awb) {
             $manifest_items = [
                 'manifest_id' => $ship_id,
                 'awb' =>  $awb,
-                // 'international_awb_number' => $ship_id,
+                'international_awb_number' => $intl_awb,
                 'inscan_manifest_id' =>  $request->inscan_manefist[$key],
                 'order_id' =>  $request->order_id[$key],
                 'destination' => $request->destination[$key],
@@ -102,7 +108,9 @@ class ExportManifestController extends Controller
             ];
             Manifest_Item::create($manifest_items);
             In_Scan::where('purchase_tracking_id', $request->tracking[$key])->update(['export_status' => 1]);
-           
+
+
+            /* Updatwe Forwarder */
             $insert_data = [
                 'forwarder_1' => $request->forwarder_1,
                 'forwarder_1_awb' => $request->forwarder_1_awb,

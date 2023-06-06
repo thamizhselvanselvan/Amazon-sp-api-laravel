@@ -20,6 +20,6 @@ class Manifest_Item extends Model
         'purchase_tracking_id',
         'forwarder_1',
         'forwarder_1_awb',
-
+        'international_awb_number',
     ];
 }

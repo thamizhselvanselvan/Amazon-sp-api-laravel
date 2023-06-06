@@ -19,6 +19,7 @@ class CreateManifestItemsTable extends Migration
 
             $table->string('manifest_id')->nullable();
             $table->string('awb')->nullable();
+            $table->string('international_awb_number')->nullable();
             $table->string('destination')->nullable();
             // $table->foreign('destination')->references('id')->on('process_masters');
             $table->string('inscan_manifest_id')->nullable();

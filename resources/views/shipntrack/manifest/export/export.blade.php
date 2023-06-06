@@ -85,12 +85,13 @@
 
 
 
-    <div id="collapsesix" class="show col-4 d-none">
-        <div class="py-1 row">
+    <div id="collapsesix" class="show  d-none">
+        <div class="py-1 d-flex">
             <x-adminlte-select label="Forwarder 1:" name="forwarder1" id="forwarder_info_1" value="{{ old('forwarder2') }}" required>
                 <option value='0'> Forwarder 1</option>
             </x-adminlte-select>
             <x-adminlte-input label="Forwarder 1 AWB :" name="forwarder_1_awb" type="text" placeholder="Forwarder 1 AWB" id="forwarder_1_awb" value="{{ old('forwarder_1_awb') }}" required />
+            <x-adminlte-input label="International AWB :" name="international_awb" type="text" placeholder="International AWB" id="international_awb" value="{{ old('forwarder_1_awb') }}" required />
         </div>
     </div>
 
@@ -311,6 +312,7 @@
         $(this).prop('disabled', true);
         let forwarder_info_1 = $('#forwarder_info_1').val();
         let forwarder_1_awb = $('#forwarder_1_awb').val();
+        let international_awb = $('#international_awb').val();
 
         let mode = $('#mode').val();
         let validation = true;
@@ -328,6 +330,12 @@
         }
         if (forwarder_1_awb == '') {
             alert('Forwarder 1 AWB Required.. please Enter AWB...');
+            $('.create_shipmtn_btn').prop('disabled', false);
+            validation = false;
+            return false;
+        }
+        if (international_awb == '') {
+            alert('International AWB Required.. please Enter AWB...');
             $('.create_shipmtn_btn').prop('disabled', false);
             validation = false;
             return false;
@@ -351,6 +359,7 @@
             data.append('mode', mode);
             data.append('forwarder_1', forwarder_info_1);
             data.append('forwarder_1_awb', forwarder_1_awb);
+            data.append('international_awb', international_awb);
 
 
             $.ajax({
