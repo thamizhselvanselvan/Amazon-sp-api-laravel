@@ -1164,6 +1164,7 @@ class labelManagementController extends Controller
         $order = config('database.connections.order.database');
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
+
         $data = DB::select("SELECT
                             DISTINCT
                             GROUP_CONCAT(DISTINCT web.id)as id, 
