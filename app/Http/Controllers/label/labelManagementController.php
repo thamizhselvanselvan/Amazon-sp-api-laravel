@@ -1147,6 +1147,7 @@ class labelManagementController extends Controller
 
     public function customLabelListing($data)
     {
+        $label_listing = [];
         foreach ($data as $record) {
             if (count(explode(",", $record->seller_sku)) >= 2) {
 
