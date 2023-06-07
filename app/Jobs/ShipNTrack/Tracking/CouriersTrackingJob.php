@@ -153,7 +153,7 @@ class CouriersTrackingJob implements ShouldQueue
                     'pass_key' => $record['courier_partner4']['password'],
                     'account_id' => $record['courier_partner4']['account_id'],
                     'time_zone' => $record['courier_partner4']['time_zone'],
-                    'key1' => $record['courier_partner3']['key1'],
+                    'key1' => $record['courier_partner4']['key1'],
                     'key2' => $record['courier_partner4']['key2'],
                 ];
 
