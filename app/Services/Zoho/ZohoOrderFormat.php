@@ -129,6 +129,13 @@ class ZohoOrderFormat
             "destination" => "UAE"
         ],
 
+        "Amazon.sa-New Media" => [
+            "AE" => "New Media Saudi",
+            "sku" => "NM_",
+            "source" => "India",
+            "destination" => "KSA"
+        ],
+
         /*
         "Amazon.ae-Nitrous" => [
             "IN" => "WIP",
@@ -316,55 +323,53 @@ class ZohoOrderFormat
     }
 
     public function get_procurement_link($Lead_Source, $country_code, $asin)
-    {   
+    {
 
-        if(isset($this->store_lists[$Lead_Source])) {
+        if (isset($this->store_lists[$Lead_Source])) {
 
             $lead_source = $this->store_lists[$Lead_Source];
 
-            if($lead_source['source'] == "USA") {
-                return "https://www.amazon.com/gp/product/". $asin;
+            if ($lead_source['source'] == "USA") {
+                return "https://www.amazon.com/gp/product/" . $asin;
             }
 
-            if($lead_source['source'] == "India") {
-                return "https://www.amazon.in/gp/product/". $asin;
+            if ($lead_source['source'] == "India") {
+                return "https://www.amazon.in/gp/product/" . $asin;
             }
 
-            if($lead_source['source'] == "UAE") {
-                return "https://www.amazon.ae/gp/product/". $asin;
+            if ($lead_source['source'] == "UAE") {
+                return "https://www.amazon.ae/gp/product/" . $asin;
             }
 
-            if($lead_source['source'] == "KSA") {
-                return "https://www.amazon.sa/gp/product/". $asin;
+            if ($lead_source['source'] == "KSA") {
+                return "https://www.amazon.sa/gp/product/" . $asin;
             }
-
         }
 
         return 'http://www.amazon.com/gp/product/' . $asin;
     }
 
     public function get_product_link($Lead_Source, $country_code, $asin)
-    {   
-        if(isset($this->store_lists[$Lead_Source])) {
+    {
+        if (isset($this->store_lists[$Lead_Source])) {
 
             $lead_source = $this->store_lists[$Lead_Source];
 
-            if($lead_source['destination'] == "USA") {
-                return "https://www.amazon.com/gp/product/". $asin;
+            if ($lead_source['destination'] == "USA") {
+                return "https://www.amazon.com/gp/product/" . $asin;
             }
 
-            if($lead_source['destination'] == "India") {
-                return "https://www.amazon.in/gp/product/". $asin;
+            if ($lead_source['destination'] == "India") {
+                return "https://www.amazon.in/gp/product/" . $asin;
             }
 
-            if($lead_source['destination'] == "UAE") {
-                return "https://www.amazon.ae/gp/product/". $asin;
+            if ($lead_source['destination'] == "UAE") {
+                return "https://www.amazon.ae/gp/product/" . $asin;
             }
 
-            if($lead_source['destination'] == "KSA") {
-                return "https://www.amazon.sa/gp/product/". $asin;
+            if ($lead_source['destination'] == "KSA") {
+                return "https://www.amazon.sa/gp/product/" . $asin;
             }
-
         }
 
         return 'http://www.amazon.com/gp/product/' . $asin;
@@ -377,9 +382,9 @@ class ZohoOrderFormat
 
         if (isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
             $address = $buyerDtls->AddressLine1 . ' ' . $buyerDtls->AddressLine2;
-        } else if(isset($buyerDtls->AddressLine1) && !isset($buyerDtls->AddressLine2)) {
+        } else if (isset($buyerDtls->AddressLine1) && !isset($buyerDtls->AddressLine2)) {
             $address = $buyerDtls->AddressLine1;
-        } else if(!isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
+        } else if (!isset($buyerDtls->AddressLine1) && isset($buyerDtls->AddressLine2)) {
             $address = $buyerDtls->AddressLine2;
         }
 
@@ -415,7 +420,7 @@ class ZohoOrderFormat
 
         if ($return == "state") {
 
-            if(isset($buyerDtls->StateOrRegion)) {
+            if (isset($buyerDtls->StateOrRegion)) {
                 return $buyerDtls->StateOrRegion;
             }
 
@@ -504,16 +509,17 @@ class ZohoOrderFormat
                 'price' => '0',
                 'status' => '0'
             ]);
-            
+
             return 0;
         }
 
         return $result_price->us_price;
     }
 
-    public function get_in_price($value, $asin, $result_price, $store_name, $order_identifier, $order_item_identifier) {
+    public function get_in_price($value, $asin, $result_price, $store_name, $order_identifier, $order_item_identifier)
+    {
 
-        if($store_name == "Infinitikart UAE") {
+        if ($store_name == "Infinitikart UAE") {
             return 0;
         }
 
@@ -535,7 +541,7 @@ class ZohoOrderFormat
                 'price' => '0',
                 'status' => '0'
             ]);
-            
+
             return 0;
         }
 
