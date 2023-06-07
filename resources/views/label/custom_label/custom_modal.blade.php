@@ -53,8 +53,8 @@
             console.log(records[0].qty);
             console.log(records[0].title);
 
-            let sku = records[0].sku.split(',');
-            let quantity = records[0].qty.split(',')
+            let sku = records[0].sku.split('-label-sku-');
+            let quantity = records[0].qty.split('-label-qty-')
             let product_title = records[0].title.split('-label-title-');
 
             console.log(sku);

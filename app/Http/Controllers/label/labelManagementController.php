@@ -1167,17 +1167,14 @@ class labelManagementController extends Controller
 
         $data = DB::select("SELECT
                             DISTINCT
-                            GROUP_CONCAT(DISTINCT web.id)as id, 
                             orderDetails.amazon_order_identifier as order_no, 
                             GROUP_CONCAT(orderDetails.title SEPARATOR '-label-title-') as title,
-                            GROUP_CONCAT(DISTINCT orderDetails.seller_sku )as sku,
-                            GROUP_CONCAT(orderDetails.quantity_ordered ) as qty,
-                            GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
-                            FROM ${web}.${prefix}labels as web
-                            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
-                            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+                            GROUP_CONCAT( orderDetails.seller_sku SEPARATOR '-label-sku-')as sku,
+                            GROUP_CONCAT(orderDetails.quantity_ordered SEPARATOR '-label-qty-') as qty
+                            FROM ${order}.orders as ord 
+                            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = ord.amazon_order_identifier
                             JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-                            WHERE web.order_no = '$order_no'
+                            WHERE ord.amazon_order_identifier = '$order_no'
                             GROUP BY orderDetails.amazon_order_identifier
                         ");
 
