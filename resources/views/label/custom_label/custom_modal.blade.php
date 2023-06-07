@@ -48,15 +48,16 @@
             let input = "<div class='mt-4'><input type='hidden' name='order_identifier' value='" + records[0]
                 .order_no + "'>";
 
-            console.log(records[0].seller_sku);
+            console.log(records);
+            console.log(records[0].sku);
             console.log(records[0].qty);
             console.log(records[0].title);
 
-            let seller_sku = records[0].seller_sku.split('-label-sku-');
+            let sku = records[0].sku.split('-label-sku-');
             let quantity = records[0].qty.split('-label-qty-')
             let product_title = records[0].title.split('-label-title-');
 
-            console.log(seller_sku);
+            console.log(sku);
             console.log(quantity);
             console.log(product_title);
 
@@ -64,8 +65,8 @@
 
                 input +=
                     " <div class='mt-4 mr-4'><input type='checkbox' name='custom_label[]' class='options' value='" +
-                    seller_sku[index] + "' >&nbsp;" + '<strong>SKU:</strong> ' +
-                    seller_sku[index] + ', &nbsp; <strong>Order ID:</strong> ' + records[0].order_no +
+                    sku[index] + "' >&nbsp;" + '<strong>SKU:</strong> ' +
+                    sku[index] + ', &nbsp; <strong>Order ID:</strong> ' + records[0].order_no +
                     ',&nbsp; <strong>Quantity:</strong> ' +
                     quantity[index] + ', &nbsp; <strong>Product:</strong> ' + ((product_name.length >
                             100) ? product_name.slice(0, 100 - 1) + '...' :
