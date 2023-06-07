@@ -150,8 +150,8 @@ class CourierTrackingController extends Controller
 
 
         $forwarder_details = [
-            'consignor' => json_decode($result[0]['consignor_details'])->consignor,
-            'consignee' => json_decode($result[0]['consignee_details'])->consignee,
+            'consignor' => json_decode($result[0]['consignor_details'])->consignor ?? 'test',
+            'consignee' => json_decode($result[0]['consignee_details'])->consignee ?? 'test',
             'origin' => $result[0]['courier_partner1']['source'],
             'destination' => $result[0]['courier_partner1']['destination'],
         ];

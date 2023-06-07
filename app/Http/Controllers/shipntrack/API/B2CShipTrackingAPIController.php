@@ -95,8 +95,8 @@ class B2CShipTrackingAPIController extends Controller
         foreach ($data as $key => $records) {
 
             $packet_details[] = [
-                'consignor' => json_decode($records['consignor_details'])->consignor,
-                'consignee' => json_decode($records['consignee_details'])->consignee,
+                'consignor' => json_decode($records['consignor_details'])->consignor ?? 'test',
+                'consignee' => json_decode($records['consignee_details'])->consignee ?? 'test',
                 'destination' => $records['courier_partner1']['destination'],
                 'origin' => $records['courier_partner1']['source'],
             ];
