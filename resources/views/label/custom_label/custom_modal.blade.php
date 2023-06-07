@@ -48,9 +48,17 @@
             let input = "<div class='mt-4'><input type='hidden' name='order_identifier' value='" + records[0]
                 .order_no + "'>";
 
+            console.log(records[0].seller_sku);
+            console.log(records[0].qty);
+            console.log(records[0].title);
+
             let seller_sku = records[0].seller_sku.split('-label-sku-');
             let quantity = records[0].qty.split('-label-qty-')
             let product_title = records[0].title.split('-label-title-');
+
+            console.log(seller_sku);
+            console.log(quantity);
+            console.log(product_title);
 
             $.each(product_title, function(index, product_name) {
 
