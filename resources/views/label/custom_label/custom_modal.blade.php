@@ -1,27 +1,23 @@
 <div id="custom_label" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
 
-        <!-- Modal content-->
         <div class="modal-content ">
             <div class="modal-header">
                 <h4 class="modal-title">Custom Label</h4>
             </div>
             <div class="modal-body">
-                <form action="{{ route('custom.label.print') }}" method="POST" target="_blank">
-                    @csrf
-                    <p>Check whatever you want to print.</p>
-                    <hr>
-                    <div id="checkbox">
+                <p>Check whatever you want to print.</p>
+                <hr>
+                <div id="checkbox">
 
-                    </div>
+                </div>
 
-                    <div class="row mt-4">
+                <div class="row mt-4">
 
-                        <button type="submit" class="btn btn-success btn-sm" value="submit" id="print"><i
-                                class="fas fa-print "> Print </i></button>
-                    </div>
+                    <button type="submit" class="btn btn-success btn-sm" value="submit" id="print"><i
+                            class="fas fa-print "> Print </i></button>
+                </div>
 
-                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger btn sm" id="close-modal">Close</button>
@@ -45,7 +41,8 @@
         $('#checkbox').empty();
         $.get("/label/custom/get/" + order_no, function(records) {
 
-            let input = "<div class='mt-4'><input type='hidden' name='order_identifier' value='" + records[0]
+            let input = "<div class='mt-4'><input type='hidden' name='order_identifier' id='order_id' value='" +
+                records[0]
                 .order_no + "'>";
 
             console.log(records);
@@ -64,7 +61,7 @@
             $.each(product_title, function(index, product_name) {
 
                 input +=
-                    " <div class='mt-4 mr-4'><input type='checkbox' name='custom_label[]' class='options' value='" +
+                    " <div class='mt-4 mr-4'><input type='checkbox' name='custom_label[]'  id='custom_sku' value='" +
                     sku[index] + "' >&nbsp;" + '<strong>SKU:</strong> ' +
                     sku[index] + ', &nbsp; <strong>Order ID:</strong> ' + records[0].order_no +
                     ',&nbsp; <strong>Quantity:</strong> ' +
@@ -83,5 +80,24 @@
 
     $('#close-modal').click(function() {
         $('#custom_label').modal('hide');
+    });
+
+
+    $('#print').click(function() {
+
+        let order_identifier = $('#order_id').val();
+        let sku = '';
+        let count = 0;
+        $("input[name='custom_label[]']:checked").each(function() {
+            if (count == 0) {
+                sku += $(this).val();
+            } else {
+                sku += '-' + $(this).val();
+            }
+            count++;
+
+        });
+        window.open("/label/custom/print/" + order_identifier + "/" + sku, "_blank");
+
     });
 </script>

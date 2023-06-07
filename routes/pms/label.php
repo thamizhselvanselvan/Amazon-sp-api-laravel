@@ -37,6 +37,6 @@ Route::put('label/update-order-address/{id}', 'label\labelManagementController@u
 Route::get('label/file/management/monitor', 'label\labelManagementController@LabelFileManagementMonitor')->name('label.file.management.monitor');
 Route::match(['get', 'post'], 'label/search/date', 'label\labelManagementController@labelSearchByDate')->name('lable.search.date');
 
-Route::get('label/custom/view', 'label\labelManagementController@customLabelIndex')->name('custom.label.index');
+Route::get('label/cstom/view', 'label\labelManagementController@LabelIndex')->name('custom.label.index');
 Route::get('label/custom/get/{order_no}', 'label\labelManagementController@FetchCustomLabelRecord')->name('custom.label.records');
-Route::post('label/custom/print', 'label\labelManagementController@CustomLabelPrint')->name('custom.label.print');
+Route::get('label/custom/print/{order_identifer}/{sku}', 'label\labelManagementController@LabelPrintTemplate')->name('custom.label.print');

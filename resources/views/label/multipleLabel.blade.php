@@ -84,9 +84,9 @@
                 margin: 0px;
                 padding: 0px;
                 /*
-                                                        width: 384px;
-                                                        height: 576px;
-                                                        */
+                                                                                                                width: 384px;
+                                                                                                                height: 576px;
+                                                                                                                */
             }
         }
 
@@ -129,7 +129,9 @@
         <div class="container label-container" id="label-container">
             <div class="col-md-12">
                 <div class="label p-1">
-                    <div class="label-content mb-0">
+                    <div class="label-content mb-0"
+                        style="min-height: 100%;
+                    margin-bottom: -25px !important;">
                         <!-- <div class="table-responsive"> -->
                         <table class="table table-label table-bordered table-bordered-dark pt-1 pb-0 mb-1 table_border">
                             <tbody>
@@ -282,7 +284,15 @@
                                 Warehouse 61, Al Habtoor Warehouses, Industrial Area 3, Al Qusias, Dubai UAE
                             </p>
                         </div>
+
+
                         <!-- </div> -->
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <p class="m-0" style="font-size:11px;">Please capture receivers
+                            Emirates ID or any valid Photo ID upon delivery
+                        </p>
                     </div>
                 </div>
             </div>
