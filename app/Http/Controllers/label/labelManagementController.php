@@ -1205,7 +1205,7 @@ class labelManagementController extends Controller
                             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
                             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = ord.amazon_order_identifier
                             JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-                            WHERE web.order_no IN ('$order_identifier')
+                            WHERE web.order_no = '$order_identifier'
                             AND orderDetails.seller_sku IN ($sku)
                             GROUP BY orderDetails.amazon_order_identifier
                             ORDER BY shipping_address
