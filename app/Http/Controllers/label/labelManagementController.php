@@ -1102,7 +1102,7 @@ class labelManagementController extends Controller
         return $googleTranslatedText;
     }
 
-    public function customLabelIndex(Request $request)
+    public function LabelIndex(Request $request)
     {
         if ($request->ajax()) {
             $date = $request->date;
@@ -1181,33 +1181,35 @@ class labelManagementController extends Controller
         return response()->json($data);
     }
 
-    public function CustomLabelPrint(Request $request)
+    public function LabelPrintTemplate($order_identifier, $sku)
     {
-        $order_identifier = $request->order_identifier;
-        $sku = "'" . implode("','", $request->custom_label) . "'";
+        $sku = "'" . implode("','", explode("-", $sku)) . "'";
 
         $order = config('database.connections.order.database');
         $web = config('database.connections.web.database');
         $prefix = config('database.connections.web.prefix');
-        $label = DB::select("SELECT orderDetails.amazon_order_identifier,
-        GROUP_CONCAT(DISTINCT web.order_no)as order_no,
-        GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
-        GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
-        GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
-        GROUP_CONCAT(DISTINCT store.store_name) as store_name,
-        GROUP_CONCAT(DISTINCT orderDetails.shipping_address, '-address-separator-') as shipping_address,
-        GROUP_CONCAT(orderDetails.title SEPARATOR '-label-title-') as title,
-        GROUP_CONCAT(orderDetails.seller_sku SEPARATOR '-label-sku-') as sku,
-        GROUP_CONCAT(orderDetails.quantity_ordered SEPARATOR '-label-qty-') as qty
-        from ${web}.${prefix}labels as web
-        JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
-        JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = ord.amazon_order_identifier
-        JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-        WHERE web.order_no IN ('$order_identifier')
-        AND orderDetails.seller_sku IN ($sku)
-        GROUP BY orderDetails.amazon_order_identifier
-        ORDER BY shipping_address
-        ");
+
+
+        $label = DB::select("SELECT 
+                            orderDetails.amazon_order_identifier,
+                            GROUP_CONCAT(DISTINCT web.order_no)as order_no,
+                            GROUP_CONCAT(DISTINCT web.awb_no) as awb_no,
+                            GROUP_CONCAT(DISTINCT web.forwarder) as forwarder,
+                            GROUP_CONCAT(DISTINCT ord.purchase_date) as purchase_date,
+                            GROUP_CONCAT(DISTINCT store.store_name) as store_name,
+                            GROUP_CONCAT(DISTINCT orderDetails.shipping_address, '-address-separator-') as shipping_address,
+                            GROUP_CONCAT(orderDetails.title SEPARATOR '-label-title-') as title,
+                            GROUP_CONCAT(orderDetails.seller_sku SEPARATOR '-label-sku-') as sku,
+                            GROUP_CONCAT(orderDetails.quantity_ordered SEPARATOR '-label-qty-') as qty
+                            FROM ${web}.${prefix}labels as web
+                            JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+                            JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = ord.amazon_order_identifier
+                            JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+                            WHERE web.order_no IN ('$order_identifier')
+                            AND orderDetails.seller_sku IN ($sku)
+                            GROUP BY orderDetails.amazon_order_identifier
+                            ORDER BY shipping_address
+                        ");
 
         $label_data = [];
         $order_no = '';
@@ -1291,40 +1293,40 @@ class labelManagementController extends Controller
             $label_details_array[] = $label_data;
             $product = [];
             $label_data = [];
+        }
 
-            $getTranslatedText = $this->GetArabicToEnglisText($label_details_array);
-            $generator = new BarcodeGeneratorPNG();
+        $getTranslatedText = $this->GetArabicToEnglisText($label_details_array);
+        $generator = new BarcodeGeneratorPNG();
 
-            $result = [];
-            $bar_code = [];
+        $result = [];
+        $bar_code = [];
 
-            foreach ($label_details_array as $value) {
+        foreach ($label_details_array as $value) {
 
-                $barcode_awb = 'AWB-MISSING';
-                try {
+            $barcode_awb = 'AWB-MISSING';
+            try {
 
-                    $result[] = (object)$value;
-                    if (($value['awb_no'])) {
-                        $barcode_awb = $value['awb_no'];
-                    }
+                $result[] = (object)$value;
+                if (($value['awb_no'])) {
+                    $barcode_awb = $value['awb_no'];
+                }
 
-                    $bar_code[] = base64_encode($generator->getBarcode($this->lableDataCleanup($barcode_awb, 'awb'), $generator::TYPE_CODE_39));
-                } catch (Exception $e) {
+                $bar_code[] = base64_encode($generator->getBarcode($this->lableDataCleanup($barcode_awb, 'awb'), $generator::TYPE_CODE_39));
+            } catch (Exception $e) {
 
-                    $getMessage = $e->getMessage();
-                    $getCode = $e->getCode();
-                    $getFile = $e->getFile();
+                $getMessage = $e->getMessage();
+                $getCode = $e->getCode();
+                $getFile = $e->getFile();
 
-                    $slackMessage = "Message: $getMessage
+                $slackMessage = "Message: $getMessage
                 Code: $getCode
                 File: $getFile
                 Awb_No: $barcode_awb";
 
-                    slack_notification('app360', 'Label Bar Code Error', $slackMessage);
-                }
+                slack_notification('app360', 'Label Bar Code Error', $slackMessage);
             }
-
-            return view('label.multipleLabel', compact('result', 'bar_code', 'getTranslatedText'));
         }
+
+        return view('label.multipleLabel', compact('result', 'bar_code', 'getTranslatedText'));
     }
 }
