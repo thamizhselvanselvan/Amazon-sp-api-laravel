@@ -24,26 +24,26 @@ class CourierTrackingController extends Controller
             $data = [];
             if ($request->sourceDestination == 'AE') {
 
-                $data = Trackingae::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
-                    ->orderBy('awb_number', 'DESC')
+                $data = Trackingae::select('id', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                    ->orderBy('id', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'IN') {
 
-                $data = Trackingin::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
-                    ->orderBy('awb_number', 'DESC')
+                $data = Trackingin::select('id', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                    ->orderBy('id', 'DESC')
                     ->get()
                     ->toArray();
             } elseif ($request->sourceDestination == 'SA') {
 
-                $data = Trackingksa::select('awb_number', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
-                    ->orderBy('awb_number', 'DESC')
+                $data = Trackingksa::select('id', 'forwarder_1_awb', 'forwarder_2_awb', 'forwarder_3_awb', 'forwarder_4_awb', 'created_at')
+                    ->orderBy('id', 'DESC')
                     ->get()
                     ->toArray();
             }
             return DataTables::of($data)
                 ->editColumn('awb_number', function ($data) use ($request) {
-                    $awb_number = $request->sourceDestination . $data['awb_number'];
+                    $awb_number = $request->sourceDestination . $data['id'];
                     return $awb_number;
                 })
                 ->editColumn('forwarder1_awb', function ($data) {
@@ -67,7 +67,7 @@ class CourierTrackingController extends Controller
                     return $created_date;
                 })
                 ->addColumn('action', function ($data) use ($request) {
-                    $action = "<a href='/shipntrack/courier/moredetails/" . $request->sourceDestination . "/" . $data['awb_number'] . "' class='' target='_blank'>More Details</a>";
+                    $action = "<a href='/shipntrack/courier/moredetails/" . $request->sourceDestination . "/" . $data['id'] . "' class='' target='_blank'>More Details</a>";
                     return $action;
                 })
                 ->rawColumns(['awb_number', 'forwarder1_awb', 'forwarder2_awb', 'forwarder3_awb', 'forwarder4_awb', 'created_date', 'action'])
@@ -121,7 +121,7 @@ class CourierTrackingController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         } elseif ($sourceDestination == 'IN') {
@@ -132,7 +132,7 @@ class CourierTrackingController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         } elseif ($sourceDestination == 'SA') {
@@ -143,14 +143,15 @@ class CourierTrackingController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         }
 
+
         $forwarder_details = [
-            'consignor' => $result[0]['consignor'],
-            'consignee' => $result[0]['consignee'],
+            'consignor' => json_decode($result[0]['consignor_details'])->consignor,
+            'consignee' => json_decode($result[0]['consignee_details'])->consignee,
             'origin' => $result[0]['courier_partner1']['source'],
             'destination' => $result[0]['courier_partner1']['destination'],
         ];
@@ -159,6 +160,7 @@ class CourierTrackingController extends Controller
         if ($result[0]['forwarder_1_awb'] != '') {
 
             $awb_no = $result[0]['forwarder_1_awb'];
+
             $courier_name = $result[0]['courier_partner1']['courier_names']['courier_name'];
             $table = table_model_change(model_path: 'CourierTracking', model_name: ucwords(strtolower($courier_name)) . 'Tracking', table_name: strtolower($courier_name) . '_trackings');
 
@@ -301,6 +303,7 @@ class CourierTrackingController extends Controller
         }
         // $records = [...$forwarder1_record, ...$forwarder2_record, ...$forwarder3_record, ...$forwarder4_record];
         $records = [...$forwarder4_record, ...$forwarder3_record, ...$forwarder2_record, ...$forwarder1_record];
+
         return view('shipntrack.Smsa.packetDetails', compact('forwarder_details', 'records'));
     }
 
