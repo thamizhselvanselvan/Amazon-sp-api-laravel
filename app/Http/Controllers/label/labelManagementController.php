@@ -1170,8 +1170,8 @@ class labelManagementController extends Controller
                             GROUP_CONCAT(DISTINCT web.id)as id, 
                             orderDetails.amazon_order_identifier as order_no, 
                             GROUP_CONCAT(orderDetails.title SEPARATOR '-label-title-') as title,
-                            GROUP_CONCAT(DISTINCT orderDetails.seller_sku SEPARATOR '-label-sku-')as sku,
-                            GROUP_CONCAT(orderDetails.quantity_ordered SEPARATOR '-label-qty-') as qty,
+                            GROUP_CONCAT(DISTINCT orderDetails.seller_sku )as sku,
+                            GROUP_CONCAT(orderDetails.quantity_ordered ) as qty,
                             GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
                             FROM ${web}.${prefix}labels as web
                             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
