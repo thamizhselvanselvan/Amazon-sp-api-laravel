@@ -1077,10 +1077,22 @@ return [
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-cog',
                         ],
+                        [
+                            'text' => 'Process Master',
+                            'url' => 'shipntrack/process/home',
+                            'can' => ['Admin'],
+                            'icon' => 'far fa fa-list-ul',
+                        ],
+                        [
+                            'text' => 'Label Master',
+                            'url' => 'shipntrack/label/master',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-tag',
+                        ],
                     ],
                 ],
                 [
-                    'text' => 'New Shipment',
+                    'text' => 'Packet Booking',
                     'url' => 'shipntrack/forwarder',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
@@ -1102,67 +1114,116 @@ return [
                     // ],
 
                 ],
+
+                [
+                    'text' => 'Operations',
+                    'can' => ['Admin'],
+                    'url' => '#',
+                    'icon' => 'fa fa-plus-circle',
+                    'submenu' =>
+                    [
+
+                        [
+                            'text' => 'In-Scan',
+                            'url' => 'shipntrack/in-scan',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-tag',
+                        ],
+                        [
+                            'text' => 'Export-Manifest',
+                            'url' => 'shipntrack/export/manifest',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-tag',
+                        ],
+                        [
+                            'text' => 'Inward',
+                            'url' => 'shipntrack/inward',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-tag',
+                        ],
+                        [
+                            'text' => 'Outward',
+                            'url' => '',
+                            'can' => ['Admin'],
+                            'icon' => 'fa fa-tag',
+                        ],
+                    ],
+                ],
                 [
                     'text' => 'Tracking',
                     'can' => ['Admin'],
                     'url' => 'shipntrack/courier/tracking',
                     'icon' => 'far fa fa-bar-chart',
                 ],
+
                 [
-                    'text' => 'Operations',
+                    'text' => 'Label',
+                    'url' => 'shipntrack/label',
                     'can' => ['Admin'],
-                    'icon' => 'fas fa-shipping-fast',
-                    'submenu' =>
-                    [
-                        [
-                            'text' => 'Label Management',
-                            'can' => ['Admin'],
-                            'icon' => 'fa fa-tag',
-                            'submenu' => [
-
-                                [
-                                    'text' => 'Master',
-                                    'url' => 'shipntrack/label/master',
-                                    'can' => ['Admin'],
-                                    'icon' => 'fa fa-tag',
-                                ],
-                                [
-                                    'text' => 'Label',
-                                    'url' => 'shipntrack/label',
-                                    'can' => ['Admin'],
-                                    'icon' => 'fa fa-tag',
-                                ]
-                            ]
-                        ],
-                        [
-                            'text' => 'Invoice',
-                            'url' => 'shipntrack/invoice',
-                            'can' => ['Admin'],
-                            'icon' => 'fas fa-file-invoice',
-                        ],
-                        [
-                            'text' => 'Inventory',
-                            'can' => ['Admin'],
-                            'icon' => 'fa fa-shopping-cart',
-                            'submenu' =>
-                            [
-                                [
-                                    'text' => 'Inward ',
-                                    'icon' => 'far fa fa-plus-square-o',
-                                    'url' => 'shipntrack/inward',
-                                    'can' => ['Admin'],
-                                ],
-
-                                [
-                                    'text' => 'Outward ',
-                                    'icon' => 'far fa fa-minus-square-o',
-                                    'url' => 'shipntrack/outward',
-                                    'can' => ['Admin'],
-                                ],
-                            ],
-                        ],
-                    ],
+                    'icon' => 'fa fa-tag',
                 ],
+                [
+                    'text' => 'Invoice',
+                    'url' => 'shipntrack/invoice',
+                    'can' => ['Admin'],
+                    'icon' => 'fas fa-file-invoice',
+                ],
+
+                // [
+                //     'text' => 'Operations',
+                //     'can' => ['Admin'],
+                //     'icon' => 'fas fa-shipping-fast',
+                //     'submenu' =>
+                //     [
+                //         [
+                //             'text' => 'Label Management',
+                //             'can' => ['Admin'],
+                //             'icon' => 'fa fa-tag',
+                //             'submenu' => [
+
+                //                 [
+                //                     'text' => 'Master',
+                //                     'url' => 'shipntrack/label/master',
+                //                     'can' => ['Admin'],
+                //                     'icon' => 'fa fa-tag',
+                //                 ],
+                //                 [
+                //                     'text' => 'Label',
+                //                     'url' => 'shipntrack/label',
+                //                     'can' => ['Admin'],
+                //                     'icon' => 'fa fa-tag',
+                //                 ]
+                //             ]
+                //         ],
+                //         [
+                //             'text' => 'Invoice',
+                //             'url' => 'shipntrack/invoice',
+                //             'can' => ['Admin'],
+                //             'icon' => 'fas fa-file-invoice',
+                //         ],
+                //         [
+                //             'text' => 'Inventory',
+                //             'can' => ['Admin'],
+                //             'icon' => 'fa fa-shopping-cart',
+                //             'submenu' =>
+                //             [
+                //                 [
+                //                     'text' => 'Inward ',
+                //                     'icon' => 'far fa fa-plus-square-o',
+                //                     'url' => 'shipntrack/inward',
+                //                     'can' => ['Admin'],
+                //                 ],
+
+                //                 [
+                //                     'text' => 'Outward ',
+                //                     'icon' => 'far fa fa-minus-square-o',
+                //                     'url' => 'shipntrack/outward',
+                //                     'can' => ['Admin'],
+                //                 ],
+                //             ],
+                //         ],
+                //     ],
+                // ],
 
                 // [
                 //     'text' => 'B2C POD',
