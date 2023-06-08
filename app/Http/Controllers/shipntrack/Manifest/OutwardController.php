@@ -29,11 +29,11 @@ class OutwardController extends Controller
         $destination = $explode[1];
 
         $destination = strtolower($destination);
-        $response = DB::connection("shipntracking")->table("Inwarding_details")
-            ->where("Inwarding_details.awb_number", $awb)
-            ->where("Inwarding_details.outward_status", 0)
-            ->Join("tracking_{$destination}s", "tracking_{$destination}s.purchase_tracking_id", "=", "Inwarding_details.purchase_tracking_id")
-            ->select("Inwarding_details.*", "tracking_{$destination}s.*")
+        $response = DB::connection("shipntracking")->table("inwarding_details")
+            ->where("inwarding_details.awb_number", $awb)
+            ->where("inwarding_details.outward_status", 0)
+            ->Join("tracking_{$destination}s", "tracking_{$destination}s.purchase_tracking_id", "=", "inwarding_details.purchase_tracking_id")
+            ->select("inwarding_details.*", "tracking_{$destination}s.*")
             ->get();
 
         $response = json_decode($response);
