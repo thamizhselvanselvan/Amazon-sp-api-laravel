@@ -92,7 +92,18 @@
                 </div>
                 <div class="col-12">
                     <x-adminlte-input label="Enter Price" name="price" type="text" placeholder="Enter Price..." />
+                    <span class="d-none">
+                        <x-adminlte-input label="Enter Name" name="name" type="text" placeholder="Enter Name..." class="name " />
+                    </span>
+                    <span class="d-none">
+                        <x-adminlte-input label="Enter Address 1" name="address1" type="text" placeholder="Enter Address 1..." class="address1" />
+                    </span>
+                    <span class="d-none">
+                        <x-adminlte-input label="Enter Address 2" name="address2" type="text" placeholder="Enter Address 2..." class="address2" />
+                    </span>
+            
                 </div>
+                
                 <div class="col">
 
                     <x-adminlte-button label="Update" theme="primary" class="add_ btn-sm" icon="fas fa-upload" type="submit" id="price_upload" />
@@ -114,6 +125,7 @@
             <th>Amazon Order ID</th>
             <th>Order Item ID</th>
             <th>Price</th>
+            <th>Missing Parameters</th>
             <th>Status</th>
             <th>Update</th>
         </tr>
@@ -187,6 +199,10 @@
                         name: 'price'
                     },
                     {
+                        data: 'missing_details',
+                        name: 'missing_details'
+                    },
+                    {
                         data: 'status',
                         name: 'status'
                     },
@@ -205,6 +221,21 @@
                 let order_id = $(this).attr('data-order-id');
                 let order_item_id = $(this).attr('data-order-item-id');
                 let country_code = $(this).attr('data-country-code');
+                let name = $(this).attr('data-name');
+                let adress1 = $(this).attr('data-address1');
+                let adress2 = $(this).attr('data-address2');
+
+                if(name) {
+                    $(".name").removeClass("d-none");
+                }
+
+                if(adress1) {
+                    $(".adress1").removeClass("d-none");
+                }
+
+                if(adress1) {
+                    $(".adress2").removeClass("d-none");
+                }
 
                 $('#price_missing').modal('show');
 
@@ -227,6 +258,9 @@
             let item_id = $('#order_item_id').text();
             let country_code = $('#country_code').text();
             let price = $('#price').val();
+            let name = $('.name').val();
+            let adress1 = $('.adress1').val();
+            let adress2 = $('.adress2').val();
 
             if (price == '') {
                 alert('Please Enter Price');
@@ -243,6 +277,9 @@
                     'item_id': item_id,
                     'country_code': country_code,
                     'price': price,
+                    'name': name,
+                    'adress1': adress1,
+                    'adress2': adress2,
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(response) {
