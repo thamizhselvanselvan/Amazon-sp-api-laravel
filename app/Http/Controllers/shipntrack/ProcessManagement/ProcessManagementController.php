@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Shipntrack\ProcessManagement;
+namespace App\Http\Controllers\shipntrack\ProcessManagement;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;

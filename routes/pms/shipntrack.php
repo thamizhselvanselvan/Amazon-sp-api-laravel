@@ -90,11 +90,11 @@ Route::get('shipntrack/status/manager/{courier_id}', 'shipntrack\Courier\Courier
 Route::get('shipntrack/status/store', 'shipntrack\Courier\CourierStatusManagementController@storestatus')->name('shipntrack.courier.status.store');
 
 /* SNT Process Master */
-Route::get('shipntrack/process/home', 'Shipntrack\ProcessManagement\ProcessManagementController@index')->name('snt.process.home');
-Route::post('shipntrack/process/store', 'Shipntrack\ProcessManagement\ProcessManagementController@store')->name('snt.process.store');
-Route::get('shipntrack/process/{id}/edit', 'Shipntrack\ProcessManagement\ProcessManagementController@update_view')->name('snt.process.update.view');
-Route::post('shipntrack/process/update', 'Shipntrack\ProcessManagement\ProcessManagementController@update')->name('snt.process.update');
-Route::get('shipntrack/process/{id}/remove', 'Shipntrack\ProcessManagement\ProcessManagementController@remove')->name('snt.process.remove');
+Route::get('shipntrack/process/home', 'shipntrack\ProcessManagement\ProcessManagementController@index')->name('snt.process.home');
+Route::post('shipntrack/process/store', 'shipntrack\ProcessManagement\ProcessManagementController@store')->name('snt.process.store');
+Route::get('shipntrack/process/{id}/edit', 'shipntrack\ProcessManagement\ProcessManagementController@update_view')->name('snt.process.update.view');
+Route::post('shipntrack/process/update', 'shipntrack\ProcessManagement\ProcessManagementController@update')->name('snt.process.update');
+Route::get('shipntrack/process/{id}/remove', 'shipntrack\ProcessManagement\ProcessManagementController@remove')->name('snt.process.remove');
 
 
 
