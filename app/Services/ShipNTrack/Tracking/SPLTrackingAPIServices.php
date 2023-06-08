@@ -35,8 +35,6 @@ class SPLTrackingAPIServices
                         "CustomerCode"  =>  $CustomerCode 
                     ];
 
-        Log::alert($payload);
-
         $response = Http::withToken($AuthToken)
                             ->withHeaders([
                                 'Content-Type' => 'application/json',
