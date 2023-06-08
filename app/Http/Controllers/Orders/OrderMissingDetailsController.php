@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Orders;
 
+use Illuminate\Http\Request;
+use App\Services\Zoho\ZohoApi;
+use App\Models\order\ZohoMissing;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\order\OrderItemDetails;
-use App\Models\order\OrderSellerCredentials;
-use App\Models\order\OrderUpdateDetail;
 use App\Models\order\US_Price_Missing;
-use App\Models\order\ZohoMissing;
-use App\Services\SP_API\Config\ConfigTrait;
-use App\Services\Zoho\ZohoApi;
-use Illuminate\Http\Request;
+use App\Models\order\OrderUpdateDetail;
 use Yajra\DataTables\Facades\DataTables;
+use App\Services\SP_API\Config\ConfigTrait;
+use App\Models\order\OrderSellerCredentials;
 
 class OrderMissingDetailsController extends Controller
 {
@@ -45,6 +46,24 @@ class OrderMissingDetailsController extends Controller
 
                     return $row->price;
                 })
+                ->editColumn('missing_details', function ($row) {
+
+                    Log::info($row->missing_details);
+                    Log::info($row->amazon_order_id);
+
+                    $response = '';
+                    if (isset($row->missing_details['name'])) {
+                        $response .= '<label>Name</label>';
+                    }
+                    if (isset($row->missing_details['addressline1'])) {
+                        $response .= '<label>Address Line 1</label>';
+                    }
+                    if (isset($row->missing_details['addressline2'])) {
+                        $response .= '<label>Address Line 2</label>';
+                    }
+
+                    return $response;
+                })
                 ->editColumn('status', function ($row) {
 
                     if ($row->status == 0) {
@@ -63,6 +82,19 @@ class OrderMissingDetailsController extends Controller
                     $attributes .= " data-order-id=" . $row['amazon_order_id'];
                     $attributes .= " data-order-item-id=" . $row['order_item_id'];
                     $attributes .= " data-country-code" . $row['country_code'];
+
+                    if (isset($row->missing_details['name'])) {
+                        $attributes .= " data-name=1 ";
+                    }
+                    
+                    if (isset($row->missing_details['addressline1'])) {
+                        $attributes .= " data-address1=1 ";
+                    }
+                    
+                    if (isset($row->missing_details['addressline2'])) {
+                        $attributes .= " data-address2=1 ";
+                    }
+
 
                     return "<div class='d-flex'>
                                 <a href='javascript:void(0)' id='price_update' {$attributes}  class='edit btn btn-info btn-sm'>
@@ -85,9 +117,70 @@ class OrderMissingDetailsController extends Controller
         $item_id = $request->item_id;
         $country_code = $request->country_code;
         $price = $request->price;
+        $name = $request->name;
+        $adress1 = $request->adress1;
+        $adress2 = $request->adress2;
+        $mergedData = [];
 
         if ($order_id == null || $item_id == null || $country_code == null) {
             return response()->json(['data' => 'error']);
+        }   
+        /**
+         * 
+         * {"Name":"Skandashree Bali","AddressLine1":"Remraam","AddressLine2":"Al Thamam 09, Flat No 302","City":"Dubai","County":"Remraam","CountryCode":"AE","Phone":"+971507042920","AddressType":"Residential"}
+         */
+
+        $orders = OrderItemDetails::query()
+        ->where([
+            'asin' => $asin,
+            'order_item_identifier' => $item_id,
+            'amazon_order_identifier' => $order_id,
+        ])->first();
+
+        if($name | $adress1 | $adress2) {
+
+            if($name) {
+                $orders['shipping_address']['Name'] = $name;
+            }
+
+            if($adress1) {
+                $orders['shipping_address']['AddressLine1'] = $name;
+            }
+
+            if($adress2) {
+                $orders['shipping_address']['AddressLine2'] = $name;
+            }
+
+            OrderItemDetails::query()
+            ->where([
+                'asin' => $asin,
+                'order_item_identifier' => $item_id,
+                'amazon_order_identifier' => $order_id,
+            ])
+            ->update([
+                'shipping_address' => $orders['shipping_address'],
+            ]);
+
+            ZohoMissing::where([
+                'amazon_order_id' => $order_id,
+                'order_item_id' => $item_id,
+                'asin' => $asin,
+            ])
+            ->update([
+                'missing_details' => $orders['shipping_address'],
+                'status' => 1,
+            ]);
+
+            OrderUpdateDetail::where([
+                ['amazon_order_id', $order_id],
+                ['order_item_id', $item_id],
+            ])->update(
+                [
+                    'zoho_status' => 0,
+                ]
+            );
+
+            return response()->json(['data' => 'success']);
         }
 
         //zoho api update

@@ -53,57 +53,52 @@ class DeleteBBExcessData extends Command
         $start  = startTime();
         
         $arrays = [
-            "us" => [1, 2, 3, 4],
-            "in" => [1, 2, 3] 
+            "p1_us" => "p2_us",
+            "p2_us" => "p3_us",
+            "p1_us" => "p3_us",
+            "p1_in" => "p2_in",
+            "p2_in" => "p3_in",
+            "p1_in" => "p3_in",
         ];
+        $this->info(endTime($start) . " Main Loop START ");
+        foreach($arrays as $first_table => $second_table) {
 
+            DB::connection('buybox')
+                ->table("product_aa_custom_{$second_table}_offers")
+                ->update(['asin_exist_app360' => 0]);
 
-        $this->info(endTime($start) . " JSON Read ");
-        $tagger = 0;
-        $cnt = 1;
-        $total = 3000;
+                $this->info(endTime($start) . " $second_table UPDATE TO ZERO COLUMN");
 
-        $arrs = json_decode(Storage::get("asin_destination_uss.json"));
-        $collecs = [];
+            DB::connection('buybox')
+                ->table("product_aa_custom_{$first_table}_offers")
+                ->select('id', 'asin')
+                ->chunkById(3000, function($records) use ($second_table) {
 
-        $this->info(endTime($start) . " JSON Read Finished");
+                    DB::connection('buybox')
+                        ->table("product_aa_custom_{$second_table}_offers")
+                        ->whereIn('asin', $records->pluck('asin')->toArray())
+                        ->update(["asin_exist_app360" => 1]);
+                });
 
-        foreach($arrs as $arr) {
+                $this->info(endTime($start) . " $first_table COMPLETED");
 
-            $collecs[] = [
-                "asin" => $arr->asin,
-                "asin_exist_app360" => 1
-            ];
+                $value = DB::connection('buybox')
+                ->table("product_aa_custom_{$second_table}_offers")
+                ->where('asin_exist_app360', 1)->count();
 
-            if($cnt == $total) {
-                $cnt = 1;
-                print($tagger ."\n");
-
-
-                $this->info(endTime($start) . " Before Upsert");
-    
                 DB::connection('buybox')
-                ->table("product_aa_custom_p1_us_offers")
-                ->upsert($collecs, ["asin"], ["asin_exist_app360"]);
-    
-                $this->info(endTime($start) . " After Upsert");
-             
-                $collecs = [];
-            }
+                ->table("product_aa_custom_{$second_table}_offers")
+                ->where('asin_exist_app360', 1)
+                ->delete();    
 
-            $cnt++;
+
+                $this->info(endTime($start) . " $second_table delete COMPLETED. $value");
+
         }
 
-        $this->info(endTime($start) . " JSON Loop Finished");
+        $this->info(endTime($start) . " MAIN LOOP END ");
 
-        DB::connection('buybox')
-                ->table("product_aa_custom_p1_us_offers")
-                ->where("asin_exist_app360", 0)
-                ->delete();
-        
-
-        $this->info("Finished");
-
+        return true;
     }
 
 }
