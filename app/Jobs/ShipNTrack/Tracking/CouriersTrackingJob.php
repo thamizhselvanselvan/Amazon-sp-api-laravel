@@ -54,7 +54,7 @@ class CouriersTrackingJob implements ShouldQueue
                     'CourierPartner4.courier_names'
                 ]
             )
-                ->where('awb_number', $awb_no)
+                ->where('id', $awb_no)
                 ->get()
                 ->toArray();
         } else if ($destination == 'in') {
@@ -65,7 +65,7 @@ class CouriersTrackingJob implements ShouldQueue
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awb_no)
+                ->where('id', $awb_no)
                 ->get()
                 ->toArray();
         } else if ($destination == 'ksa') {
@@ -76,7 +76,7 @@ class CouriersTrackingJob implements ShouldQueue
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awb_no)
+                ->where('id', $awb_no)
                 ->get()
                 ->toArray();
         }

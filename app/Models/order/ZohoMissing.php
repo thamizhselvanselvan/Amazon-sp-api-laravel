@@ -2,8 +2,9 @@
 
 namespace App\Models\Order;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ZohoMissing extends Model
 {
@@ -19,6 +20,16 @@ class ZohoMissing extends Model
         'order_item_id',
         'status',
         'price',
-
+        'missing_details'
     ];
+
+    public function getMissingDetailsAttribute($value)
+    {
+        return json_decode($this->attributes['missing_details']);
+    }
+
+    public function setMissingDetailsAttribute($value)
+    {
+        return json_encode($this->attributes['missing_details']);
+    }
 }

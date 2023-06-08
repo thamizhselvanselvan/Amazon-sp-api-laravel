@@ -71,6 +71,7 @@ class ZohoOrder
             "orders.latest_delivery_date",
             "orders.is_business_order",
         ];
+
         Log::notice($amazon_order_id);
         $order_item_details = OrderItemDetails::select($order_details)
             ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
@@ -96,7 +97,9 @@ class ZohoOrder
             if (!$prod_array) {
 
                 //slack Notification 
-                $slackMessage = 'US Price not found ' .
+                $slackMessage = 'Name or Address is missing ' .
+                    'Store Name = ' . $store_name .' '.
+                    'Store ID = ' . $order_item_details->seller_identifier .' '.
                     'Amazon Order ID = ' . $amazon_order_id . ' ' .
                     'Order Item Identifier = ' .  $amazon_order_id;
 
@@ -179,6 +182,7 @@ class ZohoOrder
 
             return $this->zoho_update($zoho_search_order_exists, $order_item_details, $prod_array, $amazon_order_id, $order_item_id);
         }
+
         $type = 'old method';
         $zoho_api_save = $this->zohoApi->storeLead($prod_array, $type);
 

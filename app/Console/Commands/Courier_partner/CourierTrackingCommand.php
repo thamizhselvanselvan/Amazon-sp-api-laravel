@@ -58,7 +58,7 @@ class CourierTrackingCommand extends Command
             $records = [];
             if ($destination == 'ae') {
 
-                $records = Trackingae::select('awb_number')
+                $records = Trackingae::select('id')
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
                     ->orWhere('forwarder_3_flag', 0)
@@ -67,7 +67,7 @@ class CourierTrackingCommand extends Command
                     ->toArray();
             } else if ($destination == 'in') {
 
-                $records = Trackingin::select('awb_number')
+                $records = Trackingin::select('id')
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
                     ->orWhere('forwarder_3_flag', 0)
@@ -76,7 +76,7 @@ class CourierTrackingCommand extends Command
                     ->toArray();
             } else if ($destination == 'ksa') {
 
-                $records = Trackingksa::select('awb_number')
+                $records = Trackingksa::select('id')
                     ->orWhere('forwarder_1_flag', 0)
                     ->orWhere('forwarder_2_flag', 0)
                     ->orWhere('forwarder_3_flag', 0)
@@ -89,7 +89,7 @@ class CourierTrackingCommand extends Command
 
                 foreach ($records as $record) {
                     $data = [
-                        'awbNo' => $record['awb_number'],
+                        'awbNo' => $record['id'],
                         'destination' => $destination,
                         'process_management_id' => $pm_id
                     ];
