@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'SNT In-Scan')
+@section('title', 'SNT Inward')
 
 @section('css')
 
@@ -9,12 +9,12 @@
 @section('content_header')
 <div class="row">
     <div class="col-0.5">
-            <a href="{{route('shipntrack.inscan.view')}}">
-                <x-adminlte-button label="Back" class="btn-sm" theme="primary" icon="fas fa-arrow-left" />
-            </a>
+        <a href="{{route('shipntrack.inward')}}">
+            <x-adminlte-button label="Back" class="btn-sm" theme="primary" icon="fas fa-arrow-left" />
+        </a>
     </div>
     <div class="col text-center">
-        <h1 class="m-0 text-dark">Shipntrack IN-Scan </h1>
+        <h1 class="m-0 text-dark">SNT Inward Shipment </h1>
     </div>
 </div>
 @stop
@@ -38,7 +38,7 @@
             <x-adminlte-select name="mode" label="Source-Destination" id="mode">
                 <option value="0">Source-Destination</option>
                 @foreach ($destinations as $destination)
-                <option value={{ $destination['source'] . '-' . $destination['destination'] }}>
+                <option value={{$destination['id']}}_{{$destination['destination']}}_{{$destination['process_id']}}>
                     {{ $destination['source'] . '-' . $destination['destination'] }}
                 </option>
                 @endforeach
@@ -47,28 +47,27 @@
     </div>
     <div class="col-2">
         <div class="form-group awb type d-none">
-            <x-adminlte-input label='Enter AWB :' type='text' name='awb' id="awb" placeholder='Enter awb here' onkeyup="keyupFunction()" required />
+            <x-adminlte-input label='Enter Tracking ID :' type='text' name='awb' id="awb" placeholder='Enter Tracking ID here..' required />
         </div>
     </div>
 
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
-            <!-- //<a href="/shipment/storeshipment"> -->
-            <x-adminlte-button label="Create Shipment" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
-            <!-- </a> -->
-
+            <x-adminlte-button label="Create Manifest" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
         </div>
     </div>
 </div>
 
 <br>
-<table class="table table-bordered yajra-datatable table-striped" id="report_table">
+<table class="table table-bordered yajra-datatable table-striped d-none" id="report_table">
     <thead>
-        <tr class="table-info table d-none ">
+        <tr class="table-info table  ">
             <th>AWB</th>
-            <th>Mode</th>
-            <th>Type</th>
-            <th>Status</th>
+            <th>Booking Date</th>
+            <th>Consignor</th>
+            <th>Consignee</th>
+            <th>Order ID</th>
+            <th>Tracking ID</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -90,7 +89,10 @@
         $('.awb').removeClass('d-none');
     });
 
-    function keyupFunction() {
+
+    $(document).on("focusout", "#awb", function(e) {
+        e.stopPropagation();
+
         let mode = $('#mode').val();
         let validation = true;
         if (mode == 0) {
@@ -99,70 +101,47 @@
             return false;
         }
         let data = $('#awb').val();
-        alert(data);
-
-        $.ajax({
-            method: 'get',
-            url: "{{route('shipntrack.inscan.get')}}",
-            data: {
-                'awb': data,
-                'mode': mode,
-                "_token": "{{ csrf_token() }}",
-            },
-            success: function(result) {
-                alert('success');
-            },
-            error: function() {
-                alert('ERROR');
-            }
-        });
-    }
+        console.log(data)
 
 
-
-
-
-
-    $(".upload_awb_btn").on("click", function() {
-        let uploaded = $('.up_awb').val();
-        let mode = $('#mode').val();
-        let type = $('#type').val();
-        let validation = true;
-        if (mode == 0) {
-            alert('Mode Required.. please select Mode....');
-            validation = false;
-            return false;
-        }
-        if (uploaded == '') {
-            alert('AWB Required.. please enter AWB....');
-            validation = false;
-            return false;
-        }
-        if (type == 0) {
-            alert('Type Required.. please enter Type....');
-            validation = false;
-            return false;
-        }
         if (validation) {
-            let table = $("#table_body");
-            table.append(append_data(uploaded, mode, type))
+            $.ajax({
+                method: 'get',
+                url: "{{route('shipntrack.inward.get')}}",
+                data: {
+                    'awb': data,
+                    'mode': mode,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+                    let table = $("#table_body");
+                    table.append(append_data(result))
+                    $('#awb').val('');
+                },
+                error: function() {
+                    alert('Invalid ID or No Data Found..');
+                }
+            });
         }
     });
 
-    function append_data(response, mode, type) {
+    function append_data(response) {
+
+        console.log((response))
         $('.table').removeClass('d-none')
         $('.create_shipmtn_btn').removeClass('d-none')
         let html = '';
-        var strarray = response.split(',');
-        for (var i = 0; i < strarray.length; i++) {
-            html += "<tr class='table_row'>";
-            html += "<td name='awb_number[]'>" + strarray[i] + "</td>";
-            html += "<td name='mode[]'>" + mode + "</td>";
-            html += "<td name='type[]'>" + type + "</td>";
-            html += '<td><input type="text-area" class="w-75" value="Receved At Source Warehouse.." name="status[]" id="status">  </td>'
-            html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
-            html += "</tr>";
-        }
+
+        html += "<tr class='table_row'>";
+        html += "<td name='awb_number[]'>" + response.awb + "</td>";
+        html += "<td name='booking_date[]'>" + response.booking_date + "</td>";
+        html += "<td name='consignor[]'>" + response.consignor + "</td>";
+        html += "<td name='consignee[]'>" + response.consignee + "</td>";
+        html += "<td name='order_id[]'>" + response.order_id + "</td>";
+        html += "<td name='purchase_tracking_id[]'>" + response.purchase_tracking_id + "</td>";
+        html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
+        html += "</tr>";
+
 
         return html;
     }
@@ -173,20 +152,13 @@
         $(this).prop('disabled', true);
 
         let mode = $('#mode').val();
-        let type = $('#type').val();
         let validation = true;
         if (mode == 0) {
             alert('Mode Required.. please select Mode....');
             validation = false;
             return false;
         }
-        if (type == 0) {
-            alert('Type Required.. please enter Type....');
-            validation = false;
-            return false;
-        }
         if (validation) {
-
             let self = $(this);
             let table = $("#report_table tbody tr");
             let data = new FormData();
@@ -194,22 +166,25 @@
                 let td = $(this).find('td');
 
                 data.append('awb[]', td[0].innerText);
-                data.append('mode[]', td[1].innerText);
-                data.append('type[]', td[2].innerText);
-                data.append('status[]', td[3].children[0].value);
+                data.append('booking_date[]', td[1].innerText);
+                data.append('consignor[]', td[2].innerText);
+                data.append('consignee[]', td[3].innerText);
+                data.append('Order_id[]', td[4].innerText);
+                data.append('tracking[]', td[5].innerText);
+
 
             });
-
-
+            let mode = $('#mode').val();
+            data.append('mode', mode);
             $.ajax({
                 method: 'POST',
-                url: "{{route('shipntrack.inward.store')}}",
+                url: "{{route('shipntrack.inscan.store')}}",
                 data: data,
                 processData: false,
                 contentType: false,
                 response: 'json',
                 success: function(response) {
-                    // $('.create_shipmtn_btn').prop('disabled', false);
+                    $('.create_shipmtn_btn').prop('disabled', false);
                     if (response.success) {
                         getBack();
                     }
@@ -227,7 +202,7 @@
 
     // *Redirect to Index:*//
     function getBack() {
-        window.location.href = '/shipntrack/inward?success=Shipment has been created successfully'
+        window.location.href = '/shipntrack/in-scan?success=Shipment has been created successfully'
     }
 
     /*Delete Row :*/

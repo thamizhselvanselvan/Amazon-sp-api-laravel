@@ -43,39 +43,42 @@ class SMSATrackingAPIServices
 
     public function SMSADataFormatting($smsa_data, $reference_id)
     {
-        $smsa_data = $smsa_data['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'];
+        $smsa_data = isset($smsa_data['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking']) ? $smsa_data['soap_Body']['getTrackingResponse']['getTrackingResult']['diffgr_diffgram']['NewDataSet']['Tracking'] : [];
 
-        $smsa_records = [];
-        if (isset($smsa_data[0])) {
+        if (!empty($smsa_data)) {
 
-            foreach ($smsa_data as $smsa_value) {
+            $smsa_records = [];
+            if (isset($smsa_data[0])) {
+
+                foreach ($smsa_data as $smsa_value) {
+                    $smsa_records[] = [
+                        'account_id' => $reference_id,
+                        'awbno' => $smsa_value['awbNo'],
+                        'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'])),
+                        'activity' => $smsa_value['Activity'],
+                        'details' => $smsa_value['Details'],
+                        'location' => $smsa_value['Location']
+                    ];
+                }
+            } else {
                 $smsa_records[] = [
                     'account_id' => $reference_id,
-                    'awbno' => $smsa_value['awbNo'],
-                    'date' => date('Y-m-d H:i:s', strtotime($smsa_value['Date'])),
-                    'activity' => $smsa_value['Activity'],
-                    'details' => $smsa_value['Details'],
-                    'location' => $smsa_value['Location']
+                    'awbno' =>  $smsa_data['awbNo'],
+                    'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
+                    'activity' =>  $smsa_data['Activity'],
+                    'details' =>  $smsa_data['Details'],
+                    'location' =>  $smsa_data['Location']
                 ];
             }
-        } else {
-            $smsa_records[] = [
-                'account_id' => $reference_id,
-                'awbno' =>  $smsa_data['awbNo'],
-                'date' => date('Y-m-d H:i:s', strtotime($smsa_data['Date'])),
-                'activity' =>  $smsa_data['Activity'],
-                'details' =>  $smsa_data['Details'],
-                'location' =>  $smsa_data['Location']
-            ];
-        }
 
-        SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
-            'account_id',
-            'awbno',
-            'date',
-            'activity',
-            'details',
-            'location',
-        ]);
+            SmsaTracking::upsert($smsa_records, ['awbno_date_activity_unique'], [
+                'account_id',
+                'awbno',
+                'date',
+                'activity',
+                'details',
+                'location',
+            ]);
+        }
     }
 }

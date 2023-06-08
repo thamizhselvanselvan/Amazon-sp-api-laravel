@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'SNT In-Scan')
+@section('title', 'SNT Inward')
 
 @section('css')
 
@@ -22,15 +22,15 @@
 <div class="row">
     <div class="col-2">
         <div style="margin-top:-0.1rem">
-            <a href="{{route('shipntrack.inscan.view')}}">
-                <x-adminlte-button label="Create Manifist" class="btn-sm" theme="primary" icon="fas fa-plus" />
+            <a href="{{route('shipntrack.inward.view')}}">
+                <x-adminlte-button label="Create Shipment" class="btn-sm" theme="primary" icon="fas fa-plus" />
             </a>
         </div>
     </div>
     <div class="col-2"></div>
     <div class="col-6">
 
-        <h1 class="m-0 text-dark"> SNT In-Scan Shipment</h1>
+        <h1 class="m-0 text-dark"> SNT Inward Shipment</h1>
     </div>
 </div>
 
@@ -75,7 +75,7 @@
                         <th>Outward Type</th>
                         <th>AWB number </th>
                         <th>Status</th>
-                        <!-- <th>Action</th> -->
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id='checkTable'>
@@ -128,12 +128,12 @@
                     name: 'status'
                 },
 
-                // {
-                //     data: 'action',
-                //     name: 'action',
-                //     orderable: false,
-                //     searchable: false
-                // },
+                {
+                    data: 'action',
+                    name: 'action',
+                    orderable: false,
+                    searchable: false
+                },
             ]
         });
 
