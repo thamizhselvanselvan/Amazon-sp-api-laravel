@@ -428,7 +428,7 @@ class B2cshipBookingServices
                         'asin' => $asin, 
                         'amazon_order_id' => $order_id, 
                         'order_item_id' => $order_item_id,
-                        'price' => json_encode(['price' => ' ']),
+                        'price' => ' ',
                         'status' => 0
                     ]);
                 }
