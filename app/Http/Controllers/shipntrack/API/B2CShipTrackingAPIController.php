@@ -61,7 +61,7 @@ class B2CShipTrackingAPIController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         } elseif ($destination == 'IN') {
@@ -72,7 +72,7 @@ class B2CShipTrackingAPIController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         } elseif ($destination == 'SA') {
@@ -83,7 +83,7 @@ class B2CShipTrackingAPIController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         }
@@ -95,8 +95,8 @@ class B2CShipTrackingAPIController extends Controller
         foreach ($data as $key => $records) {
 
             $packet_details[] = [
-                'consignor' => $records['consignor'],
-                'consignee' => $records['consignee'],
+                'consignor' => json_decode($records['consignor_details'])->consignor ?? 'test',
+                'consignee' => json_decode($records['consignee_details'])->consignee ?? 'test',
                 'destination' => $records['courier_partner1']['destination'],
                 'origin' => $records['courier_partner1']['source'],
             ];

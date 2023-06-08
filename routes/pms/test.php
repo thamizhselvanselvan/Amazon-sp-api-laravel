@@ -1,37 +1,16 @@
 <?php
 
 use Carbon\Carbon;
-use App\Models\User;
 use GuzzleHttp\Client;
-use League\Csv\Writer;
-use App\Models\Mws_region;
-use Smalot\PdfParser\Parser;
-use App\Services\Zoho\ZohoApi;
-use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
-use App\Models\Catalog\Asin_master;
-use function Clue\StreamFilter\fun;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
-
-use App\Models\order\OrderUpdateDetail;
-use App\Models\seller\AsinMasterSeller;
 use Illuminate\Support\Facades\Storage;
-use App\Models\seller\SellerAsinDetails;
-use App\Services\SP_API\API\Order\Order;
 use Illuminate\Support\Facades\Response;
-use App\Models\order\OrderSellerCredentials;
-use App\Services\SP_API\API\Order\OrderItem;
 use App\Services\Inventory\InventoryCsvImport;
 use Google\Cloud\Translate\V2\TranslateClient;
-use App\Models\ShipNTrack\Packet\PacketForwarder;
-use App\Services\Catalog\AllPriceExportCsvServices;
-use App\Services\Courier_Booking\B2cshipBookingServices;
-use App\Services\SP_API\API\Order\OrderUsingRedBean;
-use App\Services\SP_API\API\Order\CheckStoreCredServices;
-use App\Services\SP_API\API\AmazonOrderFeed\FeedOrderDetailsApp360;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::middleware('can:Admin')->group(function () {
@@ -43,9 +22,8 @@ Route::middleware('can:Admin')->group(function () {
 
     Route::get('test/translation/{order_id}', function ($order_id) {
 
-
         $translate = new TranslateClient([
-            'key' => config('app.google_translate_key')
+            'key' => config('app.google_translate_key'),
         ]);
 
         $address = OrderItemDetails::select('shipping_address')
@@ -65,7 +43,7 @@ Route::middleware('can:Admin')->group(function () {
                     if (preg_match('/u06/', json_encode($record)) == 1) {
 
                         $translatedText = $translate->translate($record, [
-                            'target' => 'en'
+                            'target' => 'en',
                         ]);
                         $arabicToEnglish[$key] = $translatedText['text'];
                     }
@@ -142,7 +120,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
 </AmazonTrackingRequest>
 ',
             CURLOPT_HTTPHEADER => array(
-                'Content-Type: text/plain'
+                'Content-Type: text/plain',
             ),
         ));
 
@@ -155,7 +133,6 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
         curl_close($curl);
         echo $response;
     });
-
 
     Route::get('test/order', 'TestController@testOrderAPI');
     Route::get('search_catalog/{country_code}', 'TestController@searchCatalog');
@@ -189,7 +166,7 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
         return Storage::download($file_path);
     });
 
-    Route::match(['get', 'post'], 'test/zoho/webhook', 'TestController@zohoWebhookResponse');
+    Route::match (['get', 'post'], 'test/zoho/webhook', 'TestController@zohoWebhookResponse');
 
     Route::get('test/inventory', function () {
         $filePath = Storage::path('zoho_csv');
@@ -209,13 +186,13 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
         $payload = [
             "callback" => [
                 "url" => "https://catalog-manager-mosh.com/api/test/zoho/webhook",
-                "method" => "post"
+                "method" => "post",
             ],
             'query' => [
 
                 'module' => 'Leads',
-                'page' => 1
-            ]
+                'page' => 1,
+            ],
         ];
 
         // $response = Http::withoutVerifying()
@@ -232,11 +209,411 @@ xsi:noNamespaceSchemaLocation="AmazonTrackingRequest.xsd">
             'Authorization' => 'Zoho-oauthtoken ' . $token,
         ])->get('https://www.zohoapis.com/crm/bulk/v2/read/1929333000107167065/result');
 
-
         Storage::put('zohocsv/1929333000107167065.zip', $response);
         po($response->json());
         exit;
 
         echo 'success';
     });
+});
+
+Route::get('aramex-test/{order_item_id}', function ($order_item_id) {
+
+    $currentTimestamp = Carbon::now()->timestamp;
+    $currentTimestampMilliseconds = $currentTimestamp * 1000;
+
+    $order_details = DB::connection('order')
+        ->select("SELECT
+                oids.*,
+                ord.amazon_order_identifier as order_id,
+                ord.purchase_date as order_date,
+                ord.payment_method_details as pay_method,
+                oids.quantity_ordered as item,
+                ord.buyer_info as mail
+            FROM orders AS ord
+            INNER join orderitemdetails AS oids
+            ON ord.amazon_order_identifier = oids.amazon_order_identifier
+            WHERE
+            oids.order_item_identifier = $order_item_id
+        ");
+    // dd($order_details[0]);
+    $shipping_address = json_decode($order_details[0]->shipping_address);
+    $name = $shipping_address->Name;
+    $phone = $shipping_address->Phone;
+    $AddressLine1 = $shipping_address->AddressLine1;
+    $AddressLine2 = $shipping_address->AddressLine2;
+    $City = $shipping_address->City;
+    $CountryCode = $shipping_address->CountryCode;
+
+    // dd($shipping_address);
+
+    $order_item_identifier = $order_details[0]->order_item_identifier;
+    $item_name = $order_details[0]->title;
+    $pieces = $order_details[0]->item ?? 1;
+    $quantity = $order_details[0]->quantity_ordered ?? 1;
+    $asin = $order_details[0]->asin;
+    $cat_data = DB::connection('catalog')->select("SELECT dimensions FROM catalognewins  where asin = '$asin'");
+
+    $dimensions = json_decode($cat_data[0]->dimensions);
+
+    $package = $dimensions[0]->package;
+
+    //  $hight_unit = $package->height->unit;
+    //  $length_unit = $package->length->unit;
+    //  $width_unit = $package->width->unit;
+
+    $height = $package->height->value;
+
+    $length = $package->length->value;
+
+    $width = $package->width->value;
+
+    $weight = $package->weight->value;
+
+    //  dd($package);
+
+    $url = 'https://ws.aramex.net/shippingapi.v2/shipping/service_1_0.svc/json/CreateShipments';
+    $params = [
+        'Shipments' => [
+            [
+                'Reference1' => $order_item_identifier,
+                // 'Reference2' => null,
+                // 'Reference3' => null,
+                'Shipper' => [
+                    // 'Reference1' => '',
+                    // 'Reference2' => null,
+                    'AccountNumber' => '60531487',
+                    'PartyAddress' => [
+                        'Line1' => 'Test Shipper Address Line1{{testname}}',
+                        'Line2' => 'Test Shipper Address Line2{{testname}}',
+                        'Line3' => '',
+                        'City' => 'Mumbai',
+                        'StateOrProvinceCode' => '',
+                        'PostCode' => '400093',
+                        'CountryCode' => 'IN',
+                        'Longitude' => 0,
+                        'Latitude' => 0,
+                        'BuildingNumber' => null,
+                        'BuildingName' => null,
+                        'Floor' => null,
+                        'Apartment' => null,
+                        'POBox' => null,
+                        'Description' => null,
+                    ],
+                    'Contact' => [
+                        'Department' => null,
+                        'PersonName' => 'Test Shipper Name',
+                        'Title' => null,
+                        'CompanyName' => 'Test Shipper Name/Test Shipper Company Name',
+                        'PhoneNumber1' => '048707766',
+                        'PhoneNumber1Ext' => '',
+                        'PhoneNumber2' => '',
+                        'PhoneNumber2Ext' => '',
+                        'FaxNumber' => null,
+                        'CellPhone' => '971556893100',
+                        'EmailAddress' => 'test@aramex.com',
+                        'Type' => '',
+                    ],
+                ],
+                'Consignee' => [
+                    'Reference1' => null,
+                    'Reference2' => null,
+                    'AccountNumber' => null,
+                    'PartyAddress' => [
+                        'Line1' => $AddressLine1,
+                        'Line2' => $AddressLine2,
+                        'Line3' => '',
+                        'City' => $City,
+                        //'StateOrProvinceCode' => 'FU',
+                        'PostCode' => '',
+                        'CountryCode' => $CountryCode,
+                        'Longitude' => 0,
+                        'Latitude' => 0,
+                        'BuildingNumber' => null,
+                        'BuildingName' => null,
+                        'Floor' => null,
+                        'Apartment' => null,
+                        'POBox' => null,
+                        'Description' => null,
+                    ],
+                    'Contact' => [
+                        'Department' => null,
+                        'PersonName' => $name,
+                        'Title' => null,
+                        'CompanyName' => $name,
+                        'PhoneNumber1' => $phone,
+                        'PhoneNumber1Ext' => '',
+                        'PhoneNumber2' => '',
+                        'PhoneNumber2Ext' => '',
+                        'FaxNumber' => null,
+                        'CellPhone' => $phone,
+                        'EmailAddress' => '',
+                        'Type' => '',
+                    ],
+                ],
+                // 'ThirdParty' => [
+                //     'AccountNumber' => '60531487',
+                //     'PartyAddress' => [
+                //         'Line1' => 'Test thirdparty Address Line1',
+                //         'Line2' => 'Test thirdparty Address Line2',
+                //         'Line3' => '',
+                //         'City' => 'Dubai',
+                //         'StateOrProvinceCode' => '',
+                //         'PostCode' => '125212',
+                //         'CountryCode' => 'AE',
+                //         'Longitude' => 0,
+                //         'Latitude' => 0,
+                //         'BuildingNumber' => null,
+                //         'BuildingName' => null,
+                //         'Floor' => null,
+                //         'Apartment' => null,
+                //         'POBox' => null,
+                //         'Description' => null,
+                //     ],
+                //     'Contact' => [
+                //         'Department' => null,
+                //         'PersonName' => 'Test third party Name',
+                //         'Title' => null,
+                //         'CompanyName' => 'Test third party/third party',
+                //         'PhoneNumber1' => '04870776612',
+                //         'PhoneNumber1Ext' => '',
+                //         'PhoneNumber2' => '',
+                //         'PhoneNumber2Ext' => '',
+                //         'FaxNumber' => null,
+                //         'CellPhone' => '971556893111',
+                //         'EmailAddress' => 'test123@aramex.com',
+                //         'Type' => '',
+                //     ],
+                // ],
+                'ShippingDateTime' => '/Date(' . $currentTimestampMilliseconds . ')/',
+                'DueDate' => '/Date(' . $currentTimestampMilliseconds . ')/',
+                'Comments' => null,
+                'PickupLocation' => null,
+                'OperationsInstructions' => null,
+                'AccountingInstrcutions' => null,
+                'Details' => [
+                    'Dimensions' => [
+                        'Length' => round($length * 2.54),
+                        'Width' => round($width * 2.54),
+                        'Height' => round($height * 2.54),
+                        'Unit' => 'CM',
+                    ],
+                    'ActualWeight' => [
+                        'Unit' => 'LB',
+                        'Value' => $weight,
+                    ],
+                    'ChargeableWeight' => [
+                        'Unit' => 'LB',
+                        'Value' => 0,
+                    ],
+                    'DescriptionOfGoods' => $item_name,
+                    'GoodsOriginCountry' => 'IN',
+                    'NumberOfPieces' => $pieces,
+                    'ProductGroup' => 'DOM',
+                    'ProductType' => 'OND',
+                    'PaymentType' => 'P',
+                    'PaymentOptions' => 'ACCT',
+                    // 'CustomsValueAmount' => [
+                    //     'CurrencyCode' => 'AED',
+                    //     'Value' => 10,
+                    // ],
+                    // 'CashOnDeliveryAmount' => [
+                    //     'CurrencyCode' => 'AED',
+                    //     'Value' => 0,
+                    // ],
+                    // 'InsuranceAmount' => [
+                    //     'CurrencyCode' => 'AED',
+                    //     'Value' => 0,
+                    // ],
+                    'CashAdditionalAmount' => [
+                        'CurrencyCode' => 'INR',
+                        'Value' => 0,
+                    ],
+                    // 'CashAdditionalAmountDescription' => null,
+                    // 'CollectAmount' => [
+                    //     'CurrencyCode' => 'AED',
+                    //     'Value' => 0,
+                    // ],
+                    'Services' => '',
+                    // 'Items' => [
+                    //     [
+                    //         'PackageType' => 'item',
+                    //         'Quantity' => $quantity,
+                    //         'Weight' => [
+                    //             'Unit' => 'CM',
+                    //             'Value' => 0,
+                    //         ],
+                    //         'Comments' => 'no description',
+                    //         'Reference' => 'no barcode',
+                    //         'PiecesDimensions' => null,
+                    //         'CommodityCode' => null,
+                    //         'GoodsDescription' => null,
+                    //         'CountryOfOrigin' => null,
+                    //         'CustomsValue' => null,
+                    //         'ContainerNumber' => null,
+                    //     ],
+                    // ],
+                    // 'DeliveryInstructions' => null,
+                    // 'AdditionalProperties' => null,
+                    // 'ContainsDangerousGoods' => false,
+                ],
+                // 'Attachments' => null,
+                // 'ForeignHAWB' => null,
+                // 'TransportType' => 0,
+                // 'PickupGUID' => null,
+                // 'Number' => null,
+                // 'ScheduledDelivery' => null,
+            ],
+        ],
+        'LabelInfo' => [
+            'ReportID' => 9729, //9201
+            'ReportType' => 'URL',
+        ],
+        'ClientInfo' => [
+            'UserName' => 'mp@moshecom.com',
+            'Password' => 'A#mazon170',
+            'Version' => 'v1.0',
+            'AccountNumber' => '60531487',
+            'AccountPin' => '654654',
+            'AccountEntity' => 'BOM',
+            'AccountCountryCode' => 'IN',
+            'Source' => 24,
+            'PreferredLanguageCode' => null,
+        ],
+        // 'Transaction' => null,
+    ];
+
+    try {
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post($url, $params);
+
+        $result = json_decode($response->body(), true);
+
+        if ($result['HasErrors'] == true) {
+            $error_code = $result['Shipments'][0]['Notifications'][0]['Code'];
+            $message = $result['Shipments'][0]['Notifications'][0]['Message'];
+            Log::warning($error_code . '  ' . $message);
+        }
+
+        dd($result);
+
+    } catch (\Exception $e) {
+        // Handle the exception
+        return $e->getMessage();
+    }
+
+});
+
+Route::get('smsa-test/{order_item_id}', function ($order_item_id) {
+
+    $currentTimestamp = Carbon::now()->timestamp;
+    // $currentTimestampMilliseconds = $currentTimestamp * 1000;
+
+    $order_details = DB::connection('order')
+        ->select("SELECT
+                oids.*,
+                ord.amazon_order_identifier as order_id,
+                ord.purchase_date as order_date,
+                ord.payment_method_details as pay_method,
+                oids.quantity_ordered as item,
+                ord.buyer_info as mail
+            FROM orders AS ord
+            INNER join orderitemdetails AS oids
+            ON ord.amazon_order_identifier = oids.amazon_order_identifier
+            WHERE
+            oids.order_item_identifier = $order_item_id
+        ");
+
+    // dd($order_details[0]);
+    $shipping_address = json_decode($order_details[0]->shipping_address);
+    $name = $shipping_address->Name;
+    $phone = $shipping_address->Phone;
+    $AddressLine1 = $shipping_address->AddressLine1;
+    $AddressLine2 = $shipping_address->AddressLine2;
+    $City = $shipping_address->City;
+    $CountryCode = $shipping_address->CountryCode;
+
+    // dd($shipping_address);
+
+    $order_item_identifier = $order_details[0]->order_item_identifier;
+    $item_name = $order_details[0]->title;
+    $pieces = $order_details[0]->item ?? 1;
+    // $quantity = $order_details[0]->quantity_ordered ?? 1;
+    $asin = $order_details[0]->asin;
+    $cat_data = DB::connection('catalog')->select("SELECT dimensions FROM catalognewins  where asin = '$asin'");
+
+    $dimensions = json_decode($cat_data[0]->dimensions);
+
+    $package = $dimensions[0]->package;
+
+    //  $hight_unit = $package->height->unit;
+    //  $length_unit = $package->length->unit;
+    //  $width_unit = $package->width->unit;
+
+    // $height = $package->height->value;
+
+    // $length = $package->length->value;
+
+    // $width = $package->width->value;
+
+    $weight = $package->weight->value;
+
+
+    $url = 'https://track.smsaexpress.com/SecomRestWebApi/api/addship';
+
+    $params = [
+        "passkey" => "", //Mah@8537
+        "refno" => $order_item_identifier,
+        "sentDate" => "/Date(' . $currentTimestamp . ')/",
+        "idNo" => "",
+        "cName" => $name,
+        "cntry" => $CountryCode,
+        "cCity" => $City,
+        "cZip" => "",
+        "cPOBox" => "",
+        "cMobile" => $phone,
+        "cTel1" => "",
+        "cTel2" => "",
+        "cAddr1" =>  $AddressLine1,
+        "cAddr2" => $AddressLine2,
+        "shipType" => "DLV",
+        "PCs" => $pieces,
+        "cEmail" => "",
+        "carrValue" => "",
+        "carrCurr" => "",
+        "codAmt" => "",
+        "weight" => $weight,
+        "itemDesc" => $item_name,
+        "custVal" => "",
+        "custCurr" => "",
+        "insrAmt" => "",
+        "insrCurr" => "",
+        "sName" => "test shipper name",
+        "sContact" => "4863215632",
+        "sAddr1" => "test shipper address line 1",
+        "sAddr2" => "test shipper address line 2 o",
+        "sCity" => "shipper city",
+        "sPhone" => "123456212365",
+        "sCntry" => "AE",
+        "prefDelvDate" => "",
+        "gpsPoints" => "",
+    ];
+
+    try {
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post($url, $params);
+
+        $result = json_decode($response->body(), true);
+
+        dd($result);
+
+    } catch (\Exception $e) {
+        // Handle the exception
+        return $e->getMessage();
+    }
+
 });

@@ -1117,6 +1117,7 @@ class labelManagementController extends Controller
             } else {
                 return 'Date Selection Went Wrong';
             }
+
             $date = json_encode($split);
             $result = $this->labelListing($date, "search_date");
             $records = $this->customLabelListing($result);
@@ -1142,7 +1143,7 @@ class labelManagementController extends Controller
                 ->rawColumns(['name', 'purchase_date', 'action'])
                 ->make(true);
         }
-        return view("label.custom_label.index");
+        return view("label.customLabel.index");
     }
 
     public function customLabelListing($data)
@@ -1162,8 +1163,6 @@ class labelManagementController extends Controller
         $order_no = $request->order_no;
 
         $order = config('database.connections.order.database');
-        $web = config('database.connections.web.database');
-        $prefix = config('database.connections.web.prefix');
 
         $data = DB::select("SELECT
                             DISTINCT
@@ -1205,7 +1204,7 @@ class labelManagementController extends Controller
                             JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
                             JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = ord.amazon_order_identifier
                             JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
-                            WHERE web.order_no = '$order_identifier'
+                            WHERE web.order_no IN ('$order_identifier')
                             AND orderDetails.seller_sku IN ($sku)
                             GROUP BY orderDetails.amazon_order_identifier
                             ORDER BY shipping_address

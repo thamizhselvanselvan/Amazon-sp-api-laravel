@@ -166,5 +166,5 @@
         });
     </script>
 
-    @include('label.custom_label.custom_modal')
+    @include('label.customLabel.custom_modal')
 @stop
