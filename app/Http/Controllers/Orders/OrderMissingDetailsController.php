@@ -227,51 +227,66 @@ class OrderMissingDetailsController extends Controller
                         $output = '';
                         if (array_key_exists('Name', $missing_details)) {
                             if ($missing_details['Name'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No Name Found Update Name"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="Name Not Found Update Name"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
-                        }
-                        else {
+                        } else {
                             $output .= '<a href="#" data-toggle="tooltip" title="Incorrect Address Found"><i class="fa fa-times wrong" style="color: #ff00bf;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('AddressLine1', $missing_details)) {
                             if ($missing_details['AddressLine1'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No AddressLine1 Found Update AddressLine1"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="AddressLine1 Not Found Update AddressLine1"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="AddressLine1 Not Found Update AddressLine1"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('AddressLine2', $missing_details)) {
                             if ($missing_details['AddressLine2'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No AddressLine2 Found Update AddressLine2"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="AddressLine2 Not Found Update AddressLine2"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="AddressLine2 Not Found Update AddressLine2"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('City', $missing_details)) {
                             if ($missing_details['City'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No City Found Update City"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="City Not Found Update City"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="City Not Found Update City"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('StateOrRegion', $missing_details)) {
                             if (strlen($missing_details['StateOrRegion']) <= 2 || $missing_details['StateOrRegion'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No StateOrRegion Found Update StateOrRegion"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="StateOrRegion Not Found Update StateOrRegion"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="StateOrRegion Not Found Update StateOrRegion"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('PostalCode', $missing_details)) {
                             if ($missing_details['PostalCode'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No PostalCode Found Update PostalCode"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="PostalCode Not Found Update PostalCode"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="PostalCode Not Found Update PostalCode"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('CountryCode', $missing_details)) {
                             if ($missing_details['CountryCode'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No CountryCode Found Update CountryCode"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="CountryCode Not Found Update CountryCode"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="CountryCode Not Found Update CountryCode"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('Phone', $missing_details)) {
                             if ($missing_details['Phone'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No Phone Found Update Phone"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="Phone No. Not Found Update Phone No."><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="Phone No. Not Found Update Phone No."><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         if (array_key_exists('AddressType', $missing_details)) {
                             if ($missing_details['AddressType'] == '') {
-                                $output .= '<a href="#" data-toggle="tooltip" title="No AddressType Found Update AddressType"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
+                                $output .= '<a href="#" data-toggle="tooltip" title="AddressType Not Found Update AddressType"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                             }
+                        } else {
+                            $output .= '<a href="#" data-toggle="tooltip" title="AddressType Not Found Update AddressType"><i class="fa fa-times wrong" style="color: red;" aria-hidden="true" ></i> </a>';
                         }
                         // if ($row->price == 0) {
                         //     return '<a href="#" data-toggle="tooltip" title="No Price Found Update Price"><i class="fa fa-times wrong" color-"red" aria-hidden="true" ></i> </a>';
@@ -372,26 +387,24 @@ class OrderMissingDetailsController extends Controller
                     'amazon_order_id' => $order_id,
                 ])->value('missing_details');
 
-                if ($missing_details_check !== null && !empty($missing_details_check)) {
-                    $missing_details = json_decode($missing_details_check, true);
-                    $allNotEmpty = true;
-                    foreach ($missing_details as $value) {
-                        if ($value === "") {
-                            $allNotEmpty = false;
-                            break;
-                        }
+            if ($missing_details_check !== null && !empty($missing_details_check)) {
+                $missing_details = json_decode($missing_details_check, true);
+                $allNotEmpty = true;
+                foreach ($missing_details as $value) {
+                    if ($value === "") {
+                        $allNotEmpty = false;
+                        break;
                     }
-                    if ($allNotEmpty) {
-                        $status = 1;
-                    } else {
-                        $status = 0;
-                    }
-                } else {
-                    $status = 1;
                 }
-                
-           
-          
+                if ($allNotEmpty) {
+                    $status = 1;
+                } else {
+                    $status = 0;
+                }
+            } else {
+                $status = 1;
+            }
+
             $table_name = table_model_create(country_code:'us', model:'Pricing', table_name:'pricing_');
             $table_name->where('asin', $asin)->update(['us_price' => $price]);
 
