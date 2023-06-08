@@ -41,5 +41,5 @@ Route::match($method, 'orders/missing/force/dump', 'Orders\OrderMissingDetailsCo
 
 Route::post('orders/zoho/sync', 'Orders\OrderMissingDetailsController@zohosync')->name('orders.zoho.sync');
 //us price update for Orders
-Route::match($method, 'orders/usprice/missing', 'Orders\OrderMissingDetailsController@uspricemissing')->name('orders.usprice.missing');
-Route::match($method, 'orders/usprice/update', 'Orders\OrderMissingDetailsController@uspriceupdate')->name('orders.price.us.update');
+Route::match($method, 'orders/b2cship/missing', 'Orders\OrderMissingDetailsController@uspricemissing')->name('orders.usprice.missing');
+Route::match($method, 'orders/b2cship/update', 'Orders\OrderMissingDetailsController@uspriceupdate')->name('orders.price.us.update');
