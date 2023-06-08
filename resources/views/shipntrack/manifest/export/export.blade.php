@@ -91,14 +91,14 @@
                 <option value='0'> Forwarder 1</option>
             </x-adminlte-select>
             <x-adminlte-input label="Forwarder 1 AWB :" name="forwarder_1_awb" type="text" placeholder="Forwarder 1 AWB" id="forwarder_1_awb" value="{{ old('forwarder_1_awb') }}" required />
-            <x-adminlte-input label="International AWB :" name="international_awb" type="text" placeholder="International AWB" id="international_awb" value="{{ old('forwarder_1_awb') }}" required />
+            <!-- <x-adminlte-input label="International AWB :" name="international_awb" type="text" placeholder="International AWB" id="international_awb" value="{{ old('forwarder_1_awb') }}" required /> -->
         </div>
     </div>
 
 
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
-            <x-adminlte-button label="Create Export Manifest" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
+            <x-adminlte-button label="Generate Export Manifest" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
         </div>
     </div>
 </div>
@@ -179,7 +179,7 @@
                         }
                         let table = $("#table_body");
                         table.append(append_data(result))
-                        $('#awb').val('');
+                        // $('#awb').val('');
                         $('.show').removeClass('d-none');
                         forwarder();
                     },
@@ -225,7 +225,7 @@
                         }
                         let table = $("#table_body");
                         table.append(append_data(result))
-                        $('#bulkdata').val('');
+                        // $('#bulkdata').val('');
                         $('.show').removeClass('d-none');
                         forwarder();
                     },
@@ -312,7 +312,7 @@
         $(this).prop('disabled', true);
         let forwarder_info_1 = $('#forwarder_info_1').val();
         let forwarder_1_awb = $('#forwarder_1_awb').val();
-        let international_awb = $('#international_awb').val();
+        // let international_awb = $('#international_awb').val();
 
         let mode = $('#mode').val();
         let validation = true;
@@ -334,12 +334,12 @@
             validation = false;
             return false;
         }
-        if (international_awb == '') {
-            alert('International AWB Required.. please Enter AWB...');
-            $('.create_shipmtn_btn').prop('disabled', false);
-            validation = false;
-            return false;
-        }
+        // if (international_awb == '') {
+        //     alert('International AWB Required.. please Enter AWB...');
+        //     $('.create_shipmtn_btn').prop('disabled', false);
+        //     validation = false;
+        //     return false;
+        // }
         if (validation) {
             let self = $(this);
             let table = $("#report_table tbody tr");
@@ -359,7 +359,7 @@
             data.append('mode', mode);
             data.append('forwarder_1', forwarder_info_1);
             data.append('forwarder_1_awb', forwarder_1_awb);
-            data.append('international_awb', international_awb);
+            // data.append('international_awb', international_awb);
 
 
             $.ajax({

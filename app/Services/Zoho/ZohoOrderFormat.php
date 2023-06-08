@@ -11,6 +11,7 @@ use App\Models\order\ZohoMissing;
 use App\Models\Catalog\Catalog_in;
 use App\Models\Catalog\Catalog_us;
 use Illuminate\Support\Facades\Log;
+use App\Models\order\US_Price_Missing;
 
 class ZohoOrderFormat
 {
@@ -130,7 +131,7 @@ class ZohoOrderFormat
         ],
 
         "Amazon.sa-New Media" => [
-            "AE" => "New Media Saudi",
+            "SA" => "New media Saudi",
             "sku" => "NM_",
             "source" => "India",
             "destination" => "KSA"
@@ -166,8 +167,20 @@ class ZohoOrderFormat
         $AED_EXCHANGE_RATE = 3.8;
 
         $buyerDtls = (object)$value->shipping_address;
+        //City
+        if (!isset($buyerDtls->Name) | !isset($buyerDtls->AddressLine1) | !isset($buyerDtls->AddressLine2)) {
 
-        if (!isset($buyerDtls->Name)) {
+            US_Price_Missing::insert([
+                'country_code' => 'us', 
+                'title' => $value->title, 
+                'asin' => $value->asin, 
+                'amazon_order_id' => $value->amazon_order_identifier, 
+                'order_item_id' => $value->order_item_identifier,
+                'missing_details' => json_encode(['name', 'addressline1', 'addressline2']),
+                'status' => 0
+            ]);
+
+
             return false;
         }
 
