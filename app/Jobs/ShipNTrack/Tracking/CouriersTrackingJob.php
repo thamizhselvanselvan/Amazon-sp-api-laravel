@@ -93,6 +93,8 @@ class CouriersTrackingJob implements ShouldQueue
                     'pass_key' => $record['courier_partner1']['password'],
                     'account_id' => $record['courier_partner1']['account_id'],
                     'time_zone' => $record['courier_partner1']['time_zone'],
+                    'key1' => $record['courier_partner1']['key1'],
+                    'key2' => $record['courier_partner1']['key2'],
                 ];
 
                 $trackingAPI_name = $record['courier_partner1']['courier_names']['courier_name'];
@@ -101,6 +103,7 @@ class CouriersTrackingJob implements ShouldQueue
 
                 $results = [];
             }
+
             if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
 
                 $results = [
@@ -111,6 +114,8 @@ class CouriersTrackingJob implements ShouldQueue
                     'pass_key' => $record['courier_partner2']['password'],
                     'account_id' => $record['courier_partner2']['account_id'],
                     'time_zone' => $record['courier_partner2']['time_zone'],
+                    'key1' => $record['courier_partner2']['key1'],
+                    'key2' => $record['courier_partner2']['key2'],
                 ];
 
                 $trackingAPI_name = $record['courier_partner2']['courier_names']['courier_name'];
@@ -129,6 +134,8 @@ class CouriersTrackingJob implements ShouldQueue
                     'pass_key' => $record['courier_partner3']['password'],
                     'account_id' => $record['courier_partner3']['account_id'],
                     'time_zone' => $record['courier_partner3']['time_zone'],
+                    'key1' => $record['courier_partner3']['key1'],
+                    'key2' => $record['courier_partner3']['key2'],
                 ];
 
                 $trackingAPI_name = $record['courier_partner3']['courier_names']['courier_name'];
@@ -147,6 +154,8 @@ class CouriersTrackingJob implements ShouldQueue
                     'pass_key' => $record['courier_partner4']['password'],
                     'account_id' => $record['courier_partner4']['account_id'],
                     'time_zone' => $record['courier_partner4']['time_zone'],
+                    'key1' => $record['courier_partner4']['key1'],
+                    'key2' => $record['courier_partner4']['key2'],
                 ];
 
                 $trackingAPI_name = $record['courier_partner4']['courier_names']['courier_name'];
