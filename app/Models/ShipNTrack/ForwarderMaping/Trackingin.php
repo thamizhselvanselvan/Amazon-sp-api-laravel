@@ -12,10 +12,13 @@ class Trackingin extends Model
     protected $connection = 'shipntracking';
     protected $table = 'tracking_ins';
     protected $fillable = [
-        'awb_number',
+        'awb_no',
         'reference_id',
-        'consignor',
-        'consignee',
+        'consignor_details',
+        'consignee_details',
+        'packet_details',
+        'shipping_details',
+        'booking_details',
         'forwarder_1',
         'forwarder_1_awb',
         'forwarder_1_flag',
@@ -28,7 +31,8 @@ class Trackingin extends Model
         'forwarder_4',
         'forwarder_4_awb',
         'forwarder_4_flag',
-        'status'
+        'status',
+        'purchase_tracking_id'
     ];
 
     public function CourierPartner1()

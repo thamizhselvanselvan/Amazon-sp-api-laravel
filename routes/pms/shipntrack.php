@@ -89,6 +89,15 @@ Route::get('shipntrack/status/manager', 'shipntrack\Courier\CourierStatusManagem
 Route::get('shipntrack/status/manager/{courier_id}', 'shipntrack\Courier\CourierStatusManagementController@index')->name('status.master.courier_id');
 Route::get('shipntrack/status/store', 'shipntrack\Courier\CourierStatusManagementController@storestatus')->name('shipntrack.courier.status.store');
 
+/* SNT Process Master */
+Route::get('shipntrack/process/home', 'Shipntrack\ProcessManagement\ProcessManagementController@index')->name('snt.process.home');
+Route::post('shipntrack/process/store', 'Shipntrack\ProcessManagement\ProcessManagementController@store')->name('snt.process.store');
+Route::get('shipntrack/process/{id}/edit', 'Shipntrack\ProcessManagement\ProcessManagementController@update_view')->name('snt.process.update.view');
+Route::post('shipntrack/process/update', 'Shipntrack\ProcessManagement\ProcessManagementController@update')->name('snt.process.update');
+Route::get('shipntrack/process/{id}/remove', 'Shipntrack\ProcessManagement\ProcessManagementController@remove')->name('snt.process.remove');
+
+
+
 // POD
 Route::get('shipntrack/b2c/POD', 'shipntrack\POD\B2cProofOfDeliveryController@index')->name('shipntrack_POD');
 Route::get('shipntrack/b2c/templete', 'shipntrack\POD\B2cProofOfDeliveryController@templete')->name('shipntrack_templete');
@@ -105,14 +114,15 @@ Route::get('shipntrack/invoice/download-direct/{invoice_no}', 'shipntrack\Operat
 Route::get('shipntrack/invoice/edit/{invoice_no}', 'shipntrack\Operations\SNTInvoiceController@invoiceeditview')->name('shipntrack.invoice.single.edit.view');
 Route::post('shipntrack/invoice/edit/store', 'shipntrack\Operations\SNTInvoiceController@invoiceeditstore')->name('shipntrack.invoice.edit.store');
 
+//SNT Label Master
 Route::get('shipntrack/label/master', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@index')->name('shipntrack.label.master.index');
 Route::post('shipntrack/label/master/submit', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@LabelMasterFormSubmit')->name('shipntrack.label.master.submit');
 Route::post('shipntrack/label/master/edit', 'shipntrack\Operations\Label\ShipnTrackLabelMasterController@LabelMasterFormEdit')->name('shipntrack.label.master.edit');
 
+//SNT Label
 Route::get('shipntrack/label', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@index')->name('shipntrack.label.index');
-Route::post('shipntrack/submit', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@FormSubmit')->name('shipntrack.label.submit');
-Route::get('shipntrack/label/template/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelPdfTemplate')->name('shipntrack.label.template');
-Route::get('shipntrack/label/pdf/download/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelPdfDownload')->name('shipntrack.label.template');
+Route::get('shipntrack/label/template/{destination}/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelPdfTemplateShow')->name('shipntrack.label.template.show');
+Route::get('shipntrack/label/pdf/download/{destination}/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelPdfDownload')->name('shipntrack.label.download');
 Route::get('shipntrack/label/fetch/record/{id}', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelDetails')->name('shipntrack.label.details');
 Route::post('shipntrack/label/edit', 'shipntrack\Operations\Label\ShipnTrackLabelManagementController@LabelEdit')->name('shipntrack.label.edit');
 
@@ -126,3 +136,21 @@ Route::post('shiptrack/inward/store', 'shipntrack\Operations\SNTInwardController
 Route::get('shipntrack/outward', 'shipntrack\Operations\SNTOutwardController@index')->name('shipntrack.outward');
 Route::get('shipntrack/outward/create', 'shipntrack\Operations\SNTOutwardController@outward_view')->name('shipntrack.outward.create');
 Route::post('shiptrack/outward/store', 'shipntrack\Operations\SNTOutwardController@outward_store')->name('shipntrack.outward.store');
+
+/*In-Scan  */
+
+Route::get('shipntrack/in-scan', 'shipntrack\Manifest\ShiptrackInScanController@index')->name('shipntrack.inscan');
+Route::get('shipntrack/in-scan/create', 'shipntrack\Manifest\ShiptrackInScanController@view')->name('shipntrack.inscan.view');
+Route::get('shipntrack/in-scan/get/details', 'shipntrack\Manifest\ShiptrackInScanController@get_details')->name('shipntrack.inscan.get');
+Route::post('shipntrack/in-scan/store', 'shipntrack\Manifest\ShiptrackInScanController@store')->name('shipntrack.inscan.store');
+
+/*Export-Manifest  */
+Route::get('shipntrack/export/manifest', 'shipntrack\Manifest\ExportManifestController@index')->name('shipntrack.export');
+Route::get('shipntrack/export/export/view', 'shipntrack\Manifest\ExportManifestController@export_view')->name('shipntrack.export.view');
+Route::get('shipntrack/export/single/fetch', 'shipntrack\Manifest\ExportManifestController@single_fetch')->name('shipntrack.export.single.fetch');
+Route::post('shipntrack/export/export/store', 'shipntrack\Manifest\ExportManifestController@export_store')->name('shipntrack.export.store');
+
+/* Inward Shipment */
+Route::get('shipntrack/inward', 'shipntrack\Manifest\InwardController@index')->name('shipntrack.inward');
+Route::get('shipntrack/inward/view', 'shipntrack\Manifest\InwardController@inw_view')->name('shipntrack.inward.view');
+Route::get('shipntrack/inward/get/data', 'shipntrack\Manifest\InwardController@inw_data_fech')->name('shipntrack.inward.get');

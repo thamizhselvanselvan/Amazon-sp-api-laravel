@@ -1,17 +1,18 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\Label;
 use GuzzleHttp\Client;
 use App\Models\TestMongo;
 use App\Models\MongoDB\zoho;
 use GuzzleHttp\Psr7\Request;
 use App\Models\Catalog\PricingIn;
-use App\Models\Company\CompanyMaster;
 use App\Models\ProcessManagement;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use App\Models\Company\CompanyMaster;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use App\Support\BusinessAPI\ProductSearch;
@@ -39,8 +40,33 @@ Route::get('BusinessAPI/{asin}', function ($asin) {
 
 Route::get('test/code', function () {
 
-    $company = CompanyMaster::where('user_id', Auth::id())->get();
-    po($company);
+    $order = config('database.connections.order.database');
+    $web = config('database.connections.web.database');
+    $prefix = config('database.connections.web.prefix');
+    $data = DB::select("SELECT
+    DISTINCT
+    GROUP_CONCAT(DISTINCT web.id)as id, 
+    GROUP_CONCAT(DISTINCT web.awb_no)as awb_no, 
+    GROUP_CONCAT(DISTINCT web.forwarder)as forwarder,
+     orderDetails.amazon_order_identifier as order_no,
+     GROUP_CONCAT(DISTINCT ord.purchase_date)as purchase_date,
+     GROUP_CONCAT(DISTINCT store.store_name)as store_name, 
+     GROUP_CONCAT(DISTINCT orderDetails.seller_sku)as seller_sku, 
+     orderDetails.shipping_address,
+     GROUP_CONCAT(DISTINCT orderDetails.order_item_identifier)as order_item_identifier
+    from ${web}.${prefix}labels as web
+    JOIN ${order}.orders as ord ON ord.amazon_order_identifier = web.order_no
+    JOIN ${order}.orderitemdetails as orderDetails ON orderDetails.amazon_order_identifier = web.order_no
+    JOIN ${order}.order_seller_credentials as store ON ord.our_seller_identifier = store.seller_id
+    group by orderDetails.amazon_order_identifier,orderDetails.shipping_address
+    order by orderDetails.shipping_address
+");
+    foreach ($data as $record) {
+        if (count(explode(",", $record->seller_sku)) >= 2) {
+
+            po($record);
+        }
+    }
 });
 
 
