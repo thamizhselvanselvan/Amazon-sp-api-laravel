@@ -131,7 +131,7 @@ class ZohoOrderFormat
         ],
 
         "Amazon.sa-New Media" => [
-            "AE" => "New Media Saudi",
+            "SA" => "New media Saudi",
             "sku" => "NM_",
             "source" => "India",
             "destination" => "KSA"
