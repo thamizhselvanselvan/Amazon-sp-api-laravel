@@ -83,7 +83,7 @@ class B2CShipTrackingAPIController extends Controller
                 'CourierPartner3.courier_names',
                 'CourierPartner4.courier_names'
             ])
-                ->where('awb_number', $awbNo)
+                ->where('id', $awbNo)
                 ->get()
                 ->toArray();
         }

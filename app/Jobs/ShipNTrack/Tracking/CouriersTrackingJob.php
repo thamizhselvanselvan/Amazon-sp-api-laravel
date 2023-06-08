@@ -103,6 +103,7 @@ class CouriersTrackingJob implements ShouldQueue
 
                 $results = [];
             }
+
             if ($record['forwarder_2_flag'] == 0 && $record['forwarder_2_awb'] != '') {
 
                 $results = [
