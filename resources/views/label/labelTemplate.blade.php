@@ -117,7 +117,8 @@
 
     <div class="col-md-12" id="label-container">
         <div class="label p-1">
-            <div class="label-content">
+            <div class="label-content" style="min-height: 100%;
+            margin-bottom: -25px !important;">
                 <!-- <div class="table-responsive"> -->
                 <table class="table table-label table-bordered table-bordered-dark<td pt-1 pb-0 mb-1 table_border">
                     <tbody>
@@ -272,8 +273,13 @@
                     </p>
 
                 </div>
-            </div>
 
+            </div>
+            <div class="text-center mt-2">
+                <p class="m-0" style="font-size:11px;">Please capture receivers
+                    Emirates ID or any valid Photo ID upon delivery
+                </p>
+            </div>
 
         </div>
 
