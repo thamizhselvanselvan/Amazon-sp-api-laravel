@@ -3,7 +3,12 @@
 @section('title', 'SNT Inward')
 
 @section('css')
-
+<style>
+    #checkbox {
+        width: 2rem;
+        height: 1rem;
+    }
+</style>
 <link rel="stylesheet" href="/css/styles.css">
 @stop
 @section('content_header')
@@ -47,13 +52,13 @@
     </div>
     <div class="col-2">
         <div class="form-group awb type d-none">
-            <x-adminlte-input label='Enter Tracking ID :' type='text' name='awb' id="awb" placeholder='Enter Tracking ID here..' required />
+            <x-adminlte-input label='Enter International AWB :' type='text' name='awb' id="awb" placeholder='Enter Forwarder AWB here..' required />
         </div>
     </div>
 
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
-            <x-adminlte-button label="Create Manifest" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
+            <x-adminlte-button label="Generate new Shipment" theme="primary" icon="fas fa-plus" id="create" class="btn-sm d-none create_shipmtn_btn" />
         </div>
     </div>
 </div>
@@ -62,13 +67,14 @@
 <table class="table table-bordered yajra-datatable table-striped d-none" id="report_table">
     <thead>
         <tr class="table-info table  ">
+            <th>Total Items</th>
             <th>AWB</th>
-            <th>Booking Date</th>
-            <th>Consignor</th>
-            <th>Consignee</th>
+            <th>International AWB Number</th>
+            <th>Destination</th>
+            <th>purchase Tracking ID</th>
             <th>Order ID</th>
-            <th>Tracking ID</th>
-            <th>Action</th>
+            <th>Received Status</th>
+            <!-- <th>Action</th> -->
         </tr>
     </thead>
     <tbody id="table_body">
@@ -101,9 +107,6 @@
             return false;
         }
         let data = $('#awb').val();
-        console.log(data)
-
-
         if (validation) {
             $.ajax({
                 method: 'get',
@@ -114,9 +117,13 @@
                     "_token": "{{ csrf_token() }}",
                 },
                 success: function(result) {
+                    if (result.hasOwnProperty('error')) {
+                        alert(result.error);
+                        return false;
+                    }
                     let table = $("#table_body");
                     table.append(append_data(result))
-                    $('#awb').val('');
+                    // $('#awb').val('');
                 },
                 error: function() {
                     alert('Invalid ID or No Data Found..');
@@ -131,21 +138,24 @@
         $('.table').removeClass('d-none')
         $('.create_shipmtn_btn').removeClass('d-none')
         let html = '';
+        $.each(response.data, function(index, value) {
+            html += "<tr class='table_row'>";
+            // html += "<td name='total_items[]'>" + value.total_items + "</td>";
+            html += "<td name='total_items[]'>" + value.total_items + "</td>";
+            html += "<td name='awb_number[]'>" + value.awb + "</td>";
+            html += "<td name='international_awb_number[]'>" + value.international_awb_number + "</td>";
+            html += "<td name='destination[]'>" + value.destination + "</td>";
+            html += "<td name='purchase_tracking_id[]'>" + value.purchase_tracking_id + "</td>";
+            html += "<td name='order_id[]'>" + value.order_id + "</td>";
+            html += '<td> <input type="checkbox" value="1" name="checkbox[]" id="checkbox"> </td>';
+            // html += '<td> <button type="button" id="remove" class="ml-2 btn btn-sm btn-danger remove1">Remove</button></td>'
+            html += "</tr>";
 
-        html += "<tr class='table_row'>";
-        html += "<td name='awb_number[]'>" + response.awb + "</td>";
-        html += "<td name='booking_date[]'>" + response.booking_date + "</td>";
-        html += "<td name='consignor[]'>" + response.consignor + "</td>";
-        html += "<td name='consignee[]'>" + response.consignee + "</td>";
-        html += "<td name='order_id[]'>" + response.order_id + "</td>";
-        html += "<td name='purchase_tracking_id[]'>" + response.purchase_tracking_id + "</td>";
-        html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
-        html += "</tr>";
 
 
+        });
         return html;
     }
-
 
     // create Shipment//
     $(".create_shipmtn_btn").on("click", function() {
@@ -165,20 +175,26 @@
             table.each(function(index, elm) {
                 let td = $(this).find('td');
 
-                data.append('awb[]', td[0].innerText);
-                data.append('booking_date[]', td[1].innerText);
-                data.append('consignor[]', td[2].innerText);
-                data.append('consignee[]', td[3].innerText);
-                data.append('Order_id[]', td[4].innerText);
-                data.append('tracking[]', td[5].innerText);
+                data.append('total_item', td[0].innerText);
+                data.append('awb[]', td[1].innerText);
+                data.append('international_awb_number', td[2].innerText);
+                data.append('purchase_tracking_id[]', td[4].innerText);
+                data.append('Order_id[]', td[5].innerText);
 
+                var $chkbox = $(this).find('input[type="checkbox"]');
+                if ($chkbox.length) {
+                    var status = $chkbox.prop('checked');
+                    data.append('chkbox[]', status);
+                }
 
             });
+
             let mode = $('#mode').val();
             data.append('mode', mode);
+
             $.ajax({
                 method: 'POST',
-                url: "{{route('shipntrack.inscan.store')}}",
+                url: "{{route('shipntrack.inward.store')}}",
                 data: data,
                 processData: false,
                 contentType: false,
@@ -202,7 +218,7 @@
 
     // *Redirect to Index:*//
     function getBack() {
-        window.location.href = '/shipntrack/in-scan?success=Shipment has been created successfully'
+        window.location.href = '/shipntrack/inward?success=Shipment has been created successfully'
     }
 
     /*Delete Row :*/

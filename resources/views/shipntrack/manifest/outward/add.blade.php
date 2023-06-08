@@ -1,26 +1,32 @@
 @extends('adminlte::page')
 
-@section('title', 'SNT In-Scan')
+@section('title', 'SNT Outwardings')
 
 @section('css')
-
+<style>
+    #checkbox {
+        width: 2rem;
+        height: 1rem;
+    }
+</style>
 <link rel="stylesheet" href="/css/styles.css">
 @stop
 @section('content_header')
 <div class="row">
-    <div class="col-0.5">
-        <!-- <a href="{{route('shipntrack.inscan')}}">
+    <!-- <div class="col-0.5">
+        <a href="{{route('shipntrack.outward')}}">
             <x-adminlte-button label="Back" class="btn-sm" theme="primary" icon="fas fa-arrow-left" />
-        </a> -->
-    </div>
+        </a>
+    </div> -->
     <div class="col text-center">
-        <h1 class="m-0 text-dark">Shipntrack IN-Scan </h1>
+        <h1 class="m-0 text-dark">SNT Outwardings</h1>
     </div>
 </div>
 @stop
 @section('content')
 <div class="row">
     <div class="col">
+
         <div class="alert_display">
             @if ($message = Session::get('success'))
             <div class="alert alert-success alert-block">
@@ -28,27 +34,19 @@
                 <strong>{{ $message }}</strong>
             </div>
             @endif
-
-            @if($message = Session::get('error'))
-            <div class=" alert alert-danger alert-block">
+        </div>
+        <div class="alert_display success">
+            @if (request('success'))
+            <div class="alert alert-success alert-block">
                 <button type="button" class="close" data-dismiss="alert">×</button>
-                <strong>{{ $message }}</strong>
+                <strong>{{request('success')}}</strong>
             </div>
             @endif
-
-            <div class="alert_display success">
-                @if (request('success'))
-                <div class="alert alert-success alert-block">
-                    <button type="button" class="close" data-dismiss="alert">×</button>
-                    <strong>{{request('success')}}</strong>
-                </div>
-                @endif
-            </div>
-
         </div>
+
     </div>
 </div>
-<div class="row">
+<div class="row  align-items-center">
     <div class="col-2">
         <div class="form-group">
             <x-adminlte-select name="mode" label="Source-Destination" id="mode">
@@ -63,12 +61,27 @@
     </div>
     <div class="col-2">
         <div class="form-group awb type d-none">
-            <x-adminlte-input label='Enter Purchase Tracking ID :' type='text' name='awb' id="awb" placeholder='Enter Tracking ID here..' required />
+            <x-adminlte-input label='Enter AWB Number:' type='text' name='awb' id="awb" placeholder='Enter AWB here..' required />
         </div>
     </div>
 
+    <div id="collapsesix" class="show  col-4 d-none">
+        <div class="py-1 d-flex">
+            <div class="col-6">
+                <x-adminlte-select label="Forwarder 2:" name="forwarder2" id="forwarder_info_2" required>
+                    <option value='0'> Forwarder 2</option>
+                </x-adminlte-select>
+            </div>
+
+            <div class="col-6">
+                <x-adminlte-input label="Forwarder 2 AWB :" name="forwarder_2_awb" type="text" placeholder="Forwarder 2 AWB" id="forwarder_2_awb" required />
+            </div>
+        </div>
+    </div>
+
+
     <div class="col">
-        <div style="margin-top: 2.0rem;">
+        <div style="margin-top: 1rem;">
             <x-adminlte-button label="Save" theme="primary" icon="fas fa-save" id="create" class=" d-none create_shipmtn_btn" />
         </div>
     </div>
@@ -78,12 +91,12 @@
 <table class="table table-bordered yajra-datatable table-striped d-none" id="report_table">
     <thead>
         <tr class="table-info table  ">
-            <th>AWB</th>
-            <th>Booking Date</th>
             <th>Consignor</th>
             <th>Consignee</th>
+            <th>AWB Number</th>
             <th>Order ID</th>
-            <th>Tracking ID</th>
+            <th>Item Name</th>
+            <th>Purchase Tracking ID</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -117,13 +130,10 @@
             return false;
         }
         let data = $('#awb').val();
-        console.log(data)
-
-
         if (validation) {
             $.ajax({
                 method: 'get',
-                url: "{{route('shipntrack.inscan.get')}}",
+                url: "{{route('shipntrack.outward.get')}}",
                 data: {
                     'awb': data,
                     'mode': mode,
@@ -137,6 +147,8 @@
                     let table = $("#table_body");
                     table.append(append_data(result))
                     // $('#awb').val('');
+                    $('.show').removeClass('d-none');
+                    forwarder();
                 },
                 error: function() {
                     alert('Invalid ID or No Data Found..');
@@ -145,36 +157,83 @@
         }
     });
 
-    function append_data(response) {
-        console.log(response)
+    function forwarder() {
 
+        let mode = $('#mode').val();
+        let split_data = mode.split("_");
+        let destination = split_data[1];
+
+        if (destination != 'NULL') {
+            $.ajax({
+                method: 'get',
+                url: "{{ route('shipntrack.forwarder.select.view') }}",
+                data: {
+                    'destination': destination,
+
+                    "_token": "{{ csrf_token() }}",
+                },
+                'dataType': 'json',
+                success: function(result) {
+                    $('#forwarder_info_2').empty();
+
+                    let forwarder_data = "<option value='0' >" + 'Select Forwarder' + "</option>";
+                    $.each(result, function(i, result) {
+                        forwarder_data += "<option value='" + result.id + "'>" + result
+                            .user_name +
+                            "</option>";
+                    });
+                    $('#forwarder_info_2').append(forwarder_data);
+                },
+                error: function(result) {
+                    alert('Error.. Please Contact Admin');
+                    return false;
+                }
+
+            });
+        }
+    };
+
+    function append_data(response) {
+
+        console.log(response);
         $('.table').removeClass('d-none')
         $('.create_shipmtn_btn').removeClass('d-none')
         let html = '';
-
         html += "<tr class='table_row'>";
-        html += "<td name='awb_number[]'>" + response.data.awb + "</td>";
-        html += "<td name='booking_date[]'>" + response.data.booking_date + "</td>";
         html += "<td name='consignor[]'>" + response.data.consignor + "</td>";
         html += "<td name='consignee[]'>" + response.data.consignee + "</td>";
+        html += "<td name='awb_number[]'>" + response.data.awb_number + "</td>";
         html += "<td name='order_id[]'>" + response.data.order_id + "</td>";
+        html += "<td name='packet_details[]'>" + response.data.packet + "</td>";
         html += "<td name='purchase_tracking_id[]'>" + response.data.purchase_tracking_id + "</td>";
-        html += '<td> <button type="button" id="remove" class="btn btn-sm btn-danger remove1">Remove</button></td>'
+        html += '<td> <button type="button" id="remove" class="ml-2 btn btn-sm btn-danger remove1">Remove</button></td>'
         html += "</tr>";
-
 
         return html;
     }
 
-
     // create Shipment//
     $(".create_shipmtn_btn").on("click", function() {
         $(this).prop('disabled', true);
-
+        let forwarder_info_2 = $('#forwarder_info_2').val();
+        let forwarder_2_awb = $('#forwarder_2_awb').val();
         let mode = $('#mode').val();
+
         let validation = true;
         if (mode == 0) {
             alert('Mode Required.. please select Mode....');
+            validation = false;
+            return false;
+        }
+        if (forwarder_info_2 == 0) {
+            alert('Forwarder 2 Required.. please select Forwarder 2....');
+            $('.create_shipmtn_btn').prop('disabled', false);
+            validation = false;
+            return false;
+        }
+        if (forwarder_2_awb == '') {
+            alert('Forwarder 2 AWB Required.. please Enter AWB...');
+            $('.create_shipmtn_btn').prop('disabled', false);
             validation = false;
             return false;
         }
@@ -185,20 +244,18 @@
             table.each(function(index, elm) {
                 let td = $(this).find('td');
 
-                data.append('awb[]', td[0].innerText);
-                data.append('booking_date[]', td[1].innerText);
-                data.append('consignor[]', td[2].innerText);
-                data.append('consignee[]', td[3].innerText);
-                data.append('Order_id[]', td[4].innerText);
-                data.append('tracking[]', td[5].innerText);
-
-
+                data.append('awb[]', td[2].innerText);
+                data.append('Order_id[]', td[3].innerText);
+                data.append('purchase_tracking_id[]', td[5].innerText);
             });
+
             let mode = $('#mode').val();
             data.append('mode', mode);
+            data.append('forwarder_2', forwarder_info_2);
+            data.append('forwarder_2_awb', forwarder_2_awb);
             $.ajax({
                 method: 'POST',
-                url: "{{route('shipntrack.inscan.store')}}",
+                url: "{{route('shipntrack.outward.store')}}",
                 data: data,
                 processData: false,
                 contentType: false,
@@ -207,7 +264,7 @@
                     $('.create_shipmtn_btn').prop('disabled', false);
                     if (response.success) {
                         // getBack();
-                        alert('In-Scan Shipment has been created successfully..');
+                        alert('Outward Shipment has created successfully');
                         location.reload();
                     }
                 },
@@ -222,9 +279,11 @@
 
     });
 
-    // *Redirect to Index:*//
+    // // *Redirect to Index:*//
     // function getBack() {
-    //     window.location.href = '/shipntrack/in-scan?success=Shipment has been created successfully'
+    //     Location.reload();
+    //     window.location.href = '/shipntrack/outward?success=Shipment has been created successfully'
+
     // }
 
     /*Delete Row :*/

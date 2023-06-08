@@ -684,13 +684,13 @@ return [
                         [
                             'text' => 'Price Updated',
                             'url' => "orders/missing/price/updated",
-                            'can' => ['Admin', 'Catalog'],
+                            'can' => ['Admin'],
                             'icon' => ' fa fa-check-circle-o',
                         ],
                         [
                             'text' => 'Zoho Dump',
                             'url' => "orders/missing/force/dump/view",
-                            'can' => ['Admin', 'Catalog'],
+                            'can' => ['Admin'],
                             'icon' => 'fa fa-plus-circle',
                         ],
                         [
@@ -1078,7 +1078,7 @@ return [
                             'icon' => 'far fa fa-cog',
                         ],
                         [
-                            'text' => 'Process Master',
+                            'text' => 'Process Management',
                             'url' => 'shipntrack/process/home',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-list-ul',
@@ -1143,7 +1143,7 @@ return [
                         ],
                         [
                             'text' => 'Outward',
-                            'url' => '',
+                            'url' => 'shipntrack/outward',
                             'can' => ['Admin'],
                             'icon' => 'fa fa-tag',
                         ],
