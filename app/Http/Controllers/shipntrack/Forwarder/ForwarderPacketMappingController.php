@@ -130,16 +130,16 @@ class ForwarderPacketMappingController extends Controller
         ];
         $mode_array = explode('_', $request->destination);
         $destination = ($mode_array[1]);
-        $ref_id = $this->generate_refrenceid($mode_array);
+        $awb_no = $this->generate_refrenceid($mode_array);
 
-      
+
         $insert_data = [
             'consignor_details' => json_encode($consignor_data),
             'consignee_details' =>  json_encode($consignee_data),
             'packet_details' =>  json_encode($packet_data),
             'shipping_details' =>  json_encode($shipping_data),
             'booking_details' =>  json_encode($booking_data),
-            'reference_id' => $ref_id,
+            'reference_id' => $request->reference_id,
             // 'forwarder_1' => $request->forwarder1,
             // 'forwarder_1_awb' => $request->forwarder_1_awb,
             // 'forwarder_1_flag' => 0,
@@ -154,7 +154,7 @@ class ForwarderPacketMappingController extends Controller
             // 'forwarder_4_flag' => 0,
             // 'status' => 0,
             'purchase_tracking_id' => $request->purchase_tracking_id,
-            'awb_no' => $request->awb_no,
+            'awb_no' => $awb_no,
         ];
 
         if ($destination == 'AE') {
@@ -537,14 +537,13 @@ class ForwarderPacketMappingController extends Controller
         if ($destination == 'AE') {
 
             $val = Trackingae::query()
-                ->select(('reference_id'))
+                ->select(('awb_no'))
                 ->OrderBy('created_at', 'desc')->first();
-        
+
             if (($val == null)) {
                 $ship_id = $mode_array[1] . $mode_array[2] . '100001';
-               
             } else {
-                $existing_id = substr($val->reference_id, 4);
+                $existing_id = substr($val->awb_no, 4);
 
                 $new_id = $existing_id + 1;
                 $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
@@ -553,7 +552,7 @@ class ForwarderPacketMappingController extends Controller
         } elseif ($destination == 'IN') {
 
             $val = Trackingin::query()
-                ->select(('reference_id'))
+                ->select(('awb_no'))
                 ->OrderBy('created_at', 'desc')->first();
 
 
@@ -561,7 +560,7 @@ class ForwarderPacketMappingController extends Controller
                 $ship_id = $mode_array[1] . $mode_array[2] . '100001';
             } else {
 
-                $existing_id = substr($val->reference_id, 4);
+                $existing_id = substr($val->awb_no, 4);
 
                 $new_id = $existing_id + 1;
                 $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
@@ -570,18 +569,17 @@ class ForwarderPacketMappingController extends Controller
         } elseif ($destination == 'SA') {
 
             $val = Trackingksa::query()
-                ->select(('reference_id'))
+                ->select(('awb_no'))
                 ->OrderBy('created_at', 'desc')->first();
 
             if ((!$val)) {
                 $ship_id = $mode_array[1] . $mode_array[2] . '100001';
             } else {
 
-                $existing_id = substr($val->reference_id, 4);
+                $existing_id = substr($val->awb_no, 4);
 
                 $new_id = $existing_id + 1;
                 $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
-
             }
             return  $ship_id;
         }

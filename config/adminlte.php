@@ -1164,7 +1164,7 @@ return [
                 ],
                 [
                     'text' => 'Invoice',
-                    'url' => 'shipntrack/invoice',
+                    'url' => 'shipntrack/invoice/index',
                     'can' => ['Admin'],
                     'icon' => 'fas fa-file-invoice',
                 ],
