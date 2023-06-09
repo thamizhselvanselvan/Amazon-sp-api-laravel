@@ -23,7 +23,15 @@ class ShipnTrackInvoiceManagementController extends Controller
             ->toArray();
 
         if ($request->ajax()) {
-            $destination = $request->destination;
+
+            $destination = '';
+            if ($request->destination == 'SA') {
+                $destination = 'KSA';
+            } else {
+
+                $destination = $request->destination;
+            }
+
             $table = table_model_change(model_path: 'ForwarderMaping', model_name: 'Tracking' . strtolower($destination), table_name: 'tracking' . strtolower($destination) . 's');
 
             $invoice_data = $table->query()
@@ -35,7 +43,7 @@ class ShipnTrackInvoiceManagementController extends Controller
                 return DataTables::of($invoice_data)
                     ->addColumn('select_all', function ($result) {
 
-                        return "<input type='checkbox' name='all' class='check_options'> ";
+                        return "<input type='checkbox' name='all[]' value='$result->id' class='check_options'> ";
                     })
                     ->addColumn('invoice_no', function ($result) {
                         $invoice_no = json_decode($result->packet_details)->invoice_no;
@@ -99,24 +107,32 @@ class ShipnTrackInvoiceManagementController extends Controller
 
     public function SNTInvoiceTemplate($destination, $id)
     {
-        $ids =  implode(",", explode('-', $id));
+        $ids =   explode('-', $id);
         $data = $this->ShipnTrackInvoiceData($destination, $ids);
-        $value = $this->ShipnTrackInvoiceDataFormatting($data);
+        $records = $this->ShipnTrackInvoiceDataFormatting($data);
 
+        po($records);
+
+        $invoice_bar_code = [];
         $generator = new BarcodeGeneratorHTML();
-        $invoice_bar_code = $generator->getBarcode($value['invoice_no'], $generator::TYPE_CODE_128);
-        po($value);
+        foreach ($records as $key => $record) {
 
-        return view('shipntrack.Invoice.ind2uae', compact('value', 'invoice_bar_code'));
+            $invoice_bar_code[] = $generator->getBarcode($records[$key]['invoice_no'], $generator::TYPE_CODE_128);
+        }
+
+        return view('shipntrack.Invoice.ind2uae', compact('records', 'invoice_bar_code'));
     }
 
     public function ShipnTrackInvoiceData($destination, $ids)
     {
 
+        if ($destination == 'SA') {
+            $destination = 'KSA';
+        }
         $table = table_model_change(model_path: 'ForwarderMaping', model_name: 'Tracking' . strtolower($destination), table_name: 'tracking' . strtolower($destination) . 's');
         $records = $table->query()
             ->select(['awb_no', 'packet_details', 'booking_details', 'shipping_details', 'packet_details'])
-            ->whereIn('id', [$ids])
+            ->whereIn('id', ($ids))
             ->get()
             ->toArray();
 
@@ -155,17 +171,8 @@ class ShipnTrackInvoiceManagementController extends Controller
             $ship_to_add = $shipping_details->shipping_address;
             $hsn_code = $shipping_details->hsn;
 
-            $product_details[$key1] = [
 
-                'item_description' => $packet_desc,
-                'hsn_code' => $hsn_code,
-                'quantity' => $quantity,
-                'product_price' => $price,
-                'currency' => $currency,
-                'taxable_value' => $tax,
-                'grand_total' => $grand_total
-            ];
-            $invoice_records = [
+            $invoice_records[$key1] = [
                 'awb_no' => $record['awb_no'],
                 'invoice_date' => $invoice_date,
                 'invoice_no' => $invoice_no,
@@ -178,10 +185,18 @@ class ShipnTrackInvoiceManagementController extends Controller
                 'bill_to_add' => $bill_to_add,
                 'ship_to_name' => $ship_to_name,
                 'ship_to_add' => $ship_to_add,
-                'product_details' => $product_details
             ];
 
-            // po($invoice_records);
+            $invoice_records[$key1]['product_details'][0] = [
+
+                'item_description' => $packet_desc,
+                'hsn_code' => $hsn_code,
+                'quantity' => $quantity,
+                'product_price' => $price,
+                'currency' => $currency,
+                'taxable_value' => $tax,
+                'grand_total' => $grand_total
+            ];
         }
 
         return $invoice_records;

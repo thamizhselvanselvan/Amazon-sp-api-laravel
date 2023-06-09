@@ -6,7 +6,7 @@
     <div class="row ">
         <h1>ShipnTrack Invoice Management</h1>
         <div class="col"></div>
-        <div class="col-2 d-flex justify-content-end ">
+        <div class="col-6 d-flex justify-content-end ">
             <div class="form-group">
                 <x-adminlte-select name="mode" id="mode">
                     <option value="0">Select Mode</option>
@@ -18,6 +18,12 @@
             </div>
             <div class="form-group ">
                 <x-adminlte-button label="Search" theme="primary" icon="fas fa-search" id="search" class=" ml-2" />
+
+            </div>
+            <div class="form-group ">
+                <x-adminlte-button label="Print Selected" target="_blank" id='print_selected' theme="success"
+                    icon="fas fa-print" class=" ml-2" />
+
             </div>
         </div>
     </div>
@@ -67,12 +73,16 @@
 
     <script type="text/javascript">
         $('#selectAll').click(function() {
+
             if ($(this).is(':checked')) {
                 $('.check_options').prop('checked', true);
             } else {
                 $('.check_options').prop('checked', false);
             }
+
         });
+
+
         $('#search').click(function() {
 
             $('#selectAll').prop('checked', false);
@@ -173,6 +183,25 @@
                     }
                 ],
             });
+
+        });
+
+        $('#print_selected').click(function() {
+
+            let ids = '';
+            let count = 0;
+            let destination = $('#mode').val();
+
+            $("input[name='all[]']:checked").each(function() {
+                if (count == 0) {
+                    ids = $(this).val();
+                } else {
+                    ids += '-' + $(this).val();
+                }
+                count++;
+            });
+            window.open("/shipntrack/invoice/template/" + destination + "/" + ids, "_blank");
+
         });
     </script>
 @stop
