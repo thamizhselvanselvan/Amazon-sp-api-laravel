@@ -2,8 +2,9 @@
 
 namespace App\Models\ShipNTrack\Inventory;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ShipNTrack\Courier\CourierPartner;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Manifest_Item extends Model
 {
@@ -22,4 +23,9 @@ class Manifest_Item extends Model
         'forwarder_1_awb',
         'international_awb_number',
     ];
+      public function CourierPartner1()
+    {
+        return $this->hasOne(CourierPartner::class, 'id', 'forwarder_1');
+    }
+
 }

@@ -2,8 +2,9 @@
 
 namespace App\Models\ShipNTrack\Inventory;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ShipNTrack\Process\Process_Master;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Inwarding_detail extends Model
 {
@@ -23,4 +24,8 @@ class Inwarding_detail extends Model
         'item_received_status',
         'outward_status',
     ];
+     public function process()
+    {
+        return $this->hasOne(Process_Master::class, 'id', 'mode');
+    }
 }

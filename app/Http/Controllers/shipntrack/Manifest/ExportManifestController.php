@@ -24,7 +24,7 @@ class ExportManifestController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    return '<div class="d-flex"><a href="/shipntrack/export/' . $row->id . '/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
+                    return '<div class="d-flex justify-content-center align-items-center"><a href="/shipntrack/export/' . $row->manifest_id . '/details_view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -127,5 +127,10 @@ class ExportManifestController extends Controller
             }
         }
         return response()->json(['success' => 'Shipment has Created successfully']);
+    }
+
+    public function details_view(Request $request,$manifest_id){
+        $data = Manifest_Item::with(['CourierPartner1'])->where(['manifest_id' =>  $manifest_id])->get();
+        return view('shipntrack.manifest.export.view',compact('data'));
     }
 }
