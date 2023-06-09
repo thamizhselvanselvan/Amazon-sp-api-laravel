@@ -101,7 +101,7 @@ class ZohoOrder
                     'Store Name = ' . $store_name .' '.
                     'Store ID = ' . $order_item_details->seller_identifier .' '.
                     'Amazon Order ID = ' . $amazon_order_id . ' ' .
-                    'Order Item Identifier = ' .  $amazon_order_id;
+                    'Order Item Identifier = ' .  $order_item_id;
 
                 slack_notification('app360', 'Zoho Booking', $slackMessage);
 
