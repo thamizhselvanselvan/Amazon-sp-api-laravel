@@ -14,6 +14,5 @@ class Process_Master extends Model
         'source',
         'destination',
         'process_id',
-
     ];
 }
