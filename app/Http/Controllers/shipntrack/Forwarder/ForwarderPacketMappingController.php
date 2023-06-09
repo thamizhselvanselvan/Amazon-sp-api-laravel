@@ -131,6 +131,9 @@ class ForwarderPacketMappingController extends Controller
         $mode_array = explode('_', $request->destination);
         $destination = ($mode_array[1]);
         $awb_no = $this->generate_refrenceid($mode_array);
+        $mode = $mode_array[0];
+
+
 
 
         $insert_data = [
@@ -155,6 +158,7 @@ class ForwarderPacketMappingController extends Controller
             // 'status' => 0,
             'purchase_tracking_id' => $request->purchase_tracking_id,
             'awb_no' => $awb_no,
+            'mode' => $mode
         ];
 
         if ($destination == 'AE') {
