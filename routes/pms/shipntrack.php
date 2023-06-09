@@ -154,6 +154,7 @@ Route::get('shipntrack/inward', 'shipntrack\Manifest\InwardController@index')->n
 Route::get('shipntrack/inward/view', 'shipntrack\Manifest\InwardController@inw_view')->name('shipntrack.inward.view');
 Route::get('shipntrack/inward/get/data', 'shipntrack\Manifest\InwardController@inw_data_fech')->name('shipntrack.inward.get');
 Route::post('shipntrack/inward/store', 'shipntrack\Manifest\InwardController@store')->name('shipntrack.inward.store');
+Route::get('shipntrack/inward/verify', 'shipntrack\Manifest\InwardController@verify')->name('shipntrack.inward.verify');
 
 /* Outward Shipment */
 Route::get('shipntrack/outward', 'shipntrack\Manifest\OutwardController@index')->name('shipntrack.outward');

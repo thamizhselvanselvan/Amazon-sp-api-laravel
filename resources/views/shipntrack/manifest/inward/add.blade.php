@@ -4,9 +4,8 @@
 
 @section('css')
 <style>
-    #checkbox {
-        width: 2rem;
-        height: 1rem;
+    .table td {
+        padding-left: 10px !important;
     }
 </style>
 <link rel="stylesheet" href="/css/styles.css">
@@ -55,6 +54,11 @@
             <x-adminlte-input label='Enter International AWB :' type='text' name='awb' id="awb" placeholder='Enter Forwarder AWB here..' required />
         </div>
     </div>
+    <div class="col-2 local d-none">
+        <div class=" awb type">
+            <x-adminlte-input label='Enter Local AWB :' type='text' name='local' id="local" placeholder='Enter Local AWB here..' required />
+        </div>
+    </div>
 
     <div class="col text-right">
         <div style="margin-top: 1.8rem;">
@@ -95,7 +99,6 @@
         $('.awb').removeClass('d-none');
     });
 
-
     $(document).on("focusout", "#awb", function(e) {
         e.stopPropagation();
 
@@ -123,6 +126,7 @@
                     }
                     let table = $("#table_body");
                     table.append(append_data(result))
+                    $('.local').removeClass('d-none');
                     // $('#awb').val('');
                 },
                 error: function() {
@@ -139,6 +143,7 @@
         $('.create_shipmtn_btn').removeClass('d-none')
         let html = '';
         $.each(response.data, function(index, value) {
+            let item_class = 'item_' + value.awb;
             html += "<tr class='table_row'>";
             // html += "<td name='total_items[]'>" + value.total_items + "</td>";
             html += "<td name='total_items[]'>" + value.total_items + "</td>";
@@ -147,15 +152,72 @@
             html += "<td name='destination[]'>" + value.destination + "</td>";
             html += "<td name='purchase_tracking_id[]'>" + value.purchase_tracking_id + "</td>";
             html += "<td name='order_id[]'>" + value.order_id + "</td>";
-            html += '<td> <input type="checkbox" value="1" name="checkbox[]" id="checkbox"> </td>';
+            // html += '<td> <input type="checkbox" value="1" name="checkbox[]" id="checkbox"> </td>';
+            html += "<td name='status[]' class='" + item_class + " status'>" + '-NO-' + "</td>";
             // html += '<td> <button type="button" id="remove" class="ml-2 btn btn-sm btn-danger remove1">Remove</button></td>'
             html += "</tr>";
-
-
 
         });
         return html;
     }
+
+
+    // local scan
+    $(document).on("focusout", "#local", function(e) {
+        e.stopPropagation();
+
+        let mode = $('#mode').val();
+        let validation = true;
+        if (mode == 0) {
+            alert('Mode Required.. please select Mode....');
+            validation = false;
+            return false;
+        }
+        let data = $('#local').val();
+        console.log(data);
+
+        if (validation) {
+            $.ajax({
+                method: 'get',
+                url: "{{route('shipntrack.inward.verify')}}",
+                data: {
+                    'awb': data,
+                    'mode': mode,
+                    "_token": "{{ csrf_token() }}",
+                },
+                success: function(result) {
+
+                    if (result.hasOwnProperty('error')) {
+                        alert(result.error);
+                        return false;
+                    }
+
+                    let table = $("#table_body");
+                    ref_existing_data(result);
+                },
+                error: function() {
+                    alert('Invalid ID or No Data Found..');
+                }
+            });
+        }
+    });
+
+
+    function ref_existing_data(response) {
+
+        let html = '';
+        let awb = response.data[0].awb;
+        if (awb) {
+            let id = '.item_' + awb;
+            let title = '-YES-';
+            $(id).text(title);
+        } else {
+            alert('Something Went Wrong. Contact Admin.');
+        }
+
+        return html;
+    }
+
 
     // create Shipment//
     $(".create_shipmtn_btn").on("click", function() {
@@ -180,12 +242,12 @@
                 data.append('international_awb_number', td[2].innerText);
                 data.append('purchase_tracking_id[]', td[4].innerText);
                 data.append('Order_id[]', td[5].innerText);
-
-                var $chkbox = $(this).find('input[type="checkbox"]');
-                if ($chkbox.length) {
-                    var status = $chkbox.prop('checked');
-                    data.append('chkbox[]', status);
-                }
+                data.append('status[]', td[6].innerText);
+                // var $chkbox = $(this).find('input[type="checkbox"]');
+                // if ($chkbox.length) {
+                //     var status = $chkbox.prop('checked');
+                //     data.append('chkbox[]', status);
+                // }
 
             });
 
