@@ -148,12 +148,14 @@ Route::get('shipntrack/export/manifest', 'shipntrack\Manifest\ExportManifestCont
 Route::get('shipntrack/export/export/view', 'shipntrack\Manifest\ExportManifestController@export_view')->name('shipntrack.export.view');
 Route::get('shipntrack/export/single/fetch', 'shipntrack\Manifest\ExportManifestController@single_fetch')->name('shipntrack.export.single.fetch');
 Route::post('shipntrack/export/export/store', 'shipntrack\Manifest\ExportManifestController@export_store')->name('shipntrack.export.store');
+Route::get('shipntrack/export/{id}/details_view', 'shipntrack\Manifest\ExportManifestController@details_view')->name('shipntrack.export.details_view');
 
 /* Inward Shipment */
 Route::get('shipntrack/inward', 'shipntrack\Manifest\InwardController@index')->name('shipntrack.inward');
 Route::get('shipntrack/inward/view', 'shipntrack\Manifest\InwardController@inw_view')->name('shipntrack.inward.view');
 Route::get('shipntrack/inward/get/data', 'shipntrack\Manifest\InwardController@inw_data_fech')->name('shipntrack.inward.get');
 Route::post('shipntrack/inward/store', 'shipntrack\Manifest\InwardController@store')->name('shipntrack.inward.store');
+Route::get('shipntrack/inward/{id}/view', 'shipntrack\Manifest\InwardController@edit_view')->name('shipntrack.inward.edit_view');
 
 /* Outward Shipment */
 Route::get('shipntrack/outward', 'shipntrack\Manifest\OutwardController@index')->name('shipntrack.outward');

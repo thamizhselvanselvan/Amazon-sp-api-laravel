@@ -12,6 +12,7 @@ use App\Models\ShipNTrack\Process\Process_Master;
 use App\Models\ShipNTrack\Inventory\Manifest_Master;
 use App\Models\ShipNTrack\Inventory\Inwarding_detail;
 
+
 class InwardController extends Controller
 {
     public function index(Request $request)
@@ -22,7 +23,7 @@ class InwardController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    return '<div class="d-flex"><a href="/shipntrack/inward/' . $row->id . '/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
+                    return '<div class="d-flex"><a href="/shipntrack/inward/' . $row->shipment_id . '/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -122,5 +123,11 @@ class InwardController extends Controller
             Inwarding_detail::create($data);
         }
         return response()->json(['success' => 'Shipment has Created successfully']);
+    }
+
+    public function edit_view(Request $request,$shipment_id){
+
+        $data = Inwarding_detail::with(['process'])->where(['shipment_id' =>   $shipment_id])->get();
+        return view('shipntrack.manifest.inward.view',compact('data'));
     }
 }
