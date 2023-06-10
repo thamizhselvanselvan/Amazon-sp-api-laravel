@@ -168,7 +168,7 @@ class ZohoOrderFormat
 
         $buyerDtls = (object)$value->shipping_address;
         //City
-        if (!isset($buyerDtls->Name) | !isset($buyerDtls->AddressLine1)) {
+        if (!isset($buyerDtls->Name) | (!isset($buyerDtls->AddressLine1) && !isset($buyerDtls->AddressLine2))) {
 
             ZohoMissing::insert([
                 'country_code' => 'us', 
