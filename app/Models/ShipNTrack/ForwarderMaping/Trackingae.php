@@ -5,6 +5,7 @@ namespace App\Models\ShipNTrack\ForwarderMaping;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ShipNTrack\Courier\Courier;
 use App\Models\ShipNTrack\Courier\CourierPartner;
+use App\Models\ShipNtrack\Process\Process_Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Trackingae extends Model
@@ -14,6 +15,7 @@ class Trackingae extends Model
     protected $table = 'tracking_aes';
     protected $fillable = [
         'awb_no',
+        'mode',
         'reference_id',
         'consignor_details',
         'consignee_details',

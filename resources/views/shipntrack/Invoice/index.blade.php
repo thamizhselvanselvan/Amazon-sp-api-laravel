@@ -11,7 +11,7 @@
                 <x-adminlte-select name="mode" id="mode">
                     <option value="0">Select Mode</option>
                     @foreach ($values as $value)
-                        <option value="{{ $value['destination'] }}">
+                        <option value="{{ $value['id'] . '-' . $value['source'] . '-' . $value['destination'] }}">
                             {{ $value['source'] . '2' . $value['destination'] }}</option>
                     @endforeach
                 </x-adminlte-select>
@@ -50,6 +50,7 @@
                 <tr class="text-bold bg-info">
                     <th>Select All <input type="checkbox" id="selectAll" /></th>
                     <th>Invoice No.</th>
+                    <th>Mode</th>
                     <th>AWB No.</th>
                     <th>Invoice Date</th>
                     <th>Channel</th>
@@ -114,6 +115,12 @@
                         name: 'invoice_no',
                         orderable: false,
                         searchable: false
+                    },
+                    {
+                        data: 'mode',
+                        name: 'mode',
+                        orderable: false,
+                        searchable: false,
                     },
                     {
                         data: 'awb_no',

@@ -13,6 +13,7 @@ class Trackingksa extends Model
     protected $table = 'tracking_ksa';
     protected $fillable = [
         'awb_no',
+        'mode',
         'reference_id',
         'consignor_details',
         'consignee_details',
