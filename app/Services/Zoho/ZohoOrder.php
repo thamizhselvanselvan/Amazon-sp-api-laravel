@@ -101,7 +101,7 @@ class ZohoOrder
                     'Store Name = ' . $store_name .' '.
                     'Store ID = ' . $order_item_details->seller_identifier .' '.
                     'Amazon Order ID = ' . $amazon_order_id . ' ' .
-                    'Order Item Identifier = ' .  $amazon_order_id;
+                    'Order Item Identifier = ' .  $order_item_id;
 
                 slack_notification('app360', 'Zoho Booking', $slackMessage);
 
@@ -110,7 +110,7 @@ class ZohoOrder
                         'order_item_id' => $order_item_id,
                         'amazon_order_id' => $amazon_order_id
                     ])
-                    ->update(['zoho_status' => '3']);
+                    ->update(['zoho_status' => 5]);
             }
 
             if ($zoho_search_order_exists && $force_update) {
