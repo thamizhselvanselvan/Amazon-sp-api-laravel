@@ -11,10 +11,9 @@ class Inward extends Model
     protected $connection = 'shipntracking';
     protected $table = 'inwardings';
     protected $fillable = [
-        'manifest_id',
-        'mode',
-        'type',
-        'awb_number',
-        'status'
+        'shipment_id',
+        'total_items_in_export',
+        'total_items_receved',
+        'international_awb_number',
     ];
 }

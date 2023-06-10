@@ -23,14 +23,14 @@
     <div class="col-2">
         <div style="margin-top:-0.1rem">
             <a href="{{route('shipntrack.inward.view')}}">
-                <x-adminlte-button label="Create Shipment" class="btn-sm" theme="primary" icon="fas fa-plus" />
+                <x-adminlte-button label="Create New Shipment" class="btn-sm" theme="primary" icon="fas fa-plus" />
             </a>
         </div>
     </div>
     <div class="col-2"></div>
     <div class="col-6">
 
-        <h1 class="m-0 text-dark"> SNT Inward Shipment</h1>
+        <h1 class="m-0 text-dark"> SNT Inwardings</h1>
     </div>
 </div>
 
@@ -70,11 +70,11 @@
                 <thead>
                     <tr class="table-info">
                         <th>ID</th>
-                        <th>Manifest ID</th>
-                        <th>Mode</th>
-                        <th>Outward Type</th>
-                        <th>AWB number </th>
-                        <th>Status</th>
+                        <th>Shipment ID</th>
+                        <th>Total Items In Exported</th>
+                        <th>Total Items Received</th>
+                        <th>Intl. AWB number </th>
+                        
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -108,24 +108,20 @@
                     searchable: false
                 },
                 {
-                    data: 'manifest_id',
-                    name: 'manifest_id'
+                    data: 'shipment_id',
+                    name: 'shipment_id'
                 },
                 {
-                    data: 'mode',
-                    name: 'mode'
+                    data: 'total_items_in_export',
+                    name: 'total_items_in_export'
                 },
                 {
-                    data: 'type',
-                    name: 'type'
+                    data: 'total_items_receved',
+                    name: 'total_items_receved'
                 },
                 {
-                    data: 'awb_number',
-                    name: 'awb_number'
-                },
-                {
-                    data: 'status',
-                    name: 'status'
+                    data: 'international_awb_number',
+                    name: 'international_awb_number'
                 },
 
                 {

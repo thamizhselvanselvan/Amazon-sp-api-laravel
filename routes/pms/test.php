@@ -1,16 +1,14 @@
 <?php
 
-use Carbon\Carbon;
-use GuzzleHttp\Client;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Route;
 use App\Models\order\OrderItemDetails;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Response;
 use App\Services\Inventory\InventoryCsvImport;
+use Carbon\Carbon;
 use Google\Cloud\Translate\V2\TranslateClient;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\CssSelector\XPath\Extension\FunctionExtension;
 
 Route::middleware('can:Admin')->group(function () {
@@ -560,7 +558,6 @@ Route::get('smsa-test/{order_item_id}', function ($order_item_id) {
 
     $weight = $package->weight->value;
 
-
     $url = 'https://track.smsaexpress.com/SecomRestWebApi/api/addship';
 
     $params = [
@@ -576,7 +573,7 @@ Route::get('smsa-test/{order_item_id}', function ($order_item_id) {
         "cMobile" => $phone,
         "cTel1" => "",
         "cTel2" => "",
-        "cAddr1" =>  $AddressLine1,
+        "cAddr1" => $AddressLine1,
         "cAddr2" => $AddressLine2,
         "shipType" => "DLV",
         "PCs" => $pieces,
@@ -584,7 +581,7 @@ Route::get('smsa-test/{order_item_id}', function ($order_item_id) {
         "carrValue" => "",
         "carrCurr" => "",
         "codAmt" => "",
-        "weight" => $weight,
+        "weight" => $weight, //$weight * 0.45359237
         "itemDesc" => $item_name,
         "custVal" => "",
         "custCurr" => "",
@@ -606,6 +603,100 @@ Route::get('smsa-test/{order_item_id}', function ($order_item_id) {
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
         ])->post($url, $params);
+
+        $result = json_decode($response->body(), true);
+
+        dd($result);
+
+    } catch (\Exception $e) {
+        // Handle the exception
+        return $e->getMessage();
+    }
+
+});
+
+Route::get('smsa-test-uae-ksa', function () {
+
+    $environmentUrl = 'https://ecomapis.smsaexpress.com'; // Replace with the appropriate URL for your environment
+//$apiKey = '6ff3d5245acf42ddaab68e329d2b3e1c'; // Replace with your actual API key
+
+    $currentTimestamp = Carbon::now()->timestamp;
+    $formattedDate = Carbon::createFromTimestamp($currentTimestamp)->toIso8601String();
+
+// Prepare the request data
+    $requestData = $requestData = [
+        "ConsigneeAddress" => [
+            "ContactName" => "SMSA Express JED",
+            "ContactPhoneNumber" => "96600000",
+            "ContactPhoneNumber2" => "",
+            "Coordinates" => "",
+            "Country" => "SA",
+            "District" => "",
+            "PostalCode" => "",
+            "City" => "Jeddah",
+            "AddressLine1" => "سمسا حي الروضة",
+            "AddressLine2" => "Ar Rawdah, Jeddah 23434",
+            "ConsigneeID" => "", //Valid Saudi ID/Iqama
+        ],
+        "ShipperAddress" => [
+            "ContactName" => "Shipper name",
+            "ContactPhoneNumber" => "96600000000",
+            "Coordinates" => "",
+            "Country" => "AE",
+            "District" => "",
+            "PostalCode" => "",
+            "City" => "Dubai",
+            "AddressLine1" => "ShipperAddress 1",
+            "AddressLine2" => "ShipperAddress 2",
+        ],
+        "OrderNumber" => "FirstOrder001",
+        "DeclaredValue" => 10,
+        "CODAmount" => 10,
+        "Parcels" => 1,
+        "ShipDate" => $formattedDate,
+        "ShipmentCurrency" => "SAR",
+        "SMSARetailID" => "0",
+        "WaybillType" => "",
+        "Weight" => 1,
+        "WeightUnit" => "KG",
+        "ContentDescription" => "item name",
+        // "VatPaid" => "",
+        // "DutyPaid" => ""
+    ];
+
+// Create a new Guzzle HTTP client
+
+    try {
+        $response = Http::withHeaders([
+            'apikey' => $apiKey,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->post($environmentUrl . '/api/shipment/b2c/new', $requestData);
+
+        $result = json_decode($response->body(), true);
+
+        dd($result);
+
+    } catch (\Exception $e) {
+        // Handle the exception
+        return $e->getMessage();
+    }
+
+});
+
+Route::get('smsa-test-uae-ksa-tracking/{awb}', function ($awb) {
+
+    //$awb = (array)$awb;
+
+    $environmentUrl = 'https://ecomapis.smsaexpress.com';
+    $apiKey = '6ff3d5245acf42ddaab68e329d2b3e1c';
+
+    try {
+        $response = Http::withHeaders([
+            'apikey' => $apiKey,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+        ])->get($environmentUrl . '/api/track/single/{AWB}');
 
         $result = json_decode($response->body(), true);
 

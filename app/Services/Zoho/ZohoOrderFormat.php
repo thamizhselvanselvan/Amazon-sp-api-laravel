@@ -170,7 +170,7 @@ class ZohoOrderFormat
         //City
         if (!isset($buyerDtls->Name) | !isset($buyerDtls->AddressLine1)) {
 
-            US_Price_Missing::insert([
+            ZohoMissing::insert([
                 'country_code' => 'us', 
                 'title' => $value->title, 
                 'asin' => $value->asin, 

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models\ShipNtrack\Inventory;
+namespace App\Models\ShipNTrack\Inventory;
 
-use App\Models\ShipNtrack\Process\Process_Master;
+use App\Models\ShipNTrack\Process\Process_Master;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
