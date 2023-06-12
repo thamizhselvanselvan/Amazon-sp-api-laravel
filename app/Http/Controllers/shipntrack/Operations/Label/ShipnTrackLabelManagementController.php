@@ -60,7 +60,7 @@ class ShipnTrackLabelManagementController extends Controller
                         $split = preg_split("/-booking-details-?/", $record->booking_details);
                         $order_no = count($split) > 2 ? $split[1] : $split[0];
                         $order_no = json_decode($order_no);
-                        return $order_no->order_id;
+                        return $order_no->order_id ?? '';
                     })
                     ->editColumn('awb_no', function ($record) {
                         return $record->awb_no;
@@ -70,21 +70,21 @@ class ShipnTrackLabelManagementController extends Controller
                         $split = preg_split("/-shipping-details-?/", $record->shipping_details);
                         $shipping_address = count($split) > 2 ? $split[1] : $split[0];
                         $courier_name = json_decode($shipping_address);
-                        return $courier_name->shipped_by;
+                        return $courier_name->shipped_by ?? '';
                     })
                     ->editColumn('order_date', function ($record) {
 
                         $split_date = preg_split("/-booking-details-?/", $record->booking_details);
                         $booked_date = count($split_date) > 2 ? $split_date[1] : $split_date[0];
                         $order_date = json_decode($booked_date);
-                        return $order_date->booking_date;
+                        return $order_date->booking_date ?? '';
                     })
                     ->editColumn('customer_name', function ($record) {
 
                         $split_customer = preg_split("/-customer-details-?/", $record->customer_details);
                         $customer_address = count($split_customer) > 2 ? $split_customer[1] : $split_customer[0];
                         $customer_name = json_decode($customer_address);
-                        return $customer_name->consignee;
+                        return $customer_name->consignee ?? '';
                     })
                     ->addColumn('action', function ($record) use ($destination) {
                         $id = $record->id;

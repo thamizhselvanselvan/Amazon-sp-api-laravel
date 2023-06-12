@@ -32,7 +32,8 @@ class ShipnTrackInvoiceManagementController extends Controller
 
             $table = table_model_change(model_path: 'ForwarderMaping', model_name: 'Tracking' . strtolower($destination), table_name: 'tracking' . strtolower($destination) . 's');
             $table_des = strtolower($destination);
-            $table_name = "tracking_$table_des" . "s";
+            $table_name = $table_des != 'ksa' ? "tracking_$table_des" . "s" : "tracking_$table_des";
+
             $invoice_data = $table->query()
                 ->select(["$table_name.id", "$table_name.awb_no", "$table_name.packet_details", "$table_name.booking_details", "$table_name.shipping_details", "$table_name.packet_details", "process_masters.source", "process_masters.destination"])
                 ->join("process_masters", "$table_name.mode", "=", "process_masters.id")
@@ -48,7 +49,7 @@ class ShipnTrackInvoiceManagementController extends Controller
                         return "<input type='checkbox' name='all[]' value='$result->id' class='check_options'> ";
                     })
                     ->addColumn('invoice_no', function ($result) {
-                        $invoice_no = json_decode($result->packet_details)->invoice_no;
+                        $invoice_no = json_decode($result->packet_details)->invoice_no ?? '';
                         return $invoice_no;
                     })
                     ->addColumn('mode', function ($result) {
@@ -56,19 +57,19 @@ class ShipnTrackInvoiceManagementController extends Controller
                         return $mode;
                     })
                     ->addColumn('invoice_date', function ($result) {
-                        $invoice_date = json_decode($result->booking_details)->booking_date;
+                        $invoice_date = json_decode($result->booking_details)->booking_date ?? '';
                         return $invoice_date;
                     })
                     ->addColumn('channel', function ($result) {
-                        $channel = json_decode($result->shipping_details)->shipping_channel;
+                        $channel = json_decode($result->shipping_details)->shipping_channel ?? '';
                         return $channel;
                     })
                     ->addColumn('shipped_by', function ($result) {
-                        $shipped_by = json_decode($result->shipping_details)->shipped_by;
+                        $shipped_by = json_decode($result->shipping_details)->shipped_by ?? '';
                         return $shipped_by;
                     })
                     ->addColumn('store_name', function ($result) {
-                        $store_name = json_decode($result->shipping_details)->store;
+                        $store_name = json_decode($result->shipping_details)->store ?? '';
                         return $store_name;
                     })
                     ->addColumn('bill_to_name', function ($result) {
@@ -76,19 +77,19 @@ class ShipnTrackInvoiceManagementController extends Controller
                         return $bill_to_name;
                     })
                     ->addColumn('ship_to_name', function ($result) {
-                        $ship_to_name = json_decode($result->shipping_details)->ship_to_name;
+                        $ship_to_name = json_decode($result->shipping_details)->ship_to_name ?? '';
                         return $ship_to_name;
                     })
                     ->addColumn('sku', function ($result) {
-                        $sku = json_decode($result->shipping_details)->sku;
+                        $sku = json_decode($result->shipping_details)->sku ?? '';
                         return $sku;
                     })
                     ->addColumn('quantity', function ($result) {
-                        $quantity = json_decode($result->packet_details)->quantity;
+                        $quantity = json_decode($result->packet_details)->quantity ?? '';
                         return $quantity;
                     })
                     ->addColumn('price', function ($result) {
-                        $price = json_decode($result->packet_details)->price;
+                        $price = json_decode($result->packet_details)->price ?? '';
                         return $price;
                     })
                     ->addColumn('action', function ($result) use ($mode) {
