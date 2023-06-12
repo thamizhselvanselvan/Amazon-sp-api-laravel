@@ -17,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 use App\Models\ShipNTrack\Courier\CourierPartner;
 use App\Models\ShipNTrack\ForwarderMaping\IntoAE;
 use App\Models\ShipNTrack\Packet\PacketForwarder;
-use App\Models\ShipNtrack\Process\Process_Master;
+use App\Models\ShipNTrack\Process\Process_Master;
 use App\Models\ShipNTrack\ForwarderMaping\IntoKSA;
 use App\Models\ShipNTrack\ForwarderMaping\USAtoAE;
 use App\Models\ShipNTrack\ForwarderMaping\USAtoKSA;

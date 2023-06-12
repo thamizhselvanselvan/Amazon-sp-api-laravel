@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Shipntrack\ProcessManagement;
+namespace App\Http\Controllers\shipntrack\ProcessManagement;
 
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ShipNtrack\Process\Process_Master;
+use App\Models\ShipNTrack\Process\Process_Master;
 
 
 class ProcessManagementController extends Controller

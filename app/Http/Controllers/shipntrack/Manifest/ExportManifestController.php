@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Yajra\DataTables\Facades\DataTables;
-use App\Models\ShipNtrack\Inventory\In_Scan;
-use App\Models\ShipNtrack\Process\Process_Master;
+use App\Models\ShipNTrack\Inventory\In_Scan;
+use App\Models\ShipNTrack\Process\Process_Master;
 use App\Models\ShipNTrack\Inventory\Manifest_Item;
 use App\Models\ShipNTrack\Inventory\Manifest_Master;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
@@ -24,7 +24,7 @@ class ExportManifestController extends Controller
             return DataTables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    return '<div class="d-flex"><a href="/shipntrack/export/' . $row->id . '/view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
+                    return '<div class="d-flex justify-content-center align-items-center"><a href="/shipntrack/export/' . $row->manifest_id . '/details_view" class="edit btn btn-success btn-sm"><i class="fas fa-edit"></i> View</a>';
                 })
                 ->rawColumns(['action'])
                 ->make(true);
@@ -77,18 +77,19 @@ class ExportManifestController extends Controller
             $new_id = $existing_id + 1;
             $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
         }
-       
+
         foreach ($request->awb as $key => $awb) {
 
             $no_of_items[] = ($request->order_id[$key]);
+            // $intl_awb = $request->forwarder_1_awb;
         }
         /* Insert Manifest masters */
-        $intl_awb = $request->international_awb;
+
         $data = [
             'manifest_id' => $ship_id,
             'total_items' => count($no_of_items),
             'awb_number' => $awb,
-            'international_awb_number' => $intl_awb,
+            'international_awb_number' =>  $request->forwarder_1_awb,
 
         ];
         Manifest_Master::create($data);
@@ -98,7 +99,7 @@ class ExportManifestController extends Controller
             $manifest_items = [
                 'manifest_id' => $ship_id,
                 'awb' =>  $awb,
-                'international_awb_number' => $intl_awb,
+                'international_awb_number' =>  $request->forwarder_1_awb,
                 'inscan_manifest_id' =>  $request->inscan_manefist[$key],
                 'order_id' =>  $request->order_id[$key],
                 'destination' => $request->destination[$key],
@@ -114,16 +115,22 @@ class ExportManifestController extends Controller
             $insert_data = [
                 'forwarder_1' => $request->forwarder_1,
                 'forwarder_1_awb' => $request->forwarder_1_awb,
+                'forwarder_1_flag' => 0,
             ];
 
             if ($request->destination[$key] == 'AE') {
                 Trackingae::where('purchase_tracking_id', $request->tracking[$key])->update($insert_data);
             } elseif ($request->destination[$key] == 'IN') {
                 Trackingin::where('purchase_tracking_id', $request->tracking[$key])->update($insert_data);
-            } elseif ($request->destination[$key] == 'KSA') {
+            } elseif ($request->destination[$key] == 'SA') {
                 Trackingksa::where('purchase_tracking_id', $request->tracking[$key])->update($insert_data);
             }
         }
         return response()->json(['success' => 'Shipment has Created successfully']);
+    }
+
+    public function details_view(Request $request,$manifest_id){
+        $data = Manifest_Item::with(['CourierPartner1'])->where(['manifest_id' =>  $manifest_id])->get();
+        return view('shipntrack.manifest.export.view',compact('data'));
     }
 }

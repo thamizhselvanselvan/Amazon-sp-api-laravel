@@ -23,7 +23,7 @@
     <div class="col-2">
         <div style="margin-top:-0.1rem">
             <a href="{{route('shipntrack.export.view')}}">
-                <x-adminlte-button label="Export Manifest" class="btn-sm" theme="primary" icon="fas fa-file-export" />
+                <x-adminlte-button label="Export New Manifest" class="btn-sm" theme="primary" icon="fas fa-file-export" />
             </a>
         </div>
     </div>
@@ -72,7 +72,7 @@
                         <th>ID</th>
                         <th>Manifest ID</th>
                         <th>Total Items</th>
-                        <th>Intl. AWB No.</th>
+                        <th>AWB No.</th>
                         <th>Action</th>
                     </tr>
                 </thead>
