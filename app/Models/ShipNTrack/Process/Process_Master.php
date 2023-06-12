@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\ShipNtrack\Process;
+namespace App\Models\ShipNTrack\Process;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
