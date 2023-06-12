@@ -26,63 +26,6 @@ class ShipnTrackLabelManagementController extends Controller
         $this->middleware('auth')->except('LabelPdfTemplateShow');
     }
 
-    // public function index(Request $request)
-    // {
-
-    //     $values = LabelMaster::select('id', 'source', 'destination')
-    //         ->groupBy('source', 'destination')
-    //         ->orderBy('id', 'ASC')
-    //         ->get()
-    //         ->toArray();
-
-    //     if ($request->ajax()) {
-
-    //         $records = DB::connection('shipntracking')->select("SELECT
-    //             GROUP_CONCAT(DISTINCT sntlabels.id)as id, order_no,
-    //             GROUP_CONCAT(DISTINCT sntlabels.order_item_id)as order_item_id,
-    //             GROUP_CONCAT(DISTINCT sntlabels.order_date)as order_date,
-    //             GROUP_CONCAT(DISTINCT sntlabels.customer_name)as customer_name,
-    //             GROUP_CONCAT(DISTINCT sntlabels.bag_no)as bag_no,
-    //             GROUP_CONCAT(DISTINCT sntlabels.awb_no)as awb_no,
-    //             GROUP_CONCAT(DISTINCT sntlabels.forwarder)as forwarder,
-    //             GROUP_CONCAT(DISTINCT sntlabels.order_date)as purchase_date,
-    //             GROUP_CONCAT(DISTINCT sntlabels.sku)as seller_sku,
-    //             GROUP_CONCAT(DISTINCT master.source)as source,
-    //             GROUP_CONCAT(DISTINCT master.destination)as destination
-    //             FROM labels as sntlabels
-    //             JOIN label_masters as master
-    //             ON sntlabels.mode=master.id
-    //             GROUP BY sntlabels.order_no,master.source,master.destination
-    //             ");
-
-    //         return DataTables::of($records)
-    //             ->addColumn('select_all', function ($records) {
-    //                 return "<input class='check_options' type='checkbox' value='$records->id' name='options[]' >";
-    //             })
-    //             ->addColumn('mode', function ($records) {
-    //                 $mode =  $records->source . '2' . $records->destination;
-    //                 return $mode;
-    //             })
-    //             ->addColumn('action', function ($records) {
-    //                 $id = $records->id;
-    //                 $action = "<div class='d-flex justify-content-center'>
-    //                                 <a href='/shipntrack/label/template/$id 'class='edit btn btn-success btn-sm ml-2 mr-2' target='_blank'>
-    //                                     <i class='fas fa-eye'></i> View 
-    //                                 </a>
-    //                                 <a href='/shipntrack/label/pdf/download/$id 'class='edit btn btn-info btn-sm mr-2'>
-    //                                 <i class='fas fa-download'></i> Download PDF </a>
-
-    //                                 <a id='edit-address' data-toggle='modal' data-id='$records->id' href='javascript:void(0)' class='edit btn btn-secondary btn-sm'>
-    //                                 <i class='fas fa-address-card'></i> Address </a>
-    //                             </div>";
-    //                 return $action;
-    //             })
-    //             ->rawColumns(['select_all', 'mode', 'action'])
-    //             ->make(true);
-    //     }
-    //     return view('shipntrack.Operation.LabelManagement.Label.index', compact('values'));
-    // }
-
     public function index(Request $request)
     {
         $values = LabelMaster::select('id', 'source', 'destination')
@@ -106,56 +49,58 @@ class ShipnTrackLabelManagementController extends Controller
                      FROM $table_name
                      GROUP BY purchase_tracking_id,awb_no
                      ");
+            if (!empty($records)) {
 
-            return DataTables::of($records)
-                ->addColumn('select_all', function ($record) {
-                    return "<input class='check_options' type='checkbox' value='$record->id' name='options[]' >";
-                })
-                ->editColumn('order_no', function ($record) {
+                return DataTables::of($records)
+                    ->addColumn('select_all', function ($record) {
+                        return "<input class='check_options' type='checkbox' value='$record->id' name='options[]' >";
+                    })
+                    ->editColumn('order_no', function ($record) {
 
-                    $split = preg_split("/-booking-details-?/", $record->booking_details);
-                    $order_no = count($split) > 2 ? $split[1] : $split[0];
-                    $order_no = json_decode($order_no);
-                    return $order_no->order_id;
-                })
-                ->editColumn('awb_no', function ($record) {
-                    return $record->awb_no;
-                })
-                ->editColumn('courier_name', function ($record) {
+                        $split = preg_split("/-booking-details-?/", $record->booking_details);
+                        $order_no = count($split) > 2 ? $split[1] : $split[0];
+                        $order_no = json_decode($order_no);
+                        return $order_no->order_id;
+                    })
+                    ->editColumn('awb_no', function ($record) {
+                        return $record->awb_no;
+                    })
+                    ->editColumn('courier_name', function ($record) {
 
-                    $split = preg_split("/-shipping-details-?/", $record->shipping_details);
-                    $shipping_address = count($split) > 2 ? $split[1] : $split[0];
-                    $courier_name = json_decode($shipping_address);
-                    return $courier_name->shipped_by;
-                })
-                ->editColumn('order_date', function ($record) {
+                        $split = preg_split("/-shipping-details-?/", $record->shipping_details);
+                        $shipping_address = count($split) > 2 ? $split[1] : $split[0];
+                        $courier_name = json_decode($shipping_address);
+                        return $courier_name->shipped_by;
+                    })
+                    ->editColumn('order_date', function ($record) {
 
-                    $split_date = preg_split("/-booking-details-?/", $record->booking_details);
-                    $booked_date = count($split_date) > 2 ? $split_date[1] : $split_date[0];
-                    $order_date = json_decode($booked_date);
-                    return $order_date->booking_date;
-                })
-                ->editColumn('customer_name', function ($record) {
+                        $split_date = preg_split("/-booking-details-?/", $record->booking_details);
+                        $booked_date = count($split_date) > 2 ? $split_date[1] : $split_date[0];
+                        $order_date = json_decode($booked_date);
+                        return $order_date->booking_date;
+                    })
+                    ->editColumn('customer_name', function ($record) {
 
-                    $split_customer = preg_split("/-customer-details-?/", $record->customer_details);
-                    $customer_address = count($split_customer) > 2 ? $split_customer[1] : $split_customer[0];
-                    $customer_name = json_decode($customer_address);
-                    return $customer_name->consignee;
-                })
-                ->addColumn('action', function ($record) use ($destination) {
-                    $id = $record->id;
-                    $action = "<div class='d-flex justify-content-center'>
-                    <a href='/shipntrack/label/template/$destination/$id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
-                        <i class='fas fa-eye'></i> View 
-                    </a>
-                    <a href='/shipntrack/label/pdf/download/$destination/$id 'class='label_download btn btn-info btn-sm mr-2'>
-                    <i class='fas fa-download'></i> Download PDF </a>
+                        $split_customer = preg_split("/-customer-details-?/", $record->customer_details);
+                        $customer_address = count($split_customer) > 2 ? $split_customer[1] : $split_customer[0];
+                        $customer_name = json_decode($customer_address);
+                        return $customer_name->consignee;
+                    })
+                    ->addColumn('action', function ($record) use ($destination) {
+                        $id = $record->id;
+                        $action = "<div class='d-flex justify-content-center'>
+                                        <a href='/shipntrack/label/template/$destination/$id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                                            <i class='fas fa-eye'></i> View 
+                                        </a>
+                                        <a href='/shipntrack/label/pdf/download/$destination/$id 'class='label_download btn btn-info btn-sm mr-2'>
+                                        <i class='fas fa-download'></i> Download PDF </a>
 
-                </div>";
-                    return $action;
-                })
-                ->rawColumns(['select_all', 'order_no', 'awb_no', 'courier_name', 'order_date', 'customer_name', 'action'])
-                ->make(true);
+                                    </div>";
+                        return $action;
+                    })
+                    ->rawColumns(['select_all', 'order_no', 'awb_no', 'courier_name', 'order_date', 'customer_name', 'action'])
+                    ->make(true);
+            }
         }
 
         return view('shipntrack.Operation.LabelManagement.Label.index', compact('values'));

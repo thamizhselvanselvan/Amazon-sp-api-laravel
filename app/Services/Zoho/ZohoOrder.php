@@ -72,7 +72,7 @@ class ZohoOrder
             "orders.is_business_order",
         ];
 
-        Log::notice($amazon_order_id);
+      
         $order_item_details = OrderItemDetails::select($order_details)
             ->join('orders', 'orderitemdetails.amazon_order_identifier', '=', 'orders.amazon_order_identifier')
             ->where('orderitemdetails.amazon_order_identifier', $amazon_order_id)
@@ -101,7 +101,7 @@ class ZohoOrder
                     'Store Name = ' . $store_name .' '.
                     'Store ID = ' . $order_item_details->seller_identifier .' '.
                     'Amazon Order ID = ' . $amazon_order_id . ' ' .
-                    'Order Item Identifier = ' .  $amazon_order_id;
+                    'Order Item Identifier = ' .  $order_item_id;
 
                 slack_notification('app360', 'Zoho Booking', $slackMessage);
 
@@ -110,7 +110,7 @@ class ZohoOrder
                         'order_item_id' => $order_item_id,
                         'amazon_order_id' => $amazon_order_id
                     ])
-                    ->update(['zoho_status' => '3']);
+                    ->update(['zoho_status' => 5]);
             }
 
             if ($zoho_search_order_exists && $force_update) {

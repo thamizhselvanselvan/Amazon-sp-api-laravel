@@ -9,7 +9,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Picqer\Barcode\BarcodeGeneratorHTML;
-use App\Models\ShipNtrack\Process\Process_Master;
+use App\Models\ShipNTrack\Process\Process_Master;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 
 class ShipnTrackInvoiceManagementController extends Controller
@@ -17,26 +17,28 @@ class ShipnTrackInvoiceManagementController extends Controller
     public function index(Request $request)
     {
 
-        $values = Process_Master::select('source', 'destination')
-            ->groupBy('source', 'destination')
+        $values = Process_Master::select('id', 'source', 'destination')
+            ->groupBy('id', 'source', 'destination')
             ->get()
             ->toArray();
 
+
+
         if ($request->ajax()) {
 
-            $destination = '';
-            if ($request->destination == 'SA') {
-                $destination = 'KSA';
-            } else {
-
-                $destination = $request->destination;
-            }
+            $mode = $request->destination;
+            $record = $this->splitMode($request->destination);
+            $destination = $record['destination'];
 
             $table = table_model_change(model_path: 'ForwarderMaping', model_name: 'Tracking' . strtolower($destination), table_name: 'tracking' . strtolower($destination) . 's');
-
+            $table_des = strtolower($destination);
+            $table_name = "tracking_$table_des" . "s";
             $invoice_data = $table->query()
-                ->select(['id', 'awb_no', 'packet_details', 'booking_details', 'shipping_details', 'packet_details'])
+                ->select(["$table_name.id", "$table_name.awb_no", "$table_name.packet_details", "$table_name.booking_details", "$table_name.shipping_details", "$table_name.packet_details", "process_masters.source", "process_masters.destination"])
+                ->join("process_masters", "$table_name.mode", "=", "process_masters.id")
+                ->where("$table_name.mode", $record["mode"])
                 ->get();
+
 
             if (!empty($invoice_data)) {
 
@@ -48,6 +50,10 @@ class ShipnTrackInvoiceManagementController extends Controller
                     ->addColumn('invoice_no', function ($result) {
                         $invoice_no = json_decode($result->packet_details)->invoice_no;
                         return $invoice_no;
+                    })
+                    ->addColumn('mode', function ($result) {
+                        $mode = $result->source . '2' . $result->destination;
+                        return $mode;
                     })
                     ->addColumn('invoice_date', function ($result) {
                         $invoice_date = json_decode($result->booking_details)->booking_date;
@@ -85,19 +91,19 @@ class ShipnTrackInvoiceManagementController extends Controller
                         $price = json_decode($result->packet_details)->price;
                         return $price;
                     })
-                    ->addColumn('action', function ($result) use ($destination) {
+                    ->addColumn('action', function ($result) use ($mode) {
                         $action = "<div class='d-flex justify-content-center'>
-                                        <a href='/shipntrack/invoice/template/$destination/$result->id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
+                                        <a href='/shipntrack/invoice/template/$mode/$result->id 'class='label_view btn btn-success btn-sm ml-2 mr-2' target='_blank'>
                                             <i class='fas fa-eye'></i> View 
                                         </a>
-                                        <a href='/shipntrack/invoice/download/$destination/$result->id 'class='label_download btn btn-info btn-sm mr-2'>
+                                        <a href='/shipntrack/invoice/download/$mode/$result->id 'class='label_download btn btn-info btn-sm mr-2'>
                                         <i class='fas fa-download'></i> Download PDF </a>
 
                                     </div>";
                         return $action;
                     })
 
-                    ->rawColumns(['select_all', 'invoice_no', 'invoice_date', 'channel', 'shipped_by', 'store_name', 'bill_to_name', 'ship_to_name', 'sku', 'quantity', 'price', 'action'])
+                    ->rawColumns(['select_all', 'invoice_no', 'mode', 'invoice_date', 'channel', 'shipped_by', 'store_name', 'bill_to_name', 'ship_to_name', 'sku', 'quantity', 'price', 'action'])
                     ->make(true);
             }
         }
@@ -105,13 +111,32 @@ class ShipnTrackInvoiceManagementController extends Controller
         return view('shipntrack.Invoice.index', compact('values'));
     }
 
+    public function splitMode($mode)
+    {
+        $table_des = '';
+        $destination = explode("-", $mode);
+
+        if ($destination[2] == 'SA') {
+            $table_des = 'KSA';
+        } else {
+            $table_des = $destination[2];
+        }
+
+        $data = [
+            'mode' => $destination[0],
+            'destination' => $table_des,
+        ];
+
+        return $data;
+    }
+
     public function SNTInvoiceTemplate($destination, $id)
     {
         $ids =   explode('-', $id);
-        $data = $this->ShipnTrackInvoiceData($destination, $ids);
+        $data = $this->ShipnTrackInvoiceData(($destination), $ids);
         $records = $this->ShipnTrackInvoiceDataFormatting($data);
 
-        po($records);
+        // po($records);
 
         $invoice_bar_code = [];
         $generator = new BarcodeGeneratorHTML();
@@ -120,16 +145,15 @@ class ShipnTrackInvoiceManagementController extends Controller
             $invoice_bar_code[] = $generator->getBarcode($records[$key]['invoice_no'], $generator::TYPE_CODE_128);
         }
 
-        return view('shipntrack.Invoice.ind2uae', compact('records', 'invoice_bar_code'));
+        return view('shipntrack.Invoice.in2ae', compact('records', 'invoice_bar_code'));
     }
 
-    public function ShipnTrackInvoiceData($destination, $ids)
+    public function ShipnTrackInvoiceData($mode, $ids)
     {
 
-        if ($destination == 'SA') {
-            $destination = 'KSA';
-        }
-        $table = table_model_change(model_path: 'ForwarderMaping', model_name: 'Tracking' . strtolower($destination), table_name: 'tracking' . strtolower($destination) . 's');
+        $destination = $this->splitMode($mode);
+
+        $table = table_model_change(model_path: 'ForwarderMaping', model_name: 'Tracking' . strtolower($destination['destination']), table_name: 'tracking' . strtolower($destination['destination']) . 's');
         $records = $table->query()
             ->select(['awb_no', 'packet_details', 'booking_details', 'shipping_details', 'packet_details'])
             ->whereIn('id', ($ids))

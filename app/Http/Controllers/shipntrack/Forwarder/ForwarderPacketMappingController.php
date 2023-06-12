@@ -25,6 +25,8 @@ use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingin;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingksa;
 
+use function PHPUnit\Framework\isEmpty;
+
 class ForwarderPacketMappingController extends Controller
 {
 
@@ -131,6 +133,9 @@ class ForwarderPacketMappingController extends Controller
         $mode_array = explode('_', $request->destination);
         $destination = ($mode_array[1]);
         $awb_no = $this->generate_refrenceid($mode_array);
+        $mode = $mode_array[0];
+
+
 
 
         $insert_data = [
@@ -140,76 +145,23 @@ class ForwarderPacketMappingController extends Controller
             'shipping_details' =>  json_encode($shipping_data),
             'booking_details' =>  json_encode($booking_data),
             'reference_id' => $request->reference_id,
-            // 'forwarder_1' => $request->forwarder1,
-            // 'forwarder_1_awb' => $request->forwarder_1_awb,
-            // 'forwarder_1_flag' => 0,
-            // 'forwarder_2' => $request->forwarder2,
-            // 'forwarder_2_awb' => $request->forwarder_2_awb,
-            // 'forwarder_2_flag' => 0,
-            // 'forwarder_3' => $request->forwarder3,
-            // 'forwarder_3_awb' => $request->forwarder_3_awb,
-            // 'forwarder_3_flag' => 0,
-            // 'forwarder_4' => $request->forwarder4,
-            // 'forwarder_4_awb' => $request->forwarder_4_awb,
-            // 'forwarder_4_flag' => 0,
-            // 'status' => 0,
             'purchase_tracking_id' => $request->purchase_tracking_id,
             'awb_no' => $awb_no,
+            'mode' => $mode
         ];
 
         if ($destination == 'AE') {
 
-
-            Trackingae::create(
-                $insert_data,
-                // 'reference_id_unique',
-                // [
-                //     'forwarder_1',
-                //     'forwarder_1_awb',
-                //     'forwarder_2',
-                //     'forwarder_2_awb',
-                //     'forwarder_3',
-                //     'forwarder_3_awb',
-                //     'forwarder_4',
-                //     'forwarder_4_awb',
-
-                // ]
-            );
+            Trackingae::create($insert_data);
         } elseif ($destination == 'IN') {
-            Trackingin::create(
-                $insert_data,
-                // 'reference_id_unique',
-                // [
-                //     'forwarder_1',
-                //     'forwarder_1_awb',
-                //     'forwarder_2',
-                //     'forwarder_2_awb',
-                //     'forwarder_3',
-                //     'forwarder_3_awb',
-                //     'forwarder_4',
-                //     'forwarder_4_awb',
 
-                // ]
-            );
+            Trackingin::create($insert_data);
         } elseif ($destination == 'SA') {
-            Trackingksa::create(
-                $insert_data,
-                // 'reference_id_unique',
-                // [
-                //     'forwarder_1',
-                //     'forwarder_1_awb',
-                //     'forwarder_2',
-                //     'forwarder_2_awb',
-                //     'forwarder_3',
-                //     'forwarder_3_awb',
-                //     'forwarder_4',
-                //     'forwarder_4_awb',
 
-                // ]
-            );
+            Trackingksa::create($insert_data);
         }
 
-        return redirect()->intended('/shipntrack/forwarder/')->with("success", "Tracking Details Uploaded Successfully");
+        return redirect()->intended('/shipntrack/forwarder/')->with("success", "Booking Details Uploaded Successfully");
     }
 
     public function Upload()
@@ -534,54 +486,50 @@ class ForwarderPacketMappingController extends Controller
     function generate_refrenceid($mode_array)
     {
         $destination = $mode_array[1];
-        if ($destination == 'AE') {
+        $destination = strtolower($destination);
+        if ($destination == 'sa') {
+            $data =   Trackingksa::query()
+                ->select('awb_no')
+                ->OrderBy('created_at', 'desc')->first();
+        } else {
 
-            $val = Trackingae::query()
+            $data = DB::connection('shipntracking')->table("tracking_{$destination}s")
                 ->select(('awb_no'))
                 ->OrderBy('created_at', 'desc')->first();
-
-            if (($val == null)) {
-                $ship_id = $mode_array[1] . $mode_array[2] . '100001';
-            } else {
-                $existing_id = substr($val->awb_no, 4);
-
-                $new_id = $existing_id + 1;
-                $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
-            }
-            return  $ship_id;
-        } elseif ($destination == 'IN') {
-
-            $val = Trackingin::query()
-                ->select(('awb_no'))
-                ->OrderBy('created_at', 'desc')->first();
-
-
-            if ((!$val)) {
-                $ship_id = $mode_array[1] . $mode_array[2] . '100001';
-            } else {
-
-                $existing_id = substr($val->awb_no, 4);
-
-                $new_id = $existing_id + 1;
-                $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
-            }
-            return  $ship_id;
-        } elseif ($destination == 'SA') {
-
-            $val = Trackingksa::query()
-                ->select(('awb_no'))
-                ->OrderBy('created_at', 'desc')->first();
-
-            if ((!$val)) {
-                $ship_id = $mode_array[1] . $mode_array[2] . '100001';
-            } else {
-
-                $existing_id = substr($val->awb_no, 4);
-
-                $new_id = $existing_id + 1;
-                $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
-            }
-            return  $ship_id;
         }
+
+        $ship_id = null;
+        if (($data == null or $data->awb_no == '')) {
+            Log::notice('df');
+            $ship_id = $mode_array[1] . $mode_array[2] . '100001';
+        } else {
+            $existing_id = substr($data->awb_no, 4);
+
+            $new_id = $existing_id + 1;
+            $ship_id = $mode_array[1] . $mode_array[2] . $new_id;
+        }
+
+        return $ship_id;
+    }
+
+    public function booking_list(Request $request)
+    {
+        // $mode_array = explode('_', $request->destination);
+        // $destination = ($mode_array[1]);
+        // $mode = $mode_array[0];
+        $destinations  = Process_Master::query()->get();
+        // if ($destination == 'AE') {
+
+        //     $data = Trackingae::query()->get();
+        // } elseif ($destination == 'IN') {
+
+        //     $data = Trackingin::query()->get();
+        // } elseif ($destination == 'SA') {
+
+        //     $data = Trackingksa::query()->get();
+        // }
+
+
+        return view('shipntrack.Forwarder.listing',compact('destinations'));
     }
 }
