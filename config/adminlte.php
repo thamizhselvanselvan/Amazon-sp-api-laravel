@@ -1106,7 +1106,7 @@ return [
                         [
                             'text' => 'Booking List',
                             'url' => 'shipntrack/booking/details',
-                            'icon' => 'far fa fa-bar-chart',
+                            'icon' => 'fas fa-list',
                             'can' => ['Admin'],
                         ],
 

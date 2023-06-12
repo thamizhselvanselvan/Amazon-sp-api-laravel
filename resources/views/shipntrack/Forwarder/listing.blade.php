@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Forwarder Details')
+@section('title', 'Booking Details')
 
 @section('css')
 
@@ -23,19 +23,20 @@
     <div class="col-2">
         <div style="margin-top: -1.0rem;">
 
-            <x-adminlte-select name="select_mode" id="select_mode" label="Select Tracking Mode:">
-                <option value="">Select Mode</option>
-                <option value="IN_AE">IN to UAE</option>
-                <option value="IN_KSA">IN to KSA</option>
-                <option value="USA_AE">USA to UAE</option>
-                <option value="USA_KSA">USA to KSA</option>
+            <x-adminlte-select name="destination" label="Source-Destination" id="destination">
+                <option value="0">Source-Destination</option>
+                @foreach ($destinations as $destination)
+                <option value={{ $destination['id'] }}_{{ $destination['destination'] }}_{{ $destination['process_id'] }}>
+                    {{ $destination['source'] . '-' . $destination['destination'] }}
+                </option>
+                @endforeach
             </x-adminlte-select>
         </div>
     </div>
     <div class="col-3">
     </div>
     <div class="col-3">
-        <h1 class="m-0 text-dark">Forwarder Details</h1>
+        <h1 class="m-0 text-dark">Booking Details</h1>
     </div>
 </div>
 @stop
@@ -123,7 +124,7 @@
                 },
                 data: function(d) {
                     d.mode = $('#select_mode').val();
-                    
+
                 },
             },
             columns: [
