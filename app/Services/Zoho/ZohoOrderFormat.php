@@ -168,7 +168,7 @@ class ZohoOrderFormat
 
         $buyerDtls = (object)$value->shipping_address;
         //City
-        if (!isset($buyerDtls->Name) | !isset($buyerDtls->AddressLine1) | !isset($buyerDtls->AddressLine2)) {
+        if (!isset($buyerDtls->Name) | (!isset($buyerDtls->AddressLine1) && !isset($buyerDtls->AddressLine2))) {
 
             ZohoMissing::insert([
                 'country_code' => 'us', 
@@ -176,7 +176,7 @@ class ZohoOrderFormat
                 'asin' => $value->asin, 
                 'amazon_order_id' => $value->amazon_order_identifier, 
                 'order_item_id' => $value->order_item_identifier,
-                'missing_details' => json_encode(['name', 'addressline1', 'addressline2']),
+                'missing_details' => json_encode(['name', 'addressline1']),
                 'status' => 0
             ]);
 
