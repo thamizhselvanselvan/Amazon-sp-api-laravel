@@ -1078,7 +1078,7 @@ return [
                             'icon' => 'far fa fa-cog',
                         ],
                         [
-                            'text' => 'Process Management',
+                            'text' => 'AWB-Process Management',
                             'url' => 'shipntrack/process/home',
                             'can' => ['Admin'],
                             'icon' => 'far fa fa-list-ul',
@@ -1092,26 +1092,25 @@ return [
                     ],
                 ],
                 [
-                    'text' => 'Packet Booking',
-                    'url' => 'shipntrack/forwarder',
+                    'text' => 'Booking',
                     'icon' => 'far fa fa-map-marker',
                     'can' => ['Admin'],
-                    // 'submenu' =>
-                    // [
-                    //     [
-                    //         'text' => 'Forwarder Mapping',
-                    //         'url' => 'shipntrack/forwarder',
-                    //         'icon' => 'far fa fa-map-marker',
-                    //         'can' => ['Admin'],
-                    //     ],
-                    //     [
-                    //         'text' => 'Forwarder Details',
-                    //         'url' => 'shipntrack/forwarder/mapped/details',
-                    //         'icon' => 'far fa fa-bar-chart',
-                    //         'can' => ['Admin'],
-                    //     ],
+                    'submenu' =>
+                    [
+                        [
+                            'text' => 'Packet Booking',
+                            'url' => 'shipntrack/forwarder',
+                            'icon' => 'far fa fa-map-marker',
+                            'can' => ['Admin'],
+                        ],
+                        [
+                            'text' => 'Booking List',
+                            'url' => 'shipntrack/booking/details',
+                            'icon' => 'far fa fa-bar-chart',
+                            'can' => ['Admin'],
+                        ],
 
-                    // ],
+                    ],
 
                 ],
 
