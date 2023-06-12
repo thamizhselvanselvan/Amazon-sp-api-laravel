@@ -9,7 +9,7 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Picqer\Barcode\BarcodeGeneratorHTML;
-use App\Models\ShipNtrack\Process\Process_Master;
+use App\Models\ShipNTrack\Process\Process_Master;
 use App\Models\ShipNTrack\ForwarderMaping\Trackingae;
 
 class ShipnTrackInvoiceManagementController extends Controller
